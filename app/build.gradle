@@ -1,0 +1,57 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
+apply plugin: 'com.android.application'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
+apply plugin: 'io.fabric'
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "christian.eilers.flibber"
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.google.firebase:firebase-core:11.8.0' // Firebase-Analytics
+    implementation 'com.android.support:appcompat-v7:26.1.0' // App-Compat
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2' // Constraint-Layout
+    implementation 'com.google.firebase:firebase-auth:11.8.0' //Firebase-Auth
+    implementation 'com.google.firebase:firebase-database:11.8.0' // Firebase-Database
+    implementation 'com.google.firebase:firebase-storage:11.8.0' // Firebase-Storage
+    implementation 'com.google.firebase:firebase-crash:11.8.0' //Firebase-Crash Reporting
+    // Crashlytics
+    compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+        transitive = true
+    }
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+}
+
+// Google Plugin für Gradle
+apply plugin: 'com.google.gms.google-services'

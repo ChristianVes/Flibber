@@ -1,0 +1,86 @@
+{
+  "project_info": {
+    "project_number": "524804524136",
+    "firebase_url": "https://flibber-86688.firebaseio.com",
+    "project_id": "flibber-86688",
+    "storage_bucket": "flibber-86688.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:524804524136:android:d624a9c0a59b0ff0",
+        "android_client_info": {
+          "package_name": "eilers.christian.flibber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "524804524136-t2e2mm6gg6nkch4kq7kljurf0n8821lr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWsCA-jtbgloKHLxuY0aRFFZ3CUUs50Mk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:524804524136:android:b2b31fb3f79e3d11",
+        "android_client_info": {
+          "package_name": "christian.eilers.flibber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "524804524136-n8l6bg0b35l3f90te70p00p5hl5mekhb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "christian.eilers.flibber",
+            "certificate_hash": "d64ace54c26981b48f3c995cbbf774ccb7e1ea08"
+          }
+        },
+        {
+          "client_id": "524804524136-t2e2mm6gg6nkch4kq7kljurf0n8821lr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWsCA-jtbgloKHLxuY0aRFFZ3CUUs50Mk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "524804524136-t2e2mm6gg6nkch4kq7kljurf0n8821lr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
