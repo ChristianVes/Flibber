@@ -23,17 +23,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        initializeViews();
 
+        auth = FirebaseAuth.getInstance();
+
+        // Hide Keyboard on click outside
+        hideKeyboard_onClickOutside();
+    }
+
+    // Initialize views from layout file
+    private void initializeViews() {
         eT_email = (EditText) findViewById(R.id.editText_email);
         eT_password = (EditText) findViewById(R.id.editText_password);
         btn_login = (Button) findViewById(R.id.button_ok);
         btn_password = (Button) findViewById(R.id.button_forget);
         btn_newAcc = (Button) findViewById(R.id.button_newAccount);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.GONE);
 
-        // Hide Keyboard on click outside
-        hideKeyboard_onClickOutside();
+        btn_password.setOnClickListener(this);
+        btn_login.setOnClickListener(this);
+        btn_newAcc.setOnClickListener(this);
     }
 
     // Check which Button has been clicked
