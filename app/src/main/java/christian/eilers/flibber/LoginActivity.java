@@ -1,6 +1,7 @@
 package christian.eilers.flibber;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,21 +25,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initializeViews();
-
-        auth = FirebaseAuth.getInstance();
-
-        // Hide Keyboard on click outside
         hideKeyboard_onClickOutside();
+        auth = FirebaseAuth.getInstance();
     }
 
     // Initialize views from layout file
     private void initializeViews() {
-        eT_email = (EditText) findViewById(R.id.editText_email);
-        eT_password = (EditText) findViewById(R.id.editText_password);
-        btn_login = (Button) findViewById(R.id.button_ok);
-        btn_password = (Button) findViewById(R.id.button_forget);
-        btn_newAcc = (Button) findViewById(R.id.button_newAccount);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        eT_email = findViewById(R.id.editText_email);
+        eT_password = findViewById(R.id.editText_password);
+        btn_login = findViewById(R.id.button_ok);
+        btn_password = findViewById(R.id.button_forget);
+        btn_newAcc = findViewById(R.id.button_newAccount);
+        progressBar = findViewById(R.id.progressBar);
 
         btn_password.setOnClickListener(this);
         btn_login.setOnClickListener(this);
@@ -58,9 +56,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    // Switches to a XXX to create a new Account
+    // Switches to RegisterActivity to create a new Account
     private void createAccount() {
-        //TODO
+        Intent i_registerActivity = new Intent(LoginActivity.this, RegisterActivity.class);
+        startActivity(i_registerActivity);
+        //TODO: Fade animation
     }
 
     // Switches to XXX to set a new password
@@ -130,6 +130,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
+    // Variablen
     private EditText eT_email, eT_password;
     private Button btn_login, btn_newAcc, btn_password;
     private ProgressBar progressBar;

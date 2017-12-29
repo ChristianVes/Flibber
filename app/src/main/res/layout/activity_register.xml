@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="christian.eilers.flibber.LoginActivity"
+    tools:context="christian.eilers.flibber.RegisterActivity"
     android:focusableInTouchMode="true"
     android:clickable="true">
     <!-- focusable/clickable for hiding the keyboard with method hideKeyboard in the activity-->
@@ -25,10 +25,22 @@
             app:srcCompat="@drawable/hq_logo" />
 
         <EditText
+            android:id="@+id/editText_name"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:inputType="textPersonName"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/shape_rounded"
+            android:hint="Name"
+            android:textAlignment="center"
+            android:singleLine="true"
+            android:textSize="20sp" />
+
+        <EditText
             android:id="@+id/editText_email"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/shape_rounded"
             android:hint="Email Address"
             android:inputType="textEmailAddress"
@@ -49,49 +61,26 @@
             android:textSize="20sp" />
 
         <Button
-            android:id="@+id/button_ok"
+            android:id="@+id/button_signUp"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/selector_button"
-            android:text="Login"
+            android:text="Create Account"
             android:textSize="20sp"
             android:textAllCaps="false"
             android:textColor="@color/colorWhite"/>
 
-        <LinearLayout
+        <Button
+            android:id="@+id/button_toLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
             android:layout_gravity="center"
-            android:layout_marginTop="20dp">
-
-            <Button
-                android:id="@+id/button_forget"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:background="@android:color/transparent"
-                android:layout_marginRight="20dp"
-                android:text="Forget \nPassword"
-                android:textColor="@drawable/selector_textcolor"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="|"
-                android:textSize="20sp"/>
-
-            <Button
-                android:id="@+id/button_newAccount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:layout_marginLeft="20dp"
-                android:text="Register"
-                android:textColor="@drawable/selector_textcolor"/>
-
-        </LinearLayout>
+            android:background="@android:color/transparent"
+            android:text="Already a member? Login"
+            android:textAllCaps="false"
+            android:textColor="@drawable/selector_textcolor" />
 
     </LinearLayout>
 
