@@ -24,7 +24,9 @@
             android:value="6f8c3dd0bc38a28bbc7acf2996898d15b8bbb108" />
 
         <activity android:name=".LoginActivity" />
-        <activity android:name=".RegisterActivity"></activity>
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".HomeActivity" />
+        <activity android:name=".WgSelectorActivity"></activity>
     </application>
 
 </manifest>

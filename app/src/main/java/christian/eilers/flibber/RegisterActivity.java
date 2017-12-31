@@ -43,42 +43,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         btn_toLogin.setOnClickListener(this);
     }
 
-    // Attach Listener to EditTexts, on Click outside hide the Keyboard
-    private void hideKeyboard_onClickOutside() {
-        eT_name.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-
-        eT_email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-
-        eT_password.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-    }
-
-    // Hide Keyboard
-    public void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
     // Check which Button has been clicked
     @Override
     public void onClick(View v) {
@@ -101,7 +65,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    sendEmailVerification();
+                    // TODO: E-Mail verification wieder einbauen
+                    // sendEmailVerification();
+                    // TODO: weiterleiten zur Auswahl der WG / neue WG anlegen
                 } else {
                     Toast.makeText(RegisterActivity.this, "Authentication failed.",
                             Toast.LENGTH_SHORT).show();
@@ -116,7 +82,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private void toLogin() {
         Intent i_loginActivity = new Intent(RegisterActivity.this, LoginActivity.class);
         startActivity(i_loginActivity);
-        //TODO: Fade animation
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     // Send email verification
@@ -154,6 +120,42 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             return false;
         }
         return true;
+    }
+
+    // Attach Listener to EditTexts, on Click outside hide the Keyboard
+    private void hideKeyboard_onClickOutside() {
+        eT_name.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+
+        eT_email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+
+        eT_password.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+    }
+
+    // Hide Keyboard
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     // Variablen

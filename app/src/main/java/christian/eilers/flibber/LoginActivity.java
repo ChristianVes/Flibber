@@ -3,14 +3,18 @@ package christian.eilers.flibber;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -60,12 +64,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void createAccount() {
         Intent i_registerActivity = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(i_registerActivity);
-        //TODO: Fade animation
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     // Switches to XXX to set a new password
     private void forgetPassword() {
-        //TODO
+        String email = eT_email.getText().toString();
+        if(TextUtils.isEmpty(email)){
+            Toast.makeText(LoginActivity.this, "E-Mail required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        progressBar.setVisibility(View.VISIBLE);
+        auth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(LoginActivity.this, "E-Mail to reset password sent.", Toast.LENGTH_SHORT).show();
+                        } else
+                            Toast.makeText(LoginActivity.this, "Failed to send E-Mail.", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
     }
 
     // Login the user with e-mail and password
@@ -77,15 +97,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
+                eT_password.setText("");
+                progressBar.setVisibility(View.GONE);
                 if(task.isSuccessful()) {
-                    //TODO
+                    // TODO: check if user is EmailVerified
+                    // auth.getCurrentUser().isEmailVerified();
+                    Intent i_wgSelector = new Intent(LoginActivity.this, WgSelectorActivity.class);
+                    startActivity(i_wgSelector);
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 } else {
                     Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                    eT_password.setText("");
                 }
-                progressBar.setVisibility(View.GONE);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 
     // Check if email or password are empty
