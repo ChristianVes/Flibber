@@ -1,16 +1,20 @@
 package christian.eilers.flibber;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -18,8 +22,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener{
+import java.util.HashMap;
+import java.util.Map;
+
+public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,15 +40,19 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     // Initialize views from layout file
     private void initializeViews() {
-        eT_name = (EditText) findViewById(R.id.editText_name);
-        eT_email = (EditText) findViewById(R.id.editText_email);
-        eT_password = (EditText) findViewById(R.id.editText_password);
-        btn_signup = (Button) findViewById(R.id.button_signUp);
-        btn_toLogin = (Button) findViewById(R.id.button_toLogin);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        eT_name = findViewById(R.id.editText_name);
+        eT_email = findViewById(R.id.editText_email);
+        eT_password = findViewById(R.id.editText_password);
+        btn_signup = findViewById(R.id.button_signUp);
+        btn_toLogin = findViewById(R.id.button_toLogin);
+        progressBar = findViewById(R.id.progressBar);
 
         btn_signup.setOnClickListener(this);
         btn_toLogin.setOnClickListener(this);
+
+        eT_name.setOnEditorActionListener(this);
+        eT_email.setOnEditorActionListener(this);
+        eT_password.setOnEditorActionListener(this);
     }
 
     // Check which Button has been clicked
@@ -54,9 +66,23 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    // Apply Action on Keyboard Action
+    @Override
+    public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+        if (i == EditorInfo.IME_ACTION_NEXT) {
+            if(eT_name.hasFocus()) showSoftKeyboard(eT_email);
+            else if(eT_email.hasFocus()) showSoftKeyboard(eT_password);
+            return true;
+        } else if (i == EditorInfo.IME_ACTION_GO) {
+            signUp();
+            return true;
+        }
+        return false;
+    }
+
     // Sign Up new user with e-amil and password
     private void signUp() {
-        String name = eT_name.getText().toString();
+        final String name = eT_name.getText().toString();
         String email = eT_email.getText().toString();
         String password = eT_password.getText().toString();
         if (!validateForm(email, password, name)) return;
@@ -65,9 +91,20 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
+                    userID = auth.getCurrentUser().getUid();
                     // TODO: E-Mail verification wieder einbauen
                     // sendEmailVerification();
-                    // TODO: weiterleiten zur Auswahl der WG / neue WG anlegen
+
+                    // Speichere Username in DB
+                    Map<String, Object> userData = new HashMap<>();
+                    userData.put("name", name);
+                    db = FirebaseFirestore.getInstance();
+                    db.collection("users").document(userID).set(userData);
+                    // Wechsel zum WG-Selector
+                    Intent i_wgSelector = new Intent(RegisterActivity.this, WgSelectorActivity.class);
+                    startActivity(i_wgSelector);
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                    finish();
                 } else {
                     Toast.makeText(RegisterActivity.this, "Authentication failed.",
                             Toast.LENGTH_SHORT).show();
@@ -83,6 +120,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         Intent i_loginActivity = new Intent(RegisterActivity.this, LoginActivity.class);
         startActivity(i_loginActivity);
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        finish();
     }
 
     // Send email verification
@@ -120,6 +158,15 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             return false;
         }
         return true;
+    }
+
+    // Show Keyboard an focus View v
+    public void showSoftKeyboard(View view) {
+        if (view.requestFocus()) {
+            InputMethodManager imm = (InputMethodManager)
+                    getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+        }
     }
 
     // Attach Listener to EditTexts, on Click outside hide the Keyboard
@@ -163,4 +210,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private Button btn_signup, btn_toLogin;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
+    private FirebaseFirestore db;
+    private String userID;
 }

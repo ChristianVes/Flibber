@@ -10,6 +10,8 @@ import android.view.MenuItem;
 
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+import christian.eilers.flibber.Adapter.HomePagerAdapter;
+
 public class HomeActivity extends AppCompatActivity {
 
     private BottomNavigationViewEx bottomNavigationView;

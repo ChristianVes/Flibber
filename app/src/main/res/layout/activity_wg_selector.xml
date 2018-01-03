@@ -25,12 +25,20 @@
             app:srcCompat="@drawable/hq_logo" />
 
         <TextView
+            android:id="@+id/tv_deinewgs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
             android:padding="5dp"
             android:text="Deine WG's:"
             android:textColor="@color/colorWhite" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:visibility="gone"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recView"
@@ -93,15 +101,6 @@
         android:layout_alignParentTop="true"
         android:layout_margin="5dp"
         android:background="@drawable/ic_arrow_back" />
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_centerInParent="true"
-        android:background="@android:color/transparent"
-        android:visibility="gone"
-        style="?android:attr/progressBarStyle"/>
 
 </RelativeLayout>
 

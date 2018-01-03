@@ -1,8 +1,10 @@
-package christian.eilers.flibber;
+package christian.eilers.flibber.Adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import christian.eilers.flibber.PutzplanFragment;
 
 public class HomePagerAdapter extends FragmentPagerAdapter {
     private static int NUM_ITEMS = 5;
