@@ -88,13 +88,21 @@ public class WgSelectorActivity extends AppCompatActivity implements View.OnClic
         recView.setAdapter(adapter);
     }
 
-    // Custom ViewHolder for populating the WG's
-    public static class WgHolder extends RecyclerView.ViewHolder {
+    // Custom ViewHolder for interacting with single items of the RecyclerView
+    public class WgHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView v_name;
 
         public WgHolder(View itemView) {
             super(itemView);
             v_name = itemView.findViewById(R.id.wg_name);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            Intent i_home = new Intent(WgSelectorActivity.this, HomeActivity.class);
+            startActivity(i_home);
+            finish();
         }
     }
 

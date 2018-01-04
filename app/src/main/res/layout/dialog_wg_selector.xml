@@ -16,7 +16,7 @@
         android:background="@color/colorPrimary"
         android:padding="5dp"
         android:text="WG beitreten"
-        android:textSize="20sp"
+        android:textSize="22sp"
         android:textAlignment="center"
         android:textColor="@color/colorWhite" />
 
