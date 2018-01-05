@@ -29,8 +29,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import christian.eilers.flibber.Adapter.WgProfilAdapter;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.Models.Wg;
+import christian.eilers.flibber.ProfilAndWgs.WgsAndProfilActivity;
 
 public class WgSelectorActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -100,7 +102,7 @@ public class WgSelectorActivity extends AppCompatActivity implements View.OnClic
 
         @Override
         public void onClick(View view) {
-            Intent i_home = new Intent(WgSelectorActivity.this, HomeActivity.class);
+            Intent i_home = new Intent(WgSelectorActivity.this, WgsAndProfilActivity.class);
             startActivity(i_home);
             finish();
         }

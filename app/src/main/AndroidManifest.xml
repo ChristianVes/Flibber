@@ -26,7 +26,8 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".HomeActivity" />
-        <activity android:name=".WgSelectorActivity"></activity>
+        <activity android:name=".WgSelectorActivity" />
+        <activity android:name=".ProfilAndWgs.WgsAndProfilActivity"></activity>
     </application>
 
 </manifest>
