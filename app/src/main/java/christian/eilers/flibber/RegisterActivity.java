@@ -27,6 +27,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+import christian.eilers.flibber.ProfilAndWgs.WgsAndProfilActivity;
+
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener {
 
     @Override
@@ -82,9 +84,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     // Sign Up new user with e-amil and password
     private void signUp() {
-        final String name = eT_name.getText().toString();
-        String email = eT_email.getText().toString();
-        String password = eT_password.getText().toString();
+        final String name = eT_name.getText().toString().trim();
+        String email = eT_email.getText().toString().trim();
+        String password = eT_password.getText().toString().trim();
         if (!validateForm(email, password, name)) return;
         progressBar.setVisibility(View.VISIBLE);
         auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -101,7 +103,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     db = FirebaseFirestore.getInstance();
                     db.collection("users").document(userID).set(userData);
                     // Wechsel zum WG-Selector
-                    Intent i_wgSelector = new Intent(RegisterActivity.this, WgSelectorActivity.class);
+                    Intent i_wgSelector = new Intent(RegisterActivity.this, WgsAndProfilActivity.class);
                     startActivity(i_wgSelector);
                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                     finish();

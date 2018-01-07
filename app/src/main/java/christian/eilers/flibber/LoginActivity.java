@@ -26,6 +26,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import christian.eilers.flibber.ProfilAndWgs.WgsAndProfilActivity;
+
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener{
 
     @Override
@@ -67,8 +69,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     // Login the user with e-mail and password
     private void login() {
-        String email = eT_email.getText().toString();
-        String password = eT_password.getText().toString();
+        String email = eT_email.getText().toString().trim();
+        String password = eT_password.getText().toString().trim();
         if (!validateForm(email, password)) return;
         progressBar.setVisibility(View.VISIBLE);
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
@@ -79,7 +81,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if(task.isSuccessful()) {
                     // TODO: check if user is EmailVerified
                     // auth.getCurrentUser().isEmailVerified();
-                    Intent i_wgSelector = new Intent(LoginActivity.this, WgSelectorActivity.class);
+                    Intent i_wgSelector = new Intent(LoginActivity.this, WgsAndProfilActivity.class);
                     startActivity(i_wgSelector);
                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                     finish();
