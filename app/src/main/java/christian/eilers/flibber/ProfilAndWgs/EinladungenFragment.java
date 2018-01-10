@@ -1,5 +1,6 @@
 package christian.eilers.flibber.ProfilAndWgs;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,15 +23,18 @@ import android.widget.Toast;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import christian.eilers.flibber.Home.HomeActivity;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.Models.Wg;
 import christian.eilers.flibber.R;
+import christian.eilers.flibber.Utils.Utils;
 
 public class EinladungenFragment extends Fragment {
 
@@ -38,22 +42,25 @@ public class EinladungenFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.fragment_einladungen, container, false);
+        initializeViews();
+        db = FirebaseFirestore.getInstance();
+        loadData();
+        return mainView;
+    }
+
+    // Initialize views from layout file
+    private void initializeViews() {
         recView = mainView.findViewById(R.id.recView);
         btn_join = mainView.findViewById(R.id.btn_join);
         placeholder = mainView.findViewById(R.id.placeholder);
         progressBar = mainView.findViewById(R.id.progressBar);
-        auth = FirebaseAuth.getInstance();
-        userID = auth.getCurrentUser().getUid();
-        db = FirebaseFirestore.getInstance();
         progressBar.setVisibility(View.VISIBLE);
-        loadData();
         btn_join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 joinWgDialog();
             }
         });
-        return mainView;
     }
 
     // Lade Liste an WG's des eingeloggten Users aus der Database
@@ -62,8 +69,8 @@ public class EinladungenFragment extends Fragment {
         // nach Einzugsdatum soriert
         Query query = FirebaseFirestore.getInstance()
                 .collection("users")
-                .document(userID)
-                .collection("einladungen")
+                .document(Utils.getUSERID())
+                .collection("invitations")
                 .orderBy("timestamp");
 
         FirestoreRecyclerOptions<Wg> options = new FirestoreRecyclerOptions.Builder<Wg>()
@@ -83,13 +90,13 @@ public class EinladungenFragment extends Fragment {
 
             @Override
             public void onBindViewHolder(EinladungenFragment.WgHolder holder, int position, Wg model) {
-                // TODO
+                holder.v_name.setText(model.getName());
+                holder.wg = model;
             }
 
             // Einmalige Zuweisung zum ViewHolder
             @Override
             public EinladungenFragment.WgHolder onCreateViewHolder(ViewGroup group, int i) {
-                // TODO
                 View view = LayoutInflater.from(group.getContext()).inflate(R.layout.item_wg, group, false);
                 return new EinladungenFragment.WgHolder(view);
             }
@@ -100,31 +107,34 @@ public class EinladungenFragment extends Fragment {
     }
 
     // Custom ViewHolder for interacting with single items of the RecyclerView
-    public class WgHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-
-        // TODO
+    public class WgHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public TextView v_name;
+        public Wg wg;
 
         public WgHolder(View itemView) {
             super(itemView);
+            v_name = itemView.findViewById(R.id.wg_name);
+            itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-
+            joinWG(wg.getKey());
         }
     }
 
     // Open Dialog to join an existing WG
     private void joinWgDialog() {
-        View v = getLayoutInflater().inflate(R.layout.dialog_wg_selector, null);
+        final View v = getLayoutInflater().inflate(R.layout.dialog_wg_selector, null);
         final EditText eT_key = v.findViewById(R.id.editText_key);
-        Button btn = v.findViewById(R.id.button_ok);
+        final Button btn = v.findViewById(R.id.button_ok);
         final AlertDialog dialog = makeAlertDialog(v);
+
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String key = eT_key.getText().toString().trim();
-                joinWG(key);
+                String wgkey = eT_key.getText().toString().trim();
+                joinWG(wgkey);
                 dialog.dismiss();
             }
         });
@@ -132,8 +142,8 @@ public class EinladungenFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if (i == EditorInfo.IME_ACTION_GO) {
-                    String key = eT_key.getText().toString().trim();
-                    joinWG(key);
+                    String wgkey = eT_key.getText().toString().trim();
+                    joinWG(wgkey);
                     dialog.dismiss();
                     return true;
                 }
@@ -144,19 +154,18 @@ public class EinladungenFragment extends Fragment {
 
     // Join WG with this specific key (if it exists)
     private void joinWG(final String wgKey) {
-        if(TextUtils.isEmpty(wgKey)){
+        if (TextUtils.isEmpty(wgKey)) {
             Toast.makeText(getContext(), "Keinen Key eingegeben", Toast.LENGTH_SHORT).show();
             return;
         }
-        db.collection("users").document(userID).collection("wgs").document(wgKey).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        progressBar.setVisibility(View.VISIBLE);
+
+        db.collection("users").document(Utils.getUSERID()).collection("wgs").document(wgKey).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 // Überprüfe ob User bereits Mitglied in der WG ist
-                if (!task.isSuccessful()) {
-                    Toast.makeText(getContext(), "Some error occurred", Toast.LENGTH_SHORT).show();
-                    return;
-                }
                 if (task.getResult().exists()) {
+                    progressBar.setVisibility(View.GONE);
                     Toast.makeText(getContext(), "Already member of this WG", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -164,16 +173,16 @@ public class EinladungenFragment extends Fragment {
                 db.collection("wgs").document(wgKey).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (!task.isSuccessful()) return;
                         DocumentSnapshot document = task.getResult();
                         // Überprüfe ob WG mit eingegebenem Key existiert
                         if (!document.exists()) {
+                            progressBar.setVisibility(View.GONE);
                             Toast.makeText(getContext(), "WG does not exist", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         // WG zu dem User hinzufügen
                         Wg wg = document.toObject(Wg.class);
-                        db.collection("users").document(userID).collection("wgs").document(wg.getKey()).set(wg);
+                        db.collection("users").document(Utils.getUSERID()).collection("wgs").document(wg.getKey()).set(wg);
                         // User zur WG hinzufügen
                         addUserToWg(wgKey);
                     }
@@ -184,18 +193,25 @@ public class EinladungenFragment extends Fragment {
 
     // Add current User to the WG
     private void addUserToWg(final String wgKey) {
-        db.collection("users").document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection("users").document(Utils.getUSERID()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (!task.isSuccessful()) return;
                 String username = task.getResult().getString("name");
                 String email = task.getResult().getString("email");
                 String picPath = task.getResult().getString("picPath");
-                User user = new User(username, email, userID, picPath, 0.0);
-                db.collection("wgs").document(wgKey).collection("users").document(userID).set(user);
-                Toast.makeText(getActivity(), "Erfolgreich beigetreten", Toast.LENGTH_SHORT).show();
+                User user = new User(username, email, Utils.getUSERID(), picPath, 0.0);
+                db.collection("wgs").document(wgKey).collection("users").document(Utils.getUSERID()).set(user);
+                deleteInvitation(wgKey);
             }
         });
+    }
+
+    // Delete Invitation Documents at Users-Collection and WG-Collection
+    private void deleteInvitation(final String wgkey) {
+        db.collection("users").document(Utils.getUSERID()).collection("invitations").document(wgkey).delete();
+        db.collection("wgs").document(wgkey).collection("invitations").document(Utils.getUSERID()).delete();
+        Toast.makeText(getContext(), "Erfolgreich beigetreten", Toast.LENGTH_SHORT).show();
+        progressBar.setVisibility(View.GONE);
     }
 
     // Make an AlertDialog from a View
@@ -225,8 +241,5 @@ public class EinladungenFragment extends Fragment {
     private Button btn_join;
     private ProgressBar progressBar;
     private FirestoreRecyclerAdapter adapter;
-    private FirebaseAuth auth;
     private FirebaseFirestore db;
-
-    private String userID;
 }

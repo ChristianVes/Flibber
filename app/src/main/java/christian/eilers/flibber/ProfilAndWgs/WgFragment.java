@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -47,12 +48,8 @@ public class WgFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.fragment_wg, container, false);
-        recView = mainView.findViewById(R.id.recView);
-        btn_new = mainView.findViewById(R.id.btn_new);
-        placeholder = mainView.findViewById(R.id.placeholder);
-        progressBar = mainView.findViewById(R.id.progressBar);
+        initializeViews();
         db = FirebaseFirestore.getInstance();
-        progressBar.setVisibility(View.VISIBLE);
         loadData();
         btn_new.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,20 +60,30 @@ public class WgFragment extends Fragment {
         return mainView;
     }
 
+    // Initialize views from layout file
+    private void initializeViews() {
+        recView = mainView.findViewById(R.id.recView);
+        btn_new = mainView.findViewById(R.id.btn_new);
+        placeholder = mainView.findViewById(R.id.placeholder);
+        progressBar = mainView.findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
     // Open Dialog to create a new WG
     private void createWgDialog() {
         final View v = getLayoutInflater().inflate(R.layout.dialog_wg_selector, null);
         final TextView v_title = v.findViewById(R.id.title);
         final EditText eT_name = v.findViewById(R.id.editText_key);
         final Button btn = v.findViewById(R.id.button_ok);
+        // Change title/hint (because layout file is used for Join-Dialog too)
         v_title.setText("Neue WG gründen");
         eT_name.setHint("Name der WG");
         final AlertDialog dialog = makeAlertDialog(v);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String name = eT_name.getText().toString().trim();
-                createWg(name);
+                String wgName = eT_name.getText().toString().trim();
+                createWg(wgName);
                 dialog.dismiss();
             }
         });
@@ -84,8 +91,8 @@ public class WgFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if (i == EditorInfo.IME_ACTION_GO) {
-                    String name = eT_name.getText().toString().trim();
-                    createWg(name);
+                    String wgName = eT_name.getText().toString().trim();
+                    createWg(wgName);
                     dialog.dismiss();
                     return true;
                 }
@@ -100,27 +107,35 @@ public class WgFragment extends Fragment {
             Toast.makeText(getContext(), "Keinen Namen eingegeben", Toast.LENGTH_SHORT).show();
             return;
         }
+        progressBar.setVisibility(View.VISIBLE);
         // Create new WG-Document
         final DocumentReference ref_wg = db.collection("wgs").document();
         final Wg wg = new Wg(wgName, ref_wg.getId(), null);
         ref_wg.set(wg);
 
-        // Create new WG-Document for this user
+        // Add WG to the current user's WG-Collection
         db.collection("users").document(Utils.getUSERID()).collection("wgs").document(wg.getKey()).set(wg);
-        // Add user to WG
-        addUserToWg(wg.getKey());
+        // Add user to the WG
+        addUserToWg(wg.getKey(), wgName);
     }
 
     // Add current User to the WG
-    private void addUserToWg(final String wgKey) {
+    private void addUserToWg(final String wgKey, final String wgName) {
         db.collection("users").document(Utils.getUSERID()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (!task.isSuccessful()) return;
+                if (!task.isSuccessful()) {
+                    Crashlytics.logException(task.getException());
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                }
                 String username = task.getResult().getString("name");
                 String email = task.getResult().getString("email");
-                User user = new User(username, email, Utils.getUSERID(), null, 0.0);
+                String picPath = task.getResult().getString("picPath");
+                User user = new User(username, email, Utils.getUSERID(), picPath, 0.0);
                 db.collection("wgs").document(wgKey).collection("users").document(Utils.getUSERID()).set(user);
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(getContext(), wgName + " created!", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -233,5 +248,4 @@ public class WgFragment extends Fragment {
     private ProgressBar progressBar;
     private FirestoreRecyclerAdapter adapter;
     private FirebaseFirestore db;
-    private StorageReference storage;
 }

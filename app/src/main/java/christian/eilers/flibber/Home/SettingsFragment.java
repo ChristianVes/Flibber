@@ -36,41 +36,29 @@ import christian.eilers.flibber.ProfilAndWgs.WgsAndProfilActivity;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.Utils;
 
-public class SettingsFragment extends Fragment {
+public class SettingsFragment extends Fragment implements View.OnClickListener{
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-        View view = inflater.inflate(R.layout.fragment_settings, container, false);
-        auth = FirebaseAuth.getInstance();
+        mainView = inflater.inflate(R.layout.fragment_settings, container, false);
+        initializeViews();
         db = FirebaseFirestore.getInstance();
-        btn_invite = view.findViewById(R.id.btn_invite);
-        btn_profil = view.findViewById(R.id.btn_profil);
-
-        btn_invite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createDialog();
-            }
-        });
-        btn_profil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Lösche WG Key und wechsel zur WG&Profil Activity
-                Utils.setLocalData(getActivity(), null, Utils.getUSERID(), Utils.getUSERNAME());
-                Intent profilIntent = new Intent(getContext(), WgsAndProfilActivity.class);
-                startActivity(profilIntent);
-                getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                getActivity().finish();
-            }
-        });
-        return view;
+        return mainView;
     }
 
+    // Initialize views from layout file
+    private void initializeViews() {
+        btn_invite = mainView.findViewById(R.id.btn_invite);
+        btn_profil = mainView.findViewById(R.id.btn_profil);
+        btn_profil.setOnClickListener(this);
+        btn_invite.setOnClickListener(this);
+    }
+
+    // Creates Dialog for inviting new user
     private void createDialog() {
-        View v = getLayoutInflater().inflate(R.layout.dialog_invite, null);
-        Button btn = v.findViewById(R.id.button_ok);
+        final View v = getLayoutInflater().inflate(R.layout.dialog_invite, null);
+        final Button btn = v.findViewById(R.id.button_ok);
         eT_email = v.findViewById(R.id.editText_email);
         progressBar = v.findViewById(R.id.progressBar);
         dialog = makeAlertDialog(v);
@@ -118,24 +106,16 @@ public class SettingsFragment extends Fragment {
                             return;
                         }
                         // Get the Document with the matching email (IS ALWAYS A SINGLE DOCUMENT!)
-                        for(final DocumentSnapshot docUser : documentSnapshots) {
-                            DocumentReference ref_user = docUser.getReference();
-                            checkIfMember(ref_user);
+                        for(final DocumentSnapshot invitedUserSnapshot : documentSnapshots) {
+                            checkIfMember(invitedUserSnapshot);
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext(), "Failure", Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
                     }
                 });
     }
 
     // Check if user already is member of the WG
-    private void checkIfMember(final DocumentReference ref_user) {
-        ref_user.collection("wgs").document(Utils.getWGKEY()).get()
+    private void checkIfMember(final DocumentSnapshot invitedUserSnapshot) {
+        invitedUserSnapshot.getReference().collection("wgs").document(Utils.getWGKEY()).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -143,22 +123,15 @@ public class SettingsFragment extends Fragment {
                             Toast.makeText(getContext(), "Already member of WG", Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
                         } else {
-                            checkIfInvited(ref_user);
+                            checkIfInvited(invitedUserSnapshot);
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext(), "Failure", Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
                     }
                 });
     }
 
     // Check if user already has an invitation
-    private void checkIfInvited(final DocumentReference ref_user) {
-        ref_user.collection("invitations").document(Utils.getWGKEY()).get()
+    private void checkIfInvited(final DocumentSnapshot invitedUserSnapshot) {
+        invitedUserSnapshot.getReference().collection("invitations").document(Utils.getWGKEY()).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -166,54 +139,31 @@ public class SettingsFragment extends Fragment {
                             Toast.makeText(getContext(), "Already has an invitation", Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
                         } else {
-                            sendInvitation(ref_user);
+                            sendInvitation(invitedUserSnapshot);
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext(), "Failure", Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
                     }
                 });
     }
 
     // Create Invitation-Documents in the Users-Collection and WG-Collection
-    private void sendInvitation(final DocumentReference ref_user) {
+    private void sendInvitation(final DocumentSnapshot invitedUserSnapshot) {
         db.collection("wgs").document(Utils.getWGKEY()).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot currentWGSnapshot) {
                         // Create WG-Object of current WG
                         final Wg currentWG = currentWGSnapshot.toObject(Wg.class);
-                        // Save a Reference to the invited User in the Invitation-Collection of the WG
+                        // Create Map of invited User
                         Map<String,Object> map_user = new HashMap<>();
-                        map_user.put("path" , ref_user.getPath());
+                        map_user.put("email" , invitedUserSnapshot.getString("email"));
+                        map_user.put("name" , invitedUserSnapshot.getString("name"));
+                        map_user.put("picPath" , invitedUserSnapshot.getString("picPath"));
 
-                        currentWGSnapshot.getReference().collection("invitations").add(map_user)
-                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                    @Override
-                                    public void onSuccess(DocumentReference documentReference) {
-                                        // OnSuccesListener gespart...
-                                        ref_user.collection("invitations").document(Utils.getWGKEY()).set(currentWG);
-                                        Toast.makeText(getContext(), "User invited", Toast.LENGTH_SHORT).show();
-                                        dialog.dismiss();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(getContext(), "Failure", Toast.LENGTH_SHORT).show();
-                                        dialog.dismiss();
-                                    }
-                                });
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext(), "Failure", Toast.LENGTH_SHORT).show();
+                        // Add invited User to Invitation-Collection of WG
+                        currentWGSnapshot.getReference().collection("invitations").document(invitedUserSnapshot.getId()).set(map_user);
+                        // Add WG to Invitation-Collection of invited User
+                        invitedUserSnapshot.getReference().collection("invitations").document(Utils.getWGKEY()).set(currentWG);
+                        Toast.makeText(getContext(), "User invited", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     }
                 });
@@ -228,10 +178,27 @@ public class SettingsFragment extends Fragment {
         return dialog;
     }
 
-    private Button btn_invite, btn_profil;
-    private FirebaseAuth auth;
-    private FirebaseFirestore db;
+    // Check which Button has been clicked
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.btn_invite) {
+            createDialog();
+        }
+        else if (id == R.id.btn_profil) {
+            // Lösche WG Key und wechsel zur WG&Profil Activity
+            Utils.setLocalData(getContext(), null, Utils.getUSERID(), Utils.getUSERNAME());
+            Intent profilIntent = new Intent(getContext(), WgsAndProfilActivity.class);
+            startActivity(profilIntent);
+            getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            getActivity().finish();
+        }
+    }
 
+    // Class Variables
+    private View mainView;
+    private Button btn_invite, btn_profil;
+    private FirebaseFirestore db;
     // Dialog Variables
     private ProgressBar progressBar;
     private AlertDialog dialog;

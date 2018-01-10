@@ -44,44 +44,29 @@ import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.Utils;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ProfilFragment extends Fragment {
+public class ProfilFragment extends Fragment implements View.OnClickListener {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.fragment_profil, container, false);
+        initializeViews();
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance().getReference();
+        loadData();
+        return mainView;
+    }
 
+    // Initialize views from layout file
+    private void initializeViews() {
         btn_logout = mainView.findViewById(R.id.btn_logout);
         v_name = mainView.findViewById(R.id.name);
         profileImage= mainView.findViewById(R.id.profile_image);
         progressBar = mainView.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
-
-        auth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
-        storage = FirebaseStorage.getInstance().getReference();
-
-        loadData();
-
-        btn_logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                auth.signOut();
-                Intent login = new Intent(getActivity(), LoginActivity.class);
-                startActivity(login);
-                getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                getActivity().finish();
-            }
-        });
-        profileImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(galleryIntent, 0);
-            }
-        });
-
-        return mainView;
+        btn_logout.setOnClickListener(this);
+        profileImage.setOnClickListener(this);
     }
 
     // Lade Usernamen und Profilbild aus Database
@@ -89,6 +74,11 @@ public class ProfilFragment extends Fragment {
         db.collection("users").document(Utils.getUSERID()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(!task.isSuccessful()) {
+                    Crashlytics.logException(task.getException());
+                    return;
+                }
+
                 final String name = task.getResult().getString("name");
                 final String picPath = task.getResult().getString("picPath");
                 v_name.setText(name);
@@ -110,6 +100,21 @@ public class ProfilFragment extends Fragment {
 
             }
         });
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.btn_logout) {
+            auth.signOut();
+            Intent login = new Intent(getActivity(), LoginActivity.class);
+            startActivity(login);
+            getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            getActivity().finish();
+        } else if (id == R.id.profile_image) {
+            Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(galleryIntent, 0);
+        }
     }
 
     // Gallery Intent
@@ -184,5 +189,6 @@ public class ProfilFragment extends Fragment {
     private StorageReference storage;
 
     private Uri imageUri;
+
 
 }
