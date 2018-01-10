@@ -23,17 +23,23 @@ import android.widget.Toast;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.storage.StorageReference;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import christian.eilers.flibber.Home.HomeActivity;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.Models.Wg;
 import christian.eilers.flibber.R;
-import christian.eilers.flibber.WgSelectorActivity;
+import christian.eilers.flibber.Utils.Utils;
 
 public class WgFragment extends Fragment {
 
@@ -45,8 +51,6 @@ public class WgFragment extends Fragment {
         btn_new = mainView.findViewById(R.id.btn_new);
         placeholder = mainView.findViewById(R.id.placeholder);
         progressBar = mainView.findViewById(R.id.progressBar);
-        auth = FirebaseAuth.getInstance();
-        userID = auth.getCurrentUser().getUid();
         db = FirebaseFirestore.getInstance();
         progressBar.setVisibility(View.VISIBLE);
         loadData();
@@ -102,20 +106,21 @@ public class WgFragment extends Fragment {
         ref_wg.set(wg);
 
         // Create new WG-Document for this user
-        db.collection("users").document(userID).collection("wgs").document(wg.getKey()).set(wg);
+        db.collection("users").document(Utils.getUSERID()).collection("wgs").document(wg.getKey()).set(wg);
         // Add user to WG
         addUserToWg(wg.getKey());
     }
 
     // Add current User to the WG
     private void addUserToWg(final String wgKey) {
-        db.collection("users").document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection("users").document(Utils.getUSERID()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (!task.isSuccessful()) return;
                 String username = task.getResult().getString("name");
-                User user = new User(username, userID, null, 0.0);
-                db.collection("wgs").document(wgKey).collection("users").document(userID).set(user);
+                String email = task.getResult().getString("email");
+                User user = new User(username, email, Utils.getUSERID(), null, 0.0);
+                db.collection("wgs").document(wgKey).collection("users").document(Utils.getUSERID()).set(user);
             }
         });
     }
@@ -147,7 +152,7 @@ public class WgFragment extends Fragment {
         // nach Einzugsdatum soriert
         Query query = FirebaseFirestore.getInstance()
                 .collection("users")
-                .document(userID)
+                .document(Utils.getUSERID())
                 .collection("wgs")
                 .orderBy("timestamp");
 
@@ -169,6 +174,7 @@ public class WgFragment extends Fragment {
             @Override
             public void onBindViewHolder(WgFragment.WgHolder holder, int position, Wg model) {
                 holder.v_name.setText(model.getName());
+                holder.wg = model;
             }
 
             // Einmalige Zuweisung zum ViewHolder
@@ -186,6 +192,7 @@ public class WgFragment extends Fragment {
     // Custom ViewHolder for interacting with single items of the RecyclerView
     public class WgHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView v_name;
+        public Wg wg;
 
         public WgHolder(View itemView) {
             super(itemView);
@@ -193,9 +200,29 @@ public class WgFragment extends Fragment {
             itemView.setOnClickListener(this);
         }
 
+        // Aktualisiere Profilbild, Speichere WG-Key lokal, Wechsel zur HomeActivity
         @Override
         public void onClick(View view) {
-            // TODO
+            updatePicture();
+            Utils.setLocalData(getActivity(), wg.getKey(), Utils.getUSERID(), Utils.getUSERNAME());
+            Intent homeIntent = new Intent(getContext(), HomeActivity.class);
+            startActivity(homeIntent);
+            getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            getActivity().finish();
+        }
+
+        // Update Profilbild des aktuellen Users, welches in der WG-Collection gespeichert ist
+        private void updatePicture() {
+            db.collection("users").document(Utils.getUSERID()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    String picPath = documentSnapshot.getString("picPath");
+                    Map<String, Object> userImage = new HashMap<>();
+                    userImage.put("picPath", picPath);
+                    db.collection("wgs").document(wg.getKey()).collection("users").document(Utils.getUSERID()).update(userImage);
+                }
+            });
+
         }
     }
 
@@ -205,8 +232,6 @@ public class WgFragment extends Fragment {
     private Button btn_new;
     private ProgressBar progressBar;
     private FirestoreRecyclerAdapter adapter;
-    private FirebaseAuth auth;
     private FirebaseFirestore db;
-
-    private String userID;
+    private StorageReference storage;
 }

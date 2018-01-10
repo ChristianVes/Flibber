@@ -25,8 +25,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import christian.eilers.flibber.ProfilAndWgs.WgsAndProfilActivity;
+import christian.eilers.flibber.Utils.Utils;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener{
 
@@ -81,10 +84,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if(task.isSuccessful()) {
                     // TODO: check if user is EmailVerified
                     // auth.getCurrentUser().isEmailVerified();
-                    Intent i_wgSelector = new Intent(LoginActivity.this, WgsAndProfilActivity.class);
-                    startActivity(i_wgSelector);
-                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                    finish();
+                    final String userID = auth.getCurrentUser().getUid();
+                    FirebaseFirestore.getInstance().collection("users").document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            String username = task.getResult().getString("name");
+                            Utils.setLocalData(LoginActivity.this, null, userID, username);
+                            Intent i_wgSelector = new Intent(LoginActivity.this, WgsAndProfilActivity.class);
+                            startActivity(i_wgSelector);
+                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                            finish();
+                        }
+                    });
+
                 } else {
                     Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                 }

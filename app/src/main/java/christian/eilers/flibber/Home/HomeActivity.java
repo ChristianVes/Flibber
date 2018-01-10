@@ -1,4 +1,4 @@
-package christian.eilers.flibber;
+package christian.eilers.flibber.Home;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,6 +11,8 @@ import android.view.MenuItem;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import christian.eilers.flibber.Adapter.HomePagerAdapter;
+import christian.eilers.flibber.R;
+import christian.eilers.flibber.Utils.Utils;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -22,6 +24,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        Utils.getLocalData(this);
 
         ////////////////////////////////////////////////////////////////////////
         mView = findViewById(R.id.container);

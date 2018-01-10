@@ -27,7 +27,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.ProfilAndWgs.WgsAndProfilActivity;
+import christian.eilers.flibber.Utils.Utils;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener {
 
@@ -85,7 +87,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     // Sign Up new user with e-amil and password
     private void signUp() {
         final String name = eT_name.getText().toString().trim();
-        String email = eT_email.getText().toString().trim();
+        final String email = eT_email.getText().toString().trim();
         String password = eT_password.getText().toString().trim();
         if (!validateForm(email, password, name)) return;
         progressBar.setVisibility(View.VISIBLE);
@@ -97,9 +99,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     // TODO: E-Mail verification wieder einbauen
                     // sendEmailVerification();
 
+                    Utils.setLocalData(RegisterActivity.this, null, userID, name);
                     // Speichere Username in DB
                     Map<String, Object> userData = new HashMap<>();
                     userData.put("name", name);
+                    userData.put("email", email);
                     db = FirebaseFirestore.getInstance();
                     db.collection("users").document(userID).set(userData);
                     // Wechsel zum WG-Selector

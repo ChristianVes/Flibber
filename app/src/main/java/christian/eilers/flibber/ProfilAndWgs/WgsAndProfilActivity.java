@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import christian.eilers.flibber.Adapter.WgProfilAdapter;
 import christian.eilers.flibber.R;
+import christian.eilers.flibber.Utils.Utils;
 
 public class WgsAndProfilActivity extends AppCompatActivity {
 
@@ -16,6 +17,7 @@ public class WgsAndProfilActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wgs_and_profil);
         initializeViews();
+        Utils.getLocalData(this);
     }
 
     private void initializeViews() {

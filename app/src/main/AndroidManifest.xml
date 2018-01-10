@@ -28,8 +28,7 @@
 
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".WgSelectorActivity" />
+        <activity android:name=".Home.HomeActivity" />
         <activity android:name=".ProfilAndWgs.WgsAndProfilActivity"></activity>
 
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"

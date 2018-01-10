@@ -3,14 +3,16 @@ package christian.eilers.flibber.Models;
 public class User {
 
     private String name;
+    private String email;
     private String userID;
     private String picPath;
     private double money;
 
     public User() {}
 
-    public User(String name, String userID, String picPath, double money) {
+    public User(String name, String email, String userID, String picPath, double money) {
         this.name = name;
+        this.email = email;
         this.userID = userID;
         this.picPath = picPath;
         this.money = money;
@@ -46,5 +48,13 @@ public class User {
 
     public void setMoney(double money) {
         this.money = money;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

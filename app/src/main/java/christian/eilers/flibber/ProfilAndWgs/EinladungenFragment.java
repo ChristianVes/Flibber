@@ -31,7 +31,6 @@ import com.google.firebase.firestore.Query;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.Models.Wg;
 import christian.eilers.flibber.R;
-import christian.eilers.flibber.WgSelectorActivity;
 
 public class EinladungenFragment extends Fragment {
 
@@ -190,8 +189,11 @@ public class EinladungenFragment extends Fragment {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (!task.isSuccessful()) return;
                 String username = task.getResult().getString("name");
-                User user = new User(username, userID, null, 0.0);
+                String email = task.getResult().getString("email");
+                String picPath = task.getResult().getString("picPath");
+                User user = new User(username, email, userID, picPath, 0.0);
                 db.collection("wgs").document(wgKey).collection("users").document(userID).set(user);
+                Toast.makeText(getActivity(), "Erfolgreich beigetreten", Toast.LENGTH_SHORT).show();
             }
         });
     }

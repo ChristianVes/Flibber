@@ -41,6 +41,7 @@ import java.util.Map;
 
 import christian.eilers.flibber.LoginActivity;
 import christian.eilers.flibber.R;
+import christian.eilers.flibber.Utils.Utils;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfilFragment extends Fragment {
@@ -57,7 +58,6 @@ public class ProfilFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
 
         auth = FirebaseAuth.getInstance();
-        userID = auth.getCurrentUser().getUid();
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
 
@@ -86,14 +86,14 @@ public class ProfilFragment extends Fragment {
 
     // Lade Usernamen und Profilbild aus Database
     private void loadData() {
-        db.collection("users").document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection("users").document(Utils.getUSERID()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 final String name = task.getResult().getString("name");
                 final String picPath = task.getResult().getString("picPath");
                 v_name.setText(name);
                 if(picPath != null) {
-                    Picasso.with(getActivity()).load(picPath).fit().networkPolicy(NetworkPolicy.OFFLINE)
+                    Picasso.with(getActivity()).load(picPath).fit().networkPolicy(NetworkPolicy.OFFLINE).placeholder(R.drawable.profile_placeholder)
                             .into(profileImage, new Callback() {
                                 @Override
                                 public void onSuccess() {
@@ -102,7 +102,7 @@ public class ProfilFragment extends Fragment {
 
                                 @Override
                                 public void onError() {
-                                    Picasso.with(getActivity()).load(picPath).fit().into(profileImage);
+                                    Picasso.with(getActivity()).load(picPath).fit().placeholder(R.drawable.profile_placeholder).into(profileImage);
                                     progressBar.setVisibility(View.GONE);
                                 }
                             });
@@ -148,7 +148,7 @@ public class ProfilFragment extends Fragment {
     private void saveImage() {
         progressBar.setVisibility(View.VISIBLE);
         // Storage
-        storage.child(userID).putFile(imageUri)
+        storage.child(Utils.getUSERID()).putFile(imageUri)
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -164,7 +164,7 @@ public class ProfilFragment extends Fragment {
                         Map<String, Object> userImage = new HashMap<>();
                         userImage.put("picPath", imageUri.toString());
                         // Database
-                        db.collection("users").document(userID).update(userImage).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        db.collection("users").document(Utils.getUSERID()).update(userImage).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 progressBar.setVisibility(View.GONE);
@@ -183,7 +183,6 @@ public class ProfilFragment extends Fragment {
     private FirebaseFirestore db;
     private StorageReference storage;
 
-    private String userID;
     private Uri imageUri;
 
 }

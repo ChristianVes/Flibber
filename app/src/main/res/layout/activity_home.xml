@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="christian.eilers.flibber.HomeActivity"
+    tools:context="christian.eilers.flibber.Home.HomeActivity"
     android:fitsSystemWindows="true"
     android:clickable="true">
 

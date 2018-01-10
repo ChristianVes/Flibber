@@ -4,7 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import christian.eilers.flibber.PutzplanFragment;
+import christian.eilers.flibber.Home.PutzplanFragment;
+import christian.eilers.flibber.Home.SettingsFragment;
 
 public class HomePagerAdapter extends FragmentPagerAdapter {
     private static int NUM_ITEMS = 5;
@@ -24,15 +25,15 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return PutzplanFragment.newInstance();
+                return new PutzplanFragment();
             case 1:
-                return PutzplanFragment.newInstance();
+                return new PutzplanFragment();
             case 2:
-                return PutzplanFragment.newInstance();
+                return new SettingsFragment();
             case 3:
-                return PutzplanFragment.newInstance();
+                return new PutzplanFragment();
             case 4:
-                return PutzplanFragment.newInstance();
+                return new PutzplanFragment();
             default:
                 return null;
         }
