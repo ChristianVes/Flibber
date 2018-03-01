@@ -121,6 +121,7 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Zuschneiden des Bildes auf 1:1 Ratio
+
         if (resultCode != Activity.RESULT_CANCELED) {
             if (requestCode == 0) {
                 CropImage.activity(data.getData())
@@ -147,6 +148,8 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+
+
     }
 
     // Save the Image in the FirebaseStorage and Firesotre
