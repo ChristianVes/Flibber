@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import christian.eilers.flibber.Home.FinanzenFragment;
 import christian.eilers.flibber.Home.PutzplanFragment;
 import christian.eilers.flibber.Home.SettingsFragment;
 
@@ -29,11 +30,11 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
             case 1:
                 return new PutzplanFragment();
             case 2:
-                return new SettingsFragment();
+                return new FinanzenFragment();
             case 3:
                 return new PutzplanFragment();
             case 4:
-                return new PutzplanFragment();
+                return new SettingsFragment();
             default:
                 return null;
         }

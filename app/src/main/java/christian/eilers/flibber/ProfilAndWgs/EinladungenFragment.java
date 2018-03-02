@@ -38,7 +38,7 @@ public class EinladungenFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mainView = inflater.inflate(R.layout.fragment_einladungen, container, false);
+        mainView = inflater.inflate(R.layout.dialog_einladungen, container, false);
         initializeViews();
         getDialog().setTitle("Einladungen");
         db = FirebaseFirestore.getInstance();
