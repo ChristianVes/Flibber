@@ -1,5 +1,6 @@
 package christian.eilers.flibber.Home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -28,7 +29,9 @@ public class HomeFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent_newNote = new Intent(getContext(), NoteCreateActivity.class);
+                getActivity().startActivity(intent_newNote);
+                getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
         return mainView;
