@@ -10,9 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_above="@+id/btn_join"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="15dp">
+        android:layout_margin="5dp">
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -39,15 +38,5 @@
         </android.support.v7.widget.RecyclerView>
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btn_join"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/selector_button"
-        android:text="...Mit Key beitreten"
-        android:textColor="@color/colorWhite"/>
 
 </RelativeLayout>

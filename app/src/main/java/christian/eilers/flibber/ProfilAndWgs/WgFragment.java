@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,12 +27,10 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,6 +56,15 @@ public class WgFragment extends Fragment {
                 createWgDialog();
             }
         });
+        btn_einladungen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager fm = getFragmentManager();
+                EinladungenFragment frag = EinladungenFragment.newInstance();
+                frag.setTargetFragment(WgFragment.this, 1);
+                frag.show(fm, "einladungen");
+            }
+        });
         return mainView;
     }
 
@@ -64,6 +72,7 @@ public class WgFragment extends Fragment {
     private void initializeViews() {
         recView = mainView.findViewById(R.id.recView);
         btn_new = mainView.findViewById(R.id.btn_new);
+        btn_einladungen = mainView.findViewById(R.id.btn_einladungen);
         placeholder = mainView.findViewById(R.id.placeholder);
         progressBar = mainView.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
@@ -244,7 +253,7 @@ public class WgFragment extends Fragment {
     private View mainView;
     private RecyclerView recView;
     private TextView placeholder;
-    private Button btn_new;
+    private Button btn_new, btn_einladungen;
     private ProgressBar progressBar;
     private FirestoreRecyclerAdapter adapter;
     private FirebaseFirestore db;

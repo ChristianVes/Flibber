@@ -1,21 +1,15 @@
 package christian.eilers.flibber.ProfilAndWgs;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,44 +17,42 @@ import android.widget.Toast;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-import christian.eilers.flibber.Home.HomeActivity;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.Models.Wg;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.Utils;
 
-public class EinladungenFragment extends Fragment {
+public class EinladungenFragment extends DialogFragment {
+
+    // Instanzierung des Dialogs
+    public static EinladungenFragment newInstance() {
+        if(thisDialog == null) thisDialog =  new EinladungenFragment();
+        return thisDialog;
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.fragment_einladungen, container, false);
         initializeViews();
+        getDialog().setTitle("Einladungen");
         db = FirebaseFirestore.getInstance();
         loadData();
+        adapter.startListening();
         return mainView;
     }
 
     // Initialize views from layout file
     private void initializeViews() {
         recView = mainView.findViewById(R.id.recView);
-        btn_join = mainView.findViewById(R.id.btn_join);
         placeholder = mainView.findViewById(R.id.placeholder);
         progressBar = mainView.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
-        btn_join.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                joinWgDialog();
-            }
-        });
     }
 
     // Lade Liste an WG's des eingeloggten Users aus der Database
@@ -121,35 +113,6 @@ public class EinladungenFragment extends Fragment {
         public void onClick(View view) {
             joinWG(wg.getKey());
         }
-    }
-
-    // Open Dialog to join an existing WG
-    private void joinWgDialog() {
-        final View v = getLayoutInflater().inflate(R.layout.dialog_wg_selector, null);
-        final EditText eT_key = v.findViewById(R.id.editText_key);
-        final Button btn = v.findViewById(R.id.button_ok);
-        final AlertDialog dialog = makeAlertDialog(v);
-
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String wgkey = eT_key.getText().toString().trim();
-                joinWG(wgkey);
-                dialog.dismiss();
-            }
-        });
-        eT_key.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_ACTION_GO) {
-                    String wgkey = eT_key.getText().toString().trim();
-                    joinWG(wgkey);
-                    dialog.dismiss();
-                    return true;
-                }
-                return false;
-            }
-        });
     }
 
     // Join WG with this specific key (if it exists)
@@ -214,31 +177,17 @@ public class EinladungenFragment extends Fragment {
         progressBar.setVisibility(View.GONE);
     }
 
-    // Make an AlertDialog from a View
-    public AlertDialog makeAlertDialog(View v) {
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
-        mBuilder.setView(v);
-        AlertDialog dialog = mBuilder.create();
-        dialog.show();
-        return dialog;
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(adapter != null) adapter.stopListening();
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        adapter.stopListening();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        adapter.startListening();
-    }
+    private static EinladungenFragment thisDialog;
 
     private View mainView;
     private RecyclerView recView;
     private TextView placeholder;
-    private Button btn_join;
     private ProgressBar progressBar;
     private FirestoreRecyclerAdapter adapter;
     private FirebaseFirestore db;

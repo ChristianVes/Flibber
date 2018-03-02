@@ -25,8 +25,8 @@ public class WgsAndProfilActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.tabs);
 
         adapter = new WgProfilAdapter(getSupportFragmentManager());
-        viewPager.setOffscreenPageLimit(2);
-        viewPager.setCurrentItem(1);
+        viewPager.setOffscreenPageLimit(1);
+        viewPager.setCurrentItem(2);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
     }

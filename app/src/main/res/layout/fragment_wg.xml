@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_above="@+id/btn_new"
+        android:layout_above="@+id/bottomLayout"
         android:layout_alignParentTop="true"
         android:layout_marginTop="15dp">
 
@@ -40,15 +40,35 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_new"
+    <LinearLayout
+        android:id="@+id/bottomLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
+        android:orientation="horizontal"
+        android:weightSum="2"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/selector_button"
-        android:text="Neue Wg"
-        android:textColor="@color/colorWhite"/>
+        android:layout_margin="15dp">
 
+        <Button
+            android:id="@+id/btn_einladungen"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_button"
+            android:text="Einladungen"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/colorWhite"/>
+
+        <Button
+            android:id="@+id/btn_new"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_button"
+            android:text="Neue Wg"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/colorWhite"/>
+
+    </LinearLayout>
 
 </RelativeLayout>
