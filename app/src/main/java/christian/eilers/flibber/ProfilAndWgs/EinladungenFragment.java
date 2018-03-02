@@ -31,7 +31,7 @@ public class EinladungenFragment extends DialogFragment {
 
     // Instanzierung des Dialogs
     public static EinladungenFragment newInstance() {
-        if(thisDialog == null) thisDialog =  new EinladungenFragment();
+        if(thisDialog == null) thisDialog = new EinladungenFragment();
         return thisDialog;
     }
 
