@@ -13,13 +13,6 @@ import christian.eilers.flibber.R;
 
 public class HomeFragment extends Fragment {
 
-    public HomeFragment() {}
-
-    public static HomeFragment newInstance() {
-        if(thisFragment == null) thisFragment = new HomeFragment();
-        return thisFragment;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -36,8 +29,6 @@ public class HomeFragment extends Fragment {
         });
         return mainView;
     }
-
-    private static HomeFragment thisFragment;
 
     private View mainView;
     private RecyclerView recView;

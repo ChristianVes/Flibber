@@ -3,16 +3,12 @@ package christian.eilers.flibber;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -21,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -28,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.ProfilAndWgs.WgsAndProfilActivity;
 import christian.eilers.flibber.Utils.Utils;
 
@@ -88,8 +86,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     FirebaseFirestore.getInstance().collection("users").document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            String username = task.getResult().getString("name");
-                            Utils.setLocalData(LoginActivity.this, null, userID, username);
+                            if(!task.isSuccessful()) {
+                                Crashlytics.logException(task.getException());
+                                return;
+                            }
+                            User user = task.getResult().toObject(User.class);
+                            Utils.setLocalData(LoginActivity.this, null, userID, user.getName(), user.getPicPath());
                             Intent i_wgSelector = new Intent(LoginActivity.this, WgsAndProfilActivity.class);
                             startActivity(i_wgSelector);
                             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);

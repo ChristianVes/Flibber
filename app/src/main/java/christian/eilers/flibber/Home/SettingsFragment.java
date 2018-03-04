@@ -3,7 +3,6 @@ package christian.eilers.flibber.Home;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -19,11 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -187,7 +182,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         }
         else if (id == R.id.btn_profil) {
             // Lösche WG Key und wechsel zur WG&Profil Activity
-            Utils.setLocalData(getContext(), null, Utils.getUSERID(), Utils.getUSERNAME());
+            Utils.setLocalData(getContext(), null, Utils.getUSERID(), Utils.getUSERNAME(), Utils.getPICPATH());
             Intent profilIntent = new Intent(getContext(), WgsAndProfilActivity.class);
             startActivity(profilIntent);
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);

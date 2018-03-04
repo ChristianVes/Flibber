@@ -98,7 +98,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     // TODO: E-Mail verification wieder einbauen
                     // sendEmailVerification();
 
-                    Utils.setLocalData(RegisterActivity.this, null, userID, name);
+                    Utils.setLocalData(RegisterActivity.this, null, userID, name, null);
                     // Speichere Username in DB
                     Map<String, Object> userData = new HashMap<>();
                     userData.put("name", name);

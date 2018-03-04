@@ -13,8 +13,6 @@ apply plugin: 'io.fabric'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
-    //mavenCentral()
-    //google()
 }
 
 android {
@@ -51,6 +49,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:11.8.0' // Firebase-Firestore
     implementation 'com.google.firebase:firebase-storage:11.8.0' // Firebase-Storage
     implementation 'com.firebaseui:firebase-ui-firestore:3.2.2' // Firestore-UI
+    implementation 'com.firebaseui:firebase-ui-storage:3.2.2'
 
 
     implementation 'com.github.ittianyu:BottomNavigationViewEx:1.2.4'

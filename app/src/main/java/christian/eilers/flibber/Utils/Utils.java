@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class Utils {
-    private static String WGKEY, USERID, USERNAME;
+    private static String WGKEY, USERID, USERNAME, PICPATH;
 
     public static String getWGKEY() {
         return WGKEY;
@@ -15,6 +15,9 @@ public class Utils {
     public static String getUSERNAME() {
         return USERNAME;
     }
+    public static String getPICPATH() {
+        return PICPATH;
+    }
 
     // Übernehme lokale offline Daten vom Handy für die static Variablen
     public static void getLocalData(Context c) {
@@ -22,18 +25,21 @@ public class Utils {
         WGKEY = pref_data.getString("WGKEY", null);
         USERID = pref_data.getString("USERID", null);
         USERNAME = pref_data.getString("USERNAME", null);
+        PICPATH = pref_data.getString("PICPATH", null);
     }
 
     // Speichere Userdaten lokal auf dem Handy ab
-    public static void setLocalData(Context c, String wgKey, String userID, String userName) {
+    public static void setLocalData(Context c, String wgKey, String userID, String userName, String picPath) {
         WGKEY = wgKey;
         USERID = userID;
         USERNAME = userName;
+        PICPATH = picPath;
         SharedPreferences pref_data = c.getSharedPreferences("USERDATA", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref_data.edit();
         editor.putString("WGKEY", wgKey);
         editor.putString("USERID", userID);
         editor.putString("USERNAME", userName);
+        editor.putString("PICPATH", picPath);
         editor.apply();
     }
 }

@@ -31,7 +31,7 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
             case 1:
                 return new PutzplanFragment();
             case 2:
-                return HomeFragment.newInstance();
+                return new HomeFragment();
             case 3:
                 return new FinanzenFragment();
             case 4:

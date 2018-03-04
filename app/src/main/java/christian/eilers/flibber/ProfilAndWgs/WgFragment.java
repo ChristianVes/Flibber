@@ -137,7 +137,7 @@ public class WgFragment extends Fragment {
         @Override
         public void onClick(View view) {
             updatePicture();
-            Utils.setLocalData(getActivity(), wg.getKey(), Utils.getUSERID(), Utils.getUSERNAME());
+            Utils.setLocalData(getActivity(), wg.getKey(), Utils.getUSERID(), Utils.getUSERNAME(), Utils.getPICPATH());
             Intent homeIntent = new Intent(getContext(), HomeActivity.class);
             startActivity(homeIntent);
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
