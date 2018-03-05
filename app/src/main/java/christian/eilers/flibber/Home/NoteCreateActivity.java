@@ -1,17 +1,21 @@
 package christian.eilers.flibber.Home;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import christian.eilers.flibber.Models.Note;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.Utils;
@@ -25,6 +29,7 @@ public class NoteCreateActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_note_create);
         Utils.getLocalData(this);
         storage = FirebaseStorage.getInstance().getReference().child("profile_pictures");
+        db = FirebaseFirestore.getInstance();
         initializeViews();
     }
 
@@ -48,16 +53,16 @@ public class NoteCreateActivity extends AppCompatActivity implements View.OnClic
                     .placeholder(R.drawable.profile_placeholder)
                     .into(img_profile);
         tv_username.setText(Utils.getUSERNAME());
+        tv_datum.setVisibility(View.GONE);
+
+        attachListener();
     }
 
     @Override
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.btn_cancel) {
-            Intent intent_back = new Intent(NoteCreateActivity.this, HomeActivity.class);
-            startActivity(intent_back);
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-            finish();
+            toHomeActivity();
         }
         else if (id == R.id.btn_save) {
             saveNote();
@@ -65,6 +70,42 @@ public class NoteCreateActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void saveNote() {
+        Note note = new Note(
+                et_title.getText().toString().trim(),
+                et_description.getText().toString().trim(),
+                Utils.getUSERID(),
+                null
+        );
+        db.collection("wgs").document(Utils.getWGKEY()).collection("notes").document().set(note);
+        toHomeActivity();
+    }
+
+    private void toHomeActivity() {
+        Intent intent_back = new Intent(NoteCreateActivity.this, HomeActivity.class);
+        startActivity(intent_back);
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        finish();
+    }
+
+    private void attachListener() {
+        // Hide Keyboards on Click outside
+        et_title.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) hideKeyboard(v);
+            }
+        });
+        et_description.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) hideKeyboard(v);
+            }
+        });
+    }
+
+    private void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     Button btn_cancel, btn_save;
@@ -74,6 +115,6 @@ public class NoteCreateActivity extends AppCompatActivity implements View.OnClic
     EditText et_title, et_description;
 
     StorageReference storage;
-
+    FirebaseFirestore db;
 
 }

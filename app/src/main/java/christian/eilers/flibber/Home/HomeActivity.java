@@ -86,6 +86,17 @@ public class HomeActivity extends AppCompatActivity {
         bottomNavigationView.setupWithViewPager(mView);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Utils.addUserListener();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Utils.removeUserListener();
+    }
 
     // Allgemeine Einstellungen für Bottom Navigation View
     private void setBottomNavigationBar(BottomNavigationViewEx bottomView) {
