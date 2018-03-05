@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="christian.eilers.flibber.ProfilAndWgs.WgFragment">
 
     <LinearLayout
@@ -12,7 +11,7 @@
         android:orientation="vertical"
         android:layout_above="@+id/bottomLayout"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="15dp">
+        android:layout_marginTop="10dp">
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -27,7 +26,7 @@
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:gravity="center"
-            android:visibility="gone"
+            android:visibility="visible"
             android:text="Keine WG's vorhanden..."
             android:textStyle="italic"/>
 

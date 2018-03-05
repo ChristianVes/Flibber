@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -35,6 +36,9 @@ public class HomeFragment extends Fragment {
         mainView = inflater.inflate(R.layout.fragment_home, container, false);
         recView = mainView.findViewById(R.id.recView);
         fab = mainView.findViewById(R.id.fab);
+        progressBar = mainView.findViewById(R.id.progressBar);
+        placeholder = mainView.findViewById(R.id.placeholder);
+        progressBar.setVisibility(View.VISIBLE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -49,10 +53,10 @@ public class HomeFragment extends Fragment {
     }
 
 
-    // Lade Liste an WG's des eingeloggten Users aus der Database
+    // Lade Notizen aus der Database und zeige sie in einem Recyclerview an
     private void loadData() {
-        // Referenz: WG's des aktuellen Users
-        // nach Einzugsdatum soriert
+        // Referenz: Notizen der aktuellen WG
+        // nach Erstelldatum soriert
         Query query = FirebaseFirestore.getInstance()
                 .collection("wgs")
                 .document(Utils.getWGKEY())
@@ -69,25 +73,33 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
-                /*if (getItemCount() == 0) placeholder.setVisibility(View.VISIBLE);
+                if (getItemCount() == 0) placeholder.setVisibility(View.VISIBLE);
                 else placeholder.setVisibility(View.GONE);
-                progressBar.setVisibility(View.GONE);*/
+                progressBar.setVisibility(View.GONE);
             }
 
+            // Bind data from the database to the UI-Object
             @Override
             public void onBindViewHolder(HomeFragment.NotesHolder holder, int position, Note model) {
                 holder.note = model;
                 User user = Utils.getUSERS().get(model.getUserID());
 
-                holder.tv_title.setText(model.getTitle());
-                holder.tv_description.setText(model.getDescription());
+                if(model.getTitle() == null || model.getTitle().isEmpty())
+                    holder.tv_title.setVisibility(View.GONE);
+                else
+                    holder.tv_title.setText(model.getTitle());
+
+                if(model.getDescription() == null || model.getDescription().isEmpty())
+                    holder.tv_description.setVisibility(View.GONE);
+                else
+                    holder.tv_description.setText(model.getDescription());
+
                 holder.tv_username.setText(user.getName());
 
                 if(model.getTimestamp() != null)
                     holder.tv_datum.setText(DateUtils.getRelativeTimeSpanString(model.getTimestamp().getTime()));
                 else
-                    holder.tv_datum.setText("Gerade");
-
+                    holder.tv_datum.setText("Vor 0 Minuten");
 
                 if(user.getPicPath() != null)
                     GlideApp.with(getContext())
@@ -160,6 +172,8 @@ public class HomeFragment extends Fragment {
 
     private View mainView;
     private RecyclerView recView;
+    private ProgressBar progressBar;
+    private TextView placeholder;
     private FirestoreRecyclerAdapter adapter;
     private FloatingActionButton fab;
     private StorageReference storage;

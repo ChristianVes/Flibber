@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -46,16 +47,17 @@ public class NoteCreateActivity extends AppCompatActivity implements View.OnClic
         btn_cancel.setOnClickListener(this);
         btn_save.setOnClickListener(this);
 
+        tv_username.setText(Utils.getUSERNAME());
         if (Utils.getPICPATH() != null)
             GlideApp.with(NoteCreateActivity.this)
                     .load(storage.child(Utils.getPICPATH()))
                     .dontAnimate()
                     .placeholder(R.drawable.profile_placeholder)
                     .into(img_profile);
-        tv_username.setText(Utils.getUSERNAME());
         tv_datum.setVisibility(View.GONE);
+        img_notiz.setVisibility(View.GONE);
 
-        attachListener();
+        attachKeyboardListener();
     }
 
     @Override
@@ -70,6 +72,13 @@ public class NoteCreateActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void saveNote() {
+        String title = et_title.getText().toString().trim();
+        String description = et_description.getText().toString().trim();
+        if(title.isEmpty() && description.isEmpty()) {
+            Toast.makeText(this, "Titel oder Beschreibung eingeben...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Note note = new Note(
                 et_title.getText().toString().trim(),
                 et_description.getText().toString().trim(),
@@ -87,7 +96,7 @@ public class NoteCreateActivity extends AppCompatActivity implements View.OnClic
         finish();
     }
 
-    private void attachListener() {
+    private void attachKeyboardListener() {
         // Hide Keyboards on Click outside
         et_title.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
