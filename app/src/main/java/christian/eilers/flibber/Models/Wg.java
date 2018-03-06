@@ -2,9 +2,10 @@ package christian.eilers.flibber.Models;
 
 import com.google.firebase.firestore.ServerTimestamp;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Wg {
+public class Wg implements Serializable {
 
     private String name;
     private String key;

@@ -26,8 +26,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import christian.eilers.flibber.Models.User;
-import christian.eilers.flibber.ProfilAndWgs.WgsAndProfilActivity;
-import christian.eilers.flibber.Utils.Utils;
+import christian.eilers.flibber.ProfilAndWgs.ProfilActivity;
+import christian.eilers.flibber.Utils.LocalStorage;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener{
 
@@ -54,6 +54,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Toast.makeText(LoginActivity.this, "E-Mail required.", Toast.LENGTH_SHORT).show();
             return;
         }
+        // TODO: Dialog zum Bestätigen anzeigen
         progressBar.setVisibility(View.VISIBLE);
         auth.sendPasswordResetEmail(email)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -70,37 +71,39 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     // Login the user with e-mail and password
     private void login() {
-        String email = eT_email.getText().toString().trim();
-        String password = eT_password.getText().toString().trim();
-        if (!validateForm(email, password)) return;
+        final String email = eT_email.getText().toString().trim();
+        final String password = eT_password.getText().toString().trim();
+        if (!isValidForm(email, password)) return;
         progressBar.setVisibility(View.VISIBLE);
-        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 eT_password.setText("");
-                progressBar.setVisibility(View.GONE);
                 if(task.isSuccessful()) {
-                    // TODO: check if user is EmailVerified
-                    // auth.getCurrentUser().isEmailVerified();
+                    // TODO: check if user is EmailVerified durch -> auth.getCurrentUser().isEmailVerified();
                     final String userID = auth.getCurrentUser().getUid();
                     FirebaseFirestore.getInstance().collection("users").document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            progressBar.setVisibility(View.GONE);
                             if(!task.isSuccessful()) {
                                 Crashlytics.logException(task.getException());
                                 return;
                             }
-                            User user = task.getResult().toObject(User.class);
-                            Utils.setLocalData(LoginActivity.this, null, userID, user.getName(), user.getPicPath());
-                            Intent i_wgSelector = new Intent(LoginActivity.this, WgsAndProfilActivity.class);
+                            final User mUser = task.getResult().toObject(User.class);
+                            LocalStorage.setData(LoginActivity.this, null, userID, mUser.getName(), mUser.getPicPath());
+
+                            Intent i_wgSelector = new Intent(LoginActivity.this, ProfilActivity.class);
                             startActivity(i_wgSelector);
                             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                            // TODO: Alle Activies im Backstack löschen
                             finish();
                         }
                     });
 
                 } else {
                     Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
                 }
             }
         });
@@ -136,12 +139,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    // Exit Acitivty on back pressed
-    @Override
-    public void onBackPressed() {
-        finish();
-    }
-
     // Apply Action on Keyboard Action
     @Override
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
@@ -156,7 +153,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     // Check if email or password are empty
-    private boolean validateForm(String email, String password) {
+    private boolean isValidForm(String email, String password) {
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(LoginActivity.this, "E-Mail required", Toast.LENGTH_SHORT).show();
             return false;

@@ -17,10 +17,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -37,7 +35,7 @@ import java.util.Map;
 import christian.eilers.flibber.LoginActivity;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
-import christian.eilers.flibber.Utils.Utils;
+import christian.eilers.flibber.Utils.LocalStorage;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfilFragment extends Fragment implements View.OnClickListener {
@@ -47,6 +45,9 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.fragment_profil, container, false);
         initializeViews();
+        userID = LocalStorage.getUserID(getContext());
+        userName = LocalStorage.getUsername(getContext());
+        picPath = LocalStorage.getPicPath(getContext());
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance().getReference().child("profile_pictures");
@@ -66,22 +67,21 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
 
     // Lade Usernamen und Profilbild aus dem Firebase Storage
     private void loadData() {
-        v_name.setText(Utils.getUSERNAME());
-        if (Utils.getPICPATH() != null)
+        v_name.setText(userName);
+        if (picPath != null)
             GlideApp.with(getContext())
-                    .load(storage.child(Utils.getPICPATH()))
+                    .load(storage.child(picPath))
                     .dontAnimate()
                     .placeholder(R.drawable.profile_placeholder)
                     .into(profileImage);
     }
-
     @Override
     public void onClick(View v) {
         int id = v.getId();
         // Log out the current User, delete local-cached data and go to LoginActivity
         if (id == R.id.btn_logout) {
             auth.signOut();
-            Utils.setLocalData(getContext(), null, null, null, null);
+            LocalStorage.setData(getContext(), null, null, null, null);
             Intent login = new Intent(getActivity(), LoginActivity.class);
             startActivity(login);
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -128,8 +128,18 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
     private void saveImage() {
         progressBar.setVisibility(View.VISIBLE);
         // TODO: randomStringGenerator instead of LastPathSegment
-        final String picPath = imageUri.getLastPathSegment();
-        storage.child(picPath).putFile(imageUri)
+        final String newPicPath = imageUri.getLastPathSegment();
+        storage.child(newPicPath).putFile(imageUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // Delete old Picture from Storage
+                        if (picPath != null)
+                            storage.child(picPath).delete();
+                        picPath = newPicPath;
+                        updateRefs();
+                    }
+                })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -137,70 +147,50 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
                         progressBar.setVisibility(View.GONE);
                         Toast.makeText(getContext(), "Fehler beim Upload!", Toast.LENGTH_SHORT).show();
                     }
-                })
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // Delete old Picture from Storage
-                        if (Utils.getPICPATH() != null)
-                            storage.child(Utils.getPICPATH()).delete();
-                        updateRefs(picPath);
-
-
-                        Map<String, Object> profilePic = new HashMap<>();
-                        profilePic.put("picPath", picPath);
-                        db.collection("users").document(Utils.getUSERID()).update(profilePic).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                // Update Local-cached data
-                                Utils.setLocalData(getContext(), Utils.getWGKEY(), Utils.getUSERID(), Utils.getUSERNAME(), picPath);
-                                // Load Picture into ImageView
-                                loadData();
-                                progressBar.setVisibility(View.GONE);
-                            }
-                        });
-                    }
                 });
     }
 
-    // Update Reference to the Profile-Picture in the database
-    private void updateRefs(final String picPath) {
-        final Map<String, Object> profilePic = new HashMap<>();
-        profilePic.put("picPath", picPath);
+    // Update all References to the Profile-Picture of the current user in the database
+    private void updateRefs() {
+        final Map<String, Object> userData = new HashMap<>();
+        userData.put("picPath", picPath);
         // Update Reference in the users-collection
-        db.collection("users").document(Utils.getUSERID()).update(profilePic)
+        db.collection("users").document(userID).update(userData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        // Update Local-cached data
-                        Utils.setLocalData(getContext(), Utils.getWGKEY(), Utils.getUSERID(), Utils.getUSERNAME(), picPath);
-                        // Load Picture into ImageView
-                        loadData();
-                        progressBar.setVisibility(View.GONE);
-                    }
-                });
-
-        // Update References in every WG the current user is part of
-        db.collection("users").document(Utils.getUSERID()).collection("wgs").get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot documentSnapshots) {
-                        for (DocumentSnapshot doc : documentSnapshots) {
-                            db.collection("wgs").document(doc.getId()).collection("users").document(Utils.getUSERID()).update(profilePic);
-                        }
+                        // Get all WGs the current user is part of
+                        db.collection("users").document(userID).collection("wgs").get()
+                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                                        // Update Picture-References in every WG the current user is part of
+                                        for (DocumentSnapshot doc : documentSnapshots) {
+                                            db.collection("wgs").document(doc.getId()).collection("users").document(userID).update(userData);
+                                        }
+                                        LocalStorage.setPicPath(getContext(), picPath);
+                                        loadData();
+                                        progressBar.setVisibility(View.GONE);
+                                    }
+                                });
                     }
                 });
     }
+
+
 
     private View mainView;
     private Button btn_logout;
     private TextView v_name;
     private CircleImageView profileImage;
     private ProgressBar progressBar;
+
     private FirebaseAuth auth;
     private FirebaseFirestore db;
     private StorageReference storage;
+
     private Uri imageUri;
+    private String userID, userName, picPath;
 
     private static final int REQUEST_CODE_GALLERY = 0;
 }

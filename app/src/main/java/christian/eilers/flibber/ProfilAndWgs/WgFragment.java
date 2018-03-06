@@ -16,18 +16,13 @@ import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import christian.eilers.flibber.Home.HomeActivity;
 import christian.eilers.flibber.Models.Wg;
 import christian.eilers.flibber.R;
-import christian.eilers.flibber.Utils.Utils;
+import christian.eilers.flibber.Utils.LocalStorage;
 
 public class WgFragment extends Fragment {
 
@@ -36,7 +31,7 @@ public class WgFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.fragment_wg, container, false);
         initializeViews();
-        db = FirebaseFirestore.getInstance();
+        userID = LocalStorage.getUserID(getContext());
         loadData();
         btn_new.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,7 +80,7 @@ public class WgFragment extends Fragment {
         // nach Einzugsdatum soriert
         Query query = FirebaseFirestore.getInstance()
                 .collection("users")
-                .document(Utils.getUSERID())
+                .document(userID)
                 .collection("wgs")
                 .orderBy("timestamp");
 
@@ -136,26 +131,10 @@ public class WgFragment extends Fragment {
         // Aktualisiere Profilbild, Speichere WG-Key lokal, Wechsel zur HomeActivity
         @Override
         public void onClick(View view) {
-            updatePicture();
-            Utils.setLocalData(getActivity(), wg.getKey(), Utils.getUSERID(), Utils.getUSERNAME(), Utils.getPICPATH());
+            LocalStorage.setGroupID(getContext(), wg.getKey());
             Intent homeIntent = new Intent(getContext(), HomeActivity.class);
             startActivity(homeIntent);
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-            getActivity().finish();
-        }
-
-        // Update Profilbild des aktuellen Users, welches in der WG-Collection gespeichert ist
-        private void updatePicture() {
-            db.collection("users").document(Utils.getUSERID()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    String picPath = documentSnapshot.getString("picPath");
-                    Map<String, Object> userImage = new HashMap<>();
-                    userImage.put("picPath", picPath);
-                    db.collection("wgs").document(wg.getKey()).collection("users").document(Utils.getUSERID()).update(userImage);
-                }
-            });
-
         }
     }
 
@@ -164,6 +143,7 @@ public class WgFragment extends Fragment {
     private TextView placeholder;
     private Button btn_new, btn_einladungen;
     private ProgressBar progressBar;
+
     private FirestoreRecyclerAdapter adapter;
-    private FirebaseFirestore db;
+    private String userID;
 }

@@ -25,7 +25,7 @@ import com.google.firebase.firestore.Query;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.Models.Wg;
 import christian.eilers.flibber.R;
-import christian.eilers.flibber.Utils.Utils;
+import christian.eilers.flibber.Utils.LocalStorage;
 
 public class EinladungenFragment extends DialogFragment {
 
@@ -41,9 +41,9 @@ public class EinladungenFragment extends DialogFragment {
         mainView = inflater.inflate(R.layout.dialog_einladungen, container, false);
         initializeViews();
         getDialog().setTitle("Einladungen");
+        userID = LocalStorage.getUserID(getContext());
         db = FirebaseFirestore.getInstance();
         loadData();
-        adapter.startListening();
         return mainView;
     }
 
@@ -61,7 +61,7 @@ public class EinladungenFragment extends DialogFragment {
         // nach Einzugsdatum soriert
         Query query = FirebaseFirestore.getInstance()
                 .collection("users")
-                .document(Utils.getUSERID())
+                .document(userID)
                 .collection("invitations")
                 .orderBy("timestamp");
 
@@ -94,6 +94,7 @@ public class EinladungenFragment extends DialogFragment {
             }
         };
 
+        adapter.startListening();
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
         recView.setAdapter(adapter);
     }
@@ -123,7 +124,7 @@ public class EinladungenFragment extends DialogFragment {
         }
         progressBar.setVisibility(View.VISIBLE);
 
-        db.collection("users").document(Utils.getUSERID()).collection("wgs").document(wgKey).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection("users").document(userID).collection("wgs").document(wgKey).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 // Überprüfe ob User bereits Mitglied in der WG ist
@@ -145,7 +146,7 @@ public class EinladungenFragment extends DialogFragment {
                         }
                         // WG zu dem User hinzufügen
                         Wg wg = document.toObject(Wg.class);
-                        db.collection("users").document(Utils.getUSERID()).collection("wgs").document(wg.getKey()).set(wg);
+                        db.collection("users").document(userID).collection("wgs").document(wg.getKey()).set(wg);
                         // User zur WG hinzufügen
                         addUserToWg(wgKey);
                     }
@@ -156,14 +157,14 @@ public class EinladungenFragment extends DialogFragment {
 
     // Add current User to the WG
     private void addUserToWg(final String wgKey) {
-        db.collection("users").document(Utils.getUSERID()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection("users").document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 String username = task.getResult().getString("name");
                 String email = task.getResult().getString("email");
                 String picPath = task.getResult().getString("picPath");
-                User user = new User(username, email, Utils.getUSERID(), picPath, 0.0);
-                db.collection("wgs").document(wgKey).collection("users").document(Utils.getUSERID()).set(user);
+                User user = new User(username, email, userID, picPath, 0.0);
+                db.collection("wgs").document(wgKey).collection("users").document(userID).set(user);
                 deleteInvitation(wgKey);
             }
         });
@@ -171,8 +172,8 @@ public class EinladungenFragment extends DialogFragment {
 
     // Delete Invitation Documents at Users-Collection and WG-Collection
     private void deleteInvitation(final String wgkey) {
-        db.collection("users").document(Utils.getUSERID()).collection("invitations").document(wgkey).delete();
-        db.collection("wgs").document(wgkey).collection("invitations").document(Utils.getUSERID()).delete();
+        db.collection("users").document(userID).collection("invitations").document(wgkey).delete();
+        db.collection("wgs").document(wgkey).collection("invitations").document(userID).delete();
         Toast.makeText(getContext(), "Erfolgreich beigetreten", Toast.LENGTH_SHORT).show();
         progressBar.setVisibility(View.GONE);
     }
@@ -189,6 +190,8 @@ public class EinladungenFragment extends DialogFragment {
     private RecyclerView recView;
     private TextView placeholder;
     private ProgressBar progressBar;
+
     private FirestoreRecyclerAdapter adapter;
     private FirebaseFirestore db;
+    private String userID;
 }

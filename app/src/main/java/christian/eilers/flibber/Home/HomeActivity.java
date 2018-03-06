@@ -8,23 +8,35 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+import java.util.HashMap;
+
 import christian.eilers.flibber.Adapter.HomePagerAdapter;
+import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
+import christian.eilers.flibber.Utils.LocalStorage;
 import christian.eilers.flibber.Utils.Utils;
 
 public class HomeActivity extends AppCompatActivity {
-
-    private BottomNavigationViewEx bottomNavigationView;
-    private FragmentPagerAdapter adapterViewPager;
-    private ViewPager mView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Utils.getLocalData(this);
+        userID = LocalStorage.getUserID(this);
+        if(savedInstanceState != null) {
+            users = (HashMap<String, User>) savedInstanceState.getSerializable("users");
+        } else {
+
+        }
 
         ////////////////////////////////////////////////////////////////////////
         mView = findViewById(R.id.container);
@@ -79,6 +91,8 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        usersQuery = FirebaseFirestore.getInstance().collection("wgs").document(Utils.getWGKEY()).collection("users");
+
         adapterViewPager = new HomePagerAdapter(getSupportFragmentManager());
         mView.setAdapter(adapterViewPager);
         mView.setCurrentItem(2);
@@ -89,13 +103,42 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Utils.addUserListener();
+        addUserListener();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Utils.removeUserListener();
+        removeUserListener();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if(users != null)
+            outState.putSerializable("users", users);
+        super.onSaveInstanceState(outState);
+    }
+
+    public void addUserListener() {
+        if(Utils.getWGKEY() == null) {
+            if(Utils.getUSERS() != null) Utils.getUSERS().clear();
+            return;
+        }
+        userListener = usersQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                HashMap<String, User> userHashMap = new HashMap<>();
+                for(DocumentSnapshot doc : documentSnapshots) {
+                    User user = doc.toObject(User.class);
+                    userHashMap.put(user.getUserID(), user);
+                }
+                Utils.setUSERS(userHashMap);
+            }
+        });
+    }
+
+    public void removeUserListener() {
+        if(userListener != null) userListener.remove();
     }
 
     // Allgemeine Einstellungen für Bottom Navigation View
@@ -106,4 +149,13 @@ public class HomeActivity extends AppCompatActivity {
         bottomView.setIconSize(32, 32);
         bottomView.setCurrentItem(2);
     }
+
+
+    private BottomNavigationViewEx bottomNavigationView;
+    private FragmentPagerAdapter adapterViewPager;
+    private ViewPager mView;
+    private ListenerRegistration userListener;
+    private Query usersQuery;
+    private String userID;
+    private HashMap<String, User> users;
 }

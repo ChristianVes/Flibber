@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -82,6 +83,10 @@ public class HomeFragment extends Fragment {
             @Override
             public void onBindViewHolder(HomeFragment.NotesHolder holder, int position, Note model) {
                 holder.note = model;
+                if(Utils.getUSERS() == null) {
+                    Toast.makeText(getContext(), "Fehler beim Laden der User", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 User user = Utils.getUSERS().get(model.getUserID());
 
                 if(model.getTitle() == null || model.getTitle().isEmpty())

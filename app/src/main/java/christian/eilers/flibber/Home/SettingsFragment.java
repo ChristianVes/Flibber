@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import christian.eilers.flibber.Models.Wg;
-import christian.eilers.flibber.ProfilAndWgs.WgsAndProfilActivity;
+import christian.eilers.flibber.ProfilAndWgs.ProfilActivity;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.Utils;
 
@@ -183,7 +183,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         else if (id == R.id.btn_profil) {
             // Lösche WG Key und wechsel zur WG&Profil Activity
             Utils.setLocalData(getContext(), null, Utils.getUSERID(), Utils.getUSERNAME(), Utils.getPICPATH());
-            Intent profilIntent = new Intent(getContext(), WgsAndProfilActivity.class);
+            Intent profilIntent = new Intent(getContext(), ProfilActivity.class);
             startActivity(profilIntent);
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             getActivity().finish();

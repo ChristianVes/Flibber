@@ -27,8 +27,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-import christian.eilers.flibber.ProfilAndWgs.WgsAndProfilActivity;
-import christian.eilers.flibber.Utils.Utils;
+import christian.eilers.flibber.ProfilAndWgs.ProfilActivity;
+import christian.eilers.flibber.Utils.LocalStorage;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener {
 
@@ -69,7 +69,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    // Apply Action on Keyboard Action
+    // Apply Actions for custom Keyboard Keys
     @Override
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
         if (i == EditorInfo.IME_ACTION_NEXT) {
@@ -85,28 +85,27 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     // Sign Up new user with e-amil and password
     private void signUp() {
-        final String name = eT_name.getText().toString().trim();
+        final String username = eT_name.getText().toString().trim();
         final String email = eT_email.getText().toString().trim();
-        String password = eT_password.getText().toString().trim();
-        if (!validateForm(email, password, name)) return;
+        final String password = eT_password.getText().toString().trim();
+        if (!isValidForm(email, password, username)) return;
         progressBar.setVisibility(View.VISIBLE);
         auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    userID = auth.getCurrentUser().getUid();
+                    final String userID = auth.getCurrentUser().getUid();
                     // TODO: E-Mail verification wieder einbauen
                     // sendEmailVerification();
 
-                    Utils.setLocalData(RegisterActivity.this, null, userID, name, null);
+                    LocalStorage.setData(RegisterActivity.this, null, userID, username, null);
                     // Speichere Username in DB
                     Map<String, Object> userData = new HashMap<>();
-                    userData.put("name", name);
+                    userData.put("name", username);
                     userData.put("email", email);
-                    db = FirebaseFirestore.getInstance();
-                    db.collection("users").document(userID).set(userData);
+                    FirebaseFirestore.getInstance().collection("users").document(userID).set(userData);
                     // Wechsel zum WG-Selector
-                    Intent i_wgSelector = new Intent(RegisterActivity.this, WgsAndProfilActivity.class);
+                    Intent i_wgSelector = new Intent(RegisterActivity.this, ProfilActivity.class);
                     startActivity(i_wgSelector);
                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                     finish();
@@ -149,7 +148,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     // Check if email, password or name is empty
-    private boolean validateForm(String email, String password, String name) {
+    private boolean isValidForm(String email, String password, String name) {
         if (TextUtils.isEmpty(name)) {
             Toast.makeText(RegisterActivity.this, "Name required", Toast.LENGTH_SHORT).show();
             return false;
@@ -215,6 +214,4 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private Button btn_signup, btn_toLogin;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
-    private FirebaseFirestore db;
-    private String userID;
 }

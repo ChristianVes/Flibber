@@ -8,8 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 import christian.eilers.flibber.Home.HomeActivity;
-import christian.eilers.flibber.ProfilAndWgs.WgsAndProfilActivity;
-import christian.eilers.flibber.Utils.Utils;
+import christian.eilers.flibber.ProfilAndWgs.ProfilActivity;
+import christian.eilers.flibber.Utils.LocalStorage;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         auth = FirebaseAuth.getInstance();
-
         auth_listener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -43,28 +42,26 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         auth.addAuthStateListener(auth_listener);
 
-        Utils.getLocalData(this);
+        groupID = LocalStorage.getGroupID(this);
+        userID = LocalStorage.getUserID(this);
 
-        if(auth.getCurrentUser() != null && Utils.getUSERID() != null && Utils.getUSERNAME() != null) {
-            // Aktueller User besitzt UserID und Usernamen
-            if(Utils.getWGKEY() == null) {
-                // Wechsel zur Profil&WG Activity
-                Intent profilIntent = new Intent(MainActivity.this, WgsAndProfilActivity.class);
-                startActivity(profilIntent);
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                finish();
-            } else {
-                // Wechsel zum Home der aktuellen WG
+        if(userID != null) {
+            if(groupID != null) {
                 Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
                 startActivity(homeIntent);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 finish();
             }
+            else {
+                Intent profilIntent = new Intent(MainActivity.this, ProfilActivity.class);
+                startActivity(profilIntent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                finish();
+            }
+        }
+        else {
+            if(auth.getCurrentUser() != null) auth.signOut();
 
-        } else {
-            // Logge aktuellen User aus
-            auth.signOut();
-            Utils.setLocalData(MainActivity.this, null, null, null, null);
             Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(loginIntent);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -74,4 +71,5 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener auth_listener;
+    private String groupID, userID;
 }

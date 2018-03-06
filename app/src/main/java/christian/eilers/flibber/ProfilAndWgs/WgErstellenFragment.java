@@ -24,7 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.Models.Wg;
 import christian.eilers.flibber.R;
-import christian.eilers.flibber.Utils.Utils;
+import christian.eilers.flibber.Utils.LocalStorage;
 
 public class WgErstellenFragment extends DialogFragment {
 
@@ -41,6 +41,7 @@ public class WgErstellenFragment extends DialogFragment {
         initializeViews();
         getDialog().setTitle("Neue WG erstellen");
         db = FirebaseFirestore.getInstance();
+        userID = LocalStorage.getUserID(getContext());
         btn_erstellen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,9 +70,9 @@ public class WgErstellenFragment extends DialogFragment {
         ref_wg.set(wg);
 
         // Add WG to the current user's WG-Collection
-        db.collection("users").document(Utils.getUSERID()).collection("wgs").document(wg.getKey()).set(wg);
+        db.collection("users").document(userID).collection("wgs").document(wg.getKey()).set(wg);
         // Add user to the WG
-        db.collection("users").document(Utils.getUSERID()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection("users").document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (!task.isSuccessful()) {
@@ -82,8 +83,8 @@ public class WgErstellenFragment extends DialogFragment {
                 String username = task.getResult().getString("name");
                 String email = task.getResult().getString("email");
                 String picPath = task.getResult().getString("picPath");
-                User user = new User(username, email, Utils.getUSERID(), picPath, 0.0);
-                db.collection("wgs").document(wg.getKey()).collection("users").document(Utils.getUSERID()).set(user);
+                User user = new User(username, email, userID, picPath, 0.0);
+                db.collection("wgs").document(wg.getKey()).collection("users").document(userID).set(user);
                 progressBar.setVisibility(View.GONE);
                 eT_wgName.setText("");
                 getDialog().dismiss();
@@ -108,5 +109,7 @@ public class WgErstellenFragment extends DialogFragment {
     private EditText eT_wgName;
     private Button btn_erstellen, btn_abbrechen;
     private ProgressBar progressBar;
+
     private FirebaseFirestore db;
+    private String userID;
 }
