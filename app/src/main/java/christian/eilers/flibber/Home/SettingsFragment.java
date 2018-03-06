@@ -29,7 +29,7 @@ import java.util.Map;
 import christian.eilers.flibber.Models.Wg;
 import christian.eilers.flibber.ProfilAndWgs.ProfilActivity;
 import christian.eilers.flibber.R;
-import christian.eilers.flibber.Utils.Utils;
+import christian.eilers.flibber.Utils.LocalStorage;
 
 public class SettingsFragment extends Fragment implements View.OnClickListener{
 
@@ -39,6 +39,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         mainView = inflater.inflate(R.layout.fragment_settings, container, false);
         initializeViews();
         db = FirebaseFirestore.getInstance();
+        userID = LocalStorage.getUserID(getContext());
+        groupID = LocalStorage.getGroupID(getContext());
         return mainView;
     }
 
@@ -110,7 +112,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
 
     // Check if user already is member of the WG
     private void checkIfMember(final DocumentSnapshot invitedUserSnapshot) {
-        invitedUserSnapshot.getReference().collection("wgs").document(Utils.getWGKEY()).get()
+        invitedUserSnapshot.getReference().collection("wgs").document(groupID).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -126,7 +128,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
 
     // Check if user already has an invitation
     private void checkIfInvited(final DocumentSnapshot invitedUserSnapshot) {
-        invitedUserSnapshot.getReference().collection("invitations").document(Utils.getWGKEY()).get()
+        invitedUserSnapshot.getReference().collection("invitations").document(groupID).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -142,7 +144,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
 
     // Create Invitation-Documents in the Users-Collection and WG-Collection
     private void sendInvitation(final DocumentSnapshot invitedUserSnapshot) {
-        db.collection("wgs").document(Utils.getWGKEY()).get()
+        db.collection("wgs").document(groupID).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot currentWGSnapshot) {
@@ -157,7 +159,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
                         // Add invited User to Invitation-Collection of WG
                         currentWGSnapshot.getReference().collection("invitations").document(invitedUserSnapshot.getId()).set(map_user);
                         // Add WG to Invitation-Collection of invited User
-                        invitedUserSnapshot.getReference().collection("invitations").document(Utils.getWGKEY()).set(currentWG);
+                        invitedUserSnapshot.getReference().collection("invitations").document(groupID).set(currentWG);
                         Toast.makeText(getContext(), "User invited", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     }
@@ -182,7 +184,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         }
         else if (id == R.id.btn_profil) {
             // Lösche WG Key und wechsel zur WG&Profil Activity
-            Utils.setLocalData(getContext(), null, Utils.getUSERID(), Utils.getUSERNAME(), Utils.getPICPATH());
+            LocalStorage.setGroupID(getContext(), null);
             Intent profilIntent = new Intent(getContext(), ProfilActivity.class);
             startActivity(profilIntent);
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -194,6 +196,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
     private View mainView;
     private Button btn_invite, btn_profil;
     private FirebaseFirestore db;
+    private String userID, groupID;
     // Dialog Variables
     private ProgressBar progressBar;
     private AlertDialog dialog;

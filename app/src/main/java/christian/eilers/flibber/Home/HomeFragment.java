@@ -13,10 +13,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
@@ -26,7 +27,7 @@ import christian.eilers.flibber.Models.Note;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
-import christian.eilers.flibber.Utils.Utils;
+import christian.eilers.flibber.Utils.LocalStorage;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeFragment extends Fragment {
@@ -35,6 +36,15 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.fragment_home, container, false);
+        initializeViews();
+        storage = FirebaseStorage.getInstance().getReference();
+        userID = LocalStorage.getUserID(getContext());
+        groupID = LocalStorage.getGroupID(getContext());
+        loadData();
+        return mainView;
+    }
+
+    private void initializeViews() {
         recView = mainView.findViewById(R.id.recView);
         fab = mainView.findViewById(R.id.fab);
         progressBar = mainView.findViewById(R.id.progressBar);
@@ -48,11 +58,7 @@ public class HomeFragment extends Fragment {
                 getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
-        storage = FirebaseStorage.getInstance().getReference();
-        loadData();
-        return mainView;
     }
-
 
     // Lade Notizen aus der Database und zeige sie in einem Recyclerview an
     private void loadData() {
@@ -60,7 +66,7 @@ public class HomeFragment extends Fragment {
         // nach Erstelldatum soriert
         Query query = FirebaseFirestore.getInstance()
                 .collection("wgs")
-                .document(Utils.getWGKEY())
+                .document(groupID)
                 .collection("notes")
                 .orderBy("timestamp");
 
@@ -81,13 +87,15 @@ public class HomeFragment extends Fragment {
 
             // Bind data from the database to the UI-Object
             @Override
-            public void onBindViewHolder(HomeFragment.NotesHolder holder, int position, Note model) {
-                holder.note = model;
-                if(Utils.getUSERS() == null) {
+            public void onBindViewHolder(final HomeFragment.NotesHolder holder, int position, final Note model) {
+                /*holder.note = model;
+                HashMap<String, User> users = ((HomeActivity) getActivity()).getUsers();
+                if(users == null) {
+                    // TODO !!!
                     Toast.makeText(getContext(), "Fehler beim Laden der User", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                User user = Utils.getUSERS().get(model.getUserID());
+                User user = users.get(model.getUserID());
 
                 if(model.getTitle() == null || model.getTitle().isEmpty())
                     holder.tv_title.setVisibility(View.GONE);
@@ -120,8 +128,55 @@ public class HomeFragment extends Fragment {
                             //.placeholder(R.drawable.profile_placeholder)
                             .into(holder.img_note);
                 else
-                    holder.img_note.setVisibility(View.GONE);
+                    holder.img_note.setVisibility(View.GONE);*/
 
+
+                /////////////////////////////////////////////////////////////////////////////////////
+
+                holder.note = model;
+                holder.itemView.setVisibility(View.GONE);
+                FirebaseFirestore.getInstance().collection("wgs").document(groupID).collection("users").document(model.getUserID()).get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                User user = documentSnapshot.toObject(User.class);
+
+                                if(model.getTitle() == null || model.getTitle().isEmpty())
+                                    holder.tv_title.setVisibility(View.GONE);
+                                else
+                                    holder.tv_title.setText(model.getTitle());
+
+                                if(model.getDescription() == null || model.getDescription().isEmpty())
+                                    holder.tv_description.setVisibility(View.GONE);
+                                else
+                                    holder.tv_description.setText(model.getDescription());
+
+                                holder.tv_username.setText(user.getName());
+
+                                if(model.getTimestamp() != null)
+                                    holder.tv_datum.setText(DateUtils.getRelativeTimeSpanString(model.getTimestamp().getTime()));
+                                else
+                                    holder.tv_datum.setText("Vor 0 Minuten");
+
+                                if(user.getPicPath() != null)
+                                    GlideApp.with(getContext())
+                                            .load(storage.child("profile_pictures").child(user.getPicPath()))
+                                            .dontAnimate()
+                                            .placeholder(R.drawable.profile_placeholder)
+                                            .into(holder.img_profile);
+
+                                if(model.getImagePath() != null)
+                                    GlideApp.with(getContext())
+                                            .load(storage.child("notes").child(model.getImagePath()))
+                                            .dontAnimate()
+                                            //.placeholder(R.drawable.profile_placeholder)
+                                            .into(holder.img_note);
+                                else
+                                    holder.img_note.setVisibility(View.GONE);
+
+                                holder.itemView.setVisibility(View.VISIBLE);
+                            }
+                        });
             }
 
             // Einmalige Zuweisung zum ViewHolder
@@ -153,6 +208,7 @@ public class HomeFragment extends Fragment {
 
     // Custom ViewHolder for interacting with single items of the RecyclerView
     public class NotesHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        public View itemView;
         public CircleImageView img_profile;
         public TextView tv_username, tv_title, tv_description, tv_datum;
         public ImageView img_note;
@@ -160,6 +216,7 @@ public class HomeFragment extends Fragment {
 
         public NotesHolder(View itemView) {
             super(itemView);
+            this.itemView = itemView;
             img_profile = itemView.findViewById(R.id.profile_image);
             tv_datum = itemView.findViewById(R.id.datum);
             tv_description = itemView.findViewById(R.id.description);
@@ -182,4 +239,6 @@ public class HomeFragment extends Fragment {
     private FirestoreRecyclerAdapter adapter;
     private FloatingActionButton fab;
     private StorageReference storage;
+
+    private String userID, groupID;
 }

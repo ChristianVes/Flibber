@@ -19,7 +19,7 @@ import com.google.firebase.storage.StorageReference;
 import christian.eilers.flibber.Models.Note;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
-import christian.eilers.flibber.Utils.Utils;
+import christian.eilers.flibber.Utils.LocalStorage;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NoteCreateActivity extends AppCompatActivity implements View.OnClickListener{
@@ -28,7 +28,10 @@ public class NoteCreateActivity extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_create);
-        Utils.getLocalData(this);
+        userID = LocalStorage.getUserID(this);
+        groupID = LocalStorage.getGroupID(this);
+        userName = LocalStorage.getUsername(this);
+        picPath = LocalStorage.getPicPath(this);
         storage = FirebaseStorage.getInstance().getReference().child("profile_pictures");
         db = FirebaseFirestore.getInstance();
         initializeViews();
@@ -47,10 +50,10 @@ public class NoteCreateActivity extends AppCompatActivity implements View.OnClic
         btn_cancel.setOnClickListener(this);
         btn_save.setOnClickListener(this);
 
-        tv_username.setText(Utils.getUSERNAME());
-        if (Utils.getPICPATH() != null)
+        tv_username.setText(userName);
+        if (picPath != null)
             GlideApp.with(NoteCreateActivity.this)
-                    .load(storage.child(Utils.getPICPATH()))
+                    .load(storage.child(picPath))
                     .dontAnimate()
                     .placeholder(R.drawable.profile_placeholder)
                     .into(img_profile);
@@ -82,10 +85,10 @@ public class NoteCreateActivity extends AppCompatActivity implements View.OnClic
         Note note = new Note(
                 et_title.getText().toString().trim(),
                 et_description.getText().toString().trim(),
-                Utils.getUSERID(),
+                userID,
                 null
         );
-        db.collection("wgs").document(Utils.getWGKEY()).collection("notes").document().set(note);
+        db.collection("wgs").document(groupID).collection("notes").document().set(note);
         toHomeActivity();
     }
 
@@ -117,13 +120,14 @@ public class NoteCreateActivity extends AppCompatActivity implements View.OnClic
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    Button btn_cancel, btn_save;
-    CircleImageView img_profile;
-    TextView tv_username, tv_datum;
-    ImageView img_notiz;
-    EditText et_title, et_description;
+    private Button btn_cancel, btn_save;
+    private CircleImageView img_profile;
+    private TextView tv_username, tv_datum;
+    private ImageView img_notiz;
+    private EditText et_title, et_description;
 
-    StorageReference storage;
-    FirebaseFirestore db;
+    private StorageReference storage;
+    private FirebaseFirestore db;
+    private String userID, groupID, userName, picPath;
 
 }

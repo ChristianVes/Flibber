@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 // Aktuellen User ausloggen
                 if(firebaseAuth.getCurrentUser() == null) {
-                    /*Utils.setLocalData(MainActivity.this, null, null, null, null);
+                    /*setLocalData(MainActivity.this, null, null, null, null);
 
                     Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
                     startActivity(loginIntent);

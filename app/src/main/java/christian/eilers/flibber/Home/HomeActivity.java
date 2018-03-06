@@ -23,7 +23,6 @@ import christian.eilers.flibber.Adapter.HomePagerAdapter;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
-import christian.eilers.flibber.Utils.Utils;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -32,21 +31,15 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         userID = LocalStorage.getUserID(this);
+        groupID = LocalStorage.getGroupID(this);
         if(savedInstanceState != null) {
             users = (HashMap<String, User>) savedInstanceState.getSerializable("users");
-        } else {
-
         }
 
-        ////////////////////////////////////////////////////////////////////////
         mView = findViewById(R.id.container);
         bottomNavigationView = findViewById(R.id.bnve);
-        ////////////////////////////////////////////////////////////////////////
 
-        mView.setOffscreenPageLimit(5);
 
-        // Bottom Navigation View initialisieren und auf Home Screen setzen
-        setBottomNavigationBar(bottomNavigationView);
 
         // Checked-Item in Bottom Navigation View anpassen, je nachdem, welches Fragment gerade aktiv ist
         mView.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -63,8 +56,12 @@ public class HomeActivity extends AppCompatActivity {
             public void onPageScrollStateChanged(int state) {
             }
         });
+        mView.setOffscreenPageLimit(5);
 
+
+        // Bottom Navigation View initialisieren und auf Home Screen setzen
         // Fragment wechseln, je nachdem welches Item der Bottom Navigation View angegklickt wurde
+        setBottomNavigationBar(bottomNavigationView);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -91,7 +88,18 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        usersQuery = FirebaseFirestore.getInstance().collection("wgs").document(Utils.getWGKEY()).collection("users");
+        usersQuery = FirebaseFirestore.getInstance().collection("wgs").document(groupID).collection("users");
+        userListener = usersQuery.addSnapshotListener(HomeActivity.this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                HashMap<String, User> userHashMap = new HashMap<>();
+                for(DocumentSnapshot doc : documentSnapshots) {
+                    User user = doc.toObject(User.class);
+                    userHashMap.put(user.getUserID(), user);
+                }
+                users = (HashMap<String, User>) userHashMap.clone();
+            }
+        });
 
         adapterViewPager = new HomePagerAdapter(getSupportFragmentManager());
         mView.setAdapter(adapterViewPager);
@@ -101,44 +109,10 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        addUserListener();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        removeUserListener();
-    }
-
-    @Override
     protected void onSaveInstanceState(Bundle outState) {
         if(users != null)
             outState.putSerializable("users", users);
         super.onSaveInstanceState(outState);
-    }
-
-    public void addUserListener() {
-        if(Utils.getWGKEY() == null) {
-            if(Utils.getUSERS() != null) Utils.getUSERS().clear();
-            return;
-        }
-        userListener = usersQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                HashMap<String, User> userHashMap = new HashMap<>();
-                for(DocumentSnapshot doc : documentSnapshots) {
-                    User user = doc.toObject(User.class);
-                    userHashMap.put(user.getUserID(), user);
-                }
-                Utils.setUSERS(userHashMap);
-            }
-        });
-    }
-
-    public void removeUserListener() {
-        if(userListener != null) userListener.remove();
     }
 
     // Allgemeine Einstellungen für Bottom Navigation View
@@ -150,12 +124,15 @@ public class HomeActivity extends AppCompatActivity {
         bottomView.setCurrentItem(2);
     }
 
+    public HashMap<String, User> getUsers() {
+        return users;
+    }
 
     private BottomNavigationViewEx bottomNavigationView;
     private FragmentPagerAdapter adapterViewPager;
     private ViewPager mView;
     private ListenerRegistration userListener;
     private Query usersQuery;
-    private String userID;
+    private String userID, groupID;
     private HashMap<String, User> users;
 }
