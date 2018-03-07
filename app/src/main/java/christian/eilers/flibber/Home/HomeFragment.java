@@ -34,18 +34,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class HomeFragment extends Fragment {
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.fragment_home, container, false);
         initializeViews();
-        storage = FirebaseStorage.getInstance().getReference();
-        userID = LocalStorage.getUserID(getContext());
-        groupID = LocalStorage.getGroupID(getContext());
-        users = ((HomeActivity) getActivity()).getUsers();
+        initializeVariables();
         if(users != null) loadData();
         return mainView;
     }
 
+    // Initialize views from layout file
     private void initializeViews() {
         recView = mainView.findViewById(R.id.recView);
         fab = mainView.findViewById(R.id.fab);
@@ -62,23 +59,28 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    // Lade Notizen aus der Database und zeige sie in einem Recyclerview an
+    // Initialize variables
+    private void initializeVariables() {
+        storage = FirebaseStorage.getInstance().getReference();
+        groupID = LocalStorage.getGroupID(getContext());
+        users = ((HomeActivity) getActivity()).getUsers();
+    }
+
+    // Lädt Notizen aus der Datenbank in den RecyclerView und hält sie up-to-date über einen Listener
     private void loadData() {
-        // Referenz: Notizen der aktuellen WG
-        // nach Erstelldatum soriert
-        Query query = FirebaseFirestore.getInstance()
-                .collection("wgs")
+        Query notesQuery = FirebaseFirestore.getInstance()
+                .collection(GROUPS)
                 .document(groupID)
-                .collection("notes")
-                .orderBy("timestamp");
+                .collection(NOTES)
+                .orderBy(TIMESTAMP);
 
         FirestoreRecyclerOptions<Note> options = new FirestoreRecyclerOptions.Builder<Note>()
-                .setQuery(query, Note.class)
+                .setQuery(notesQuery, Note.class)
                 .build();
 
         adapter = new FirestoreRecyclerAdapter<Note, HomeFragment.NotesHolder>(options) {
 
-            // Set Placeholder-Visibility and ProgressBar-Visibility
+            // Aktualisiere Platzhalter und ProgressBar
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
@@ -90,8 +92,10 @@ public class HomeFragment extends Fragment {
             // Bind data from the database to the UI-Object
             @Override
             public void onBindViewHolder(HomeFragment.NotesHolder holder, int position, Note model) {
-                final User user = users.get(model.getUserID());
+                User user = users.get(model.getUserID());
+                holder.tv_username.setText(user.getName());
 
+                // TITEL
                 if(model.getTitle() == null || model.getTitle().isEmpty())
                     holder.tv_title.setVisibility(View.GONE);
                 else {
@@ -99,6 +103,7 @@ public class HomeFragment extends Fragment {
                     holder.tv_title.setText(model.getTitle());
                 }
 
+                // BESCHREIBUNG
                 if(model.getDescription() == null || model.getDescription().isEmpty())
                     holder.tv_description.setVisibility(View.GONE);
                 else {
@@ -106,26 +111,27 @@ public class HomeFragment extends Fragment {
                     holder.tv_description.setText(model.getDescription());
                 }
 
-                holder.tv_username.setText(user.getName());
-
+                // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
                 if(model.getTimestamp() != null)
                     holder.tv_datum.setText(
                             DateUtils.getRelativeTimeSpanString(model.getTimestamp().getTime(),
-                                    System.currentTimeMillis() + 10000,
+                                    System.currentTimeMillis() + BUFFER,
                                     DateUtils.MINUTE_IN_MILLIS,
                                     DateUtils.FORMAT_ABBREV_RELATIVE));
 
 
+                // PROFILE PICTURE
                 if(user.getPicPath() != null)
                     GlideApp.with(getContext())
-                            .load(storage.child("profile_pictures").child(user.getPicPath()))
+                            .load(storage.child(PROFILE).child(user.getPicPath()))
                             .dontAnimate()
                             .placeholder(R.drawable.profile_placeholder)
                             .into(holder.img_profile);
 
+                // NOTE PICTURE ("Clear" zum vermeiden falscher Zuweisungen)
                 if(model.getImagePath() != null)
                     GlideApp.with(getContext())
-                            .load(storage.child("notes").child(model.getImagePath()))
+                            .load(storage.child(NOTES).child(model.getImagePath()))
                             .dontAnimate()
                             .into(holder.img_note);
                 else {
@@ -133,7 +139,7 @@ public class HomeFragment extends Fragment {
                 }
             }
 
-            // Einmalige Zuweisung zum ViewHolder
+            // Einmalige Zuweisung zum ViewHolder: NotesHolder
             @Override
             public HomeFragment.NotesHolder onCreateViewHolder(ViewGroup group, int i) {
                 View view = LayoutInflater.from(group.getContext()).inflate(R.layout.item_notes, group, false);
@@ -180,7 +186,7 @@ public class HomeFragment extends Fragment {
             tv_username = itemView.findViewById(R.id.username);
             img_note = itemView.findViewById(R.id.image);
 
-//            itemView.setOnClickListener(this);
+//          itemView.setOnClickListener(this);
         }
     }
 
@@ -192,6 +198,13 @@ public class HomeFragment extends Fragment {
     private FloatingActionButton fab;
     private StorageReference storage;
 
-    private String userID, groupID;
+    private String groupID;
     private HashMap<String, User> users;
+
+    // TODO: String-values verbessern
+    private final String GROUPS = "wgs";
+    private final String NOTES = "notes";
+    private final String TIMESTAMP = "timestamp";
+    private final String PROFILE = "profile_pictures";
+    private final int BUFFER = 10000; // Millisekunden // entspricht 10 Sekunden
 }

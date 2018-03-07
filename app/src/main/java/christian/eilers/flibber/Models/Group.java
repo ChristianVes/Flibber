@@ -5,17 +5,17 @@ import com.google.firebase.firestore.ServerTimestamp;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Wg implements Serializable {
+public class Group implements Serializable {
 
     private String name;
     private String key;
     private String picPath;
     private Date timestamp;
 
-    public Wg() {
+    public Group() {
     }
 
-    public Wg(String name, String key, String picPath) {
+    public Group(String name, String key, String picPath) {
         this.name = name;
         this.key = key;
         this.picPath = picPath;

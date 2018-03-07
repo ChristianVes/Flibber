@@ -5,12 +5,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import christian.eilers.flibber.ProfilAndWgs.ProfilFragment;
-import christian.eilers.flibber.ProfilAndWgs.WgFragment;
+import christian.eilers.flibber.ProfilAndWgs.GroupFragment;
 
-public class WgProfilAdapter extends FragmentPagerAdapter {
+public class ProfilPagerAdapter extends FragmentPagerAdapter {
     private int NUM_ITEMS = 2;
 
-    public WgProfilAdapter(FragmentManager fm) {
+    public ProfilPagerAdapter(FragmentManager fm) {
         super(fm);
     }
 
@@ -20,7 +20,7 @@ public class WgProfilAdapter extends FragmentPagerAdapter {
             case 0:
                 return new ProfilFragment();
             case 1:
-                return new WgFragment();
+                return new GroupFragment();
             default:
                 return null;
         }
@@ -38,7 +38,7 @@ public class WgProfilAdapter extends FragmentPagerAdapter {
             case 0:
                 return "Profil";
             case 1:
-                return "WG's";
+                return "Gruppen";
             default:
                 return null;
         }

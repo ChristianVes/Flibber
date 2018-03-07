@@ -6,7 +6,7 @@
     android:layout_margin="5dp"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context="christian.eilers.flibber.ProfilAndWgs.WgFragment">
+    tools:context="christian.eilers.flibber.ProfilAndWgs.GroupFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"

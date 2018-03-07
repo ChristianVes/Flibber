@@ -22,15 +22,15 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import christian.eilers.flibber.Models.User;
-import christian.eilers.flibber.Models.Wg;
+import christian.eilers.flibber.Models.Group;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 
-public class WgErstellenFragment extends DialogFragment {
+public class GroupCreationFragment extends DialogFragment {
 
     // Instanzierung des Dialogs
-    public static WgErstellenFragment newInstance() {
-        if(thisDialog == null) thisDialog =  new WgErstellenFragment();
+    public static GroupCreationFragment newInstance() {
+        if(thisDialog == null) thisDialog =  new GroupCreationFragment();
         return thisDialog;
     }
 
@@ -66,7 +66,7 @@ public class WgErstellenFragment extends DialogFragment {
         progressBar.setVisibility(View.VISIBLE);
         // Create new WG-Document
         final DocumentReference ref_wg = db.collection("wgs").document();
-        final Wg wg = new Wg(wgName, ref_wg.getId(), null);
+        final Group wg = new Group(wgName, ref_wg.getId(), null);
         ref_wg.set(wg);
 
         // Add WG to the current user's WG-Collection
@@ -102,7 +102,7 @@ public class WgErstellenFragment extends DialogFragment {
     }
 
 
-    private static WgErstellenFragment thisDialog;
+    private static GroupCreationFragment thisDialog;
 
     private View mainView;
     private ImageView image;

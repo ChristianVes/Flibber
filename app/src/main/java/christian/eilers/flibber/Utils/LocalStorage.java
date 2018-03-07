@@ -3,25 +3,30 @@ package christian.eilers.flibber.Utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+// Klasse zur lokalen Speicherung wichtiger Variablen in SharedPreferences (im lokalen Gerätespeicher)
 public class LocalStorage {
 
+    // USER ID
     public static String getUserID(Context c) {
         return c.getSharedPreferences("USERDATA", Context.MODE_PRIVATE).getString("USERID", null);
     }
 
+    // GROUP ID
     public static String getGroupID(Context c) {
         return c.getSharedPreferences("USERDATA", Context.MODE_PRIVATE).getString("GROUPID", null);
     }
 
+    // USER NAME
     public static String getUsername(Context c) {
         return c.getSharedPreferences("USERDATA", Context.MODE_PRIVATE).getString("USERNAME", null);
     }
 
+    // PROFILE PICTURE PATH
     public static String getPicPath(Context c) {
         return c.getSharedPreferences("USERDATA", Context.MODE_PRIVATE).getString("PICPATH", null);
     }
 
-    // Speichere Userdaten lokal auf dem Handy ab
+
     public static void setData(Context c, String groupID, String userID, String userName, String picPath) {
         SharedPreferences.Editor editor = c.getSharedPreferences("USERDATA", Context.MODE_PRIVATE).edit();
         editor.putString("GROUPID", groupID);

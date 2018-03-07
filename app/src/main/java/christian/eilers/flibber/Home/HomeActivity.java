@@ -32,7 +32,6 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
 
         mView = findViewById(R.id.container);
@@ -40,7 +39,7 @@ public class HomeActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
 
-        // Checked-Item in Bottom Navigation View anpassen, je nachdem, welches Fragment gerade aktiv ist
+        // Das "gecheckte" Item in der Bottom Navigation View anpassen, je nachdem, welches Fragment gerade aktiv ist
         mView.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -57,8 +56,10 @@ public class HomeActivity extends AppCompatActivity {
         });
         mView.setOffscreenPageLimit(5);
 
-        // Bottom Navigation View initialisieren und auf Home Screen setzen
-        // Fragment wechseln, je nachdem welches Item der Bottom Navigation View angegklickt wurde
+        /*
+        Bottom Navigation View initialisieren und auf Home Screen setzen
+        Fragment wechseln, je nachdem welches Item in der Bottom Navigation View angegklickt wurde
+        */
         setBottomNavigationBar(bottomNavigationView);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -86,9 +87,19 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        /*
+        Lokales Laden der User-Liste aus dem Cache
+        Unnötig, da sowieso jedes mal die get() Methode aufgerufen wird, bevor die Fragmente initialisiert werden
         if(savedInstanceState != null) {
             users = (HashMap<String, User>) savedInstanceState.getSerializable("users");
         }
+        */
+
+        /*
+        Lade Liste aller User dieser Gruppe einmalig und initalisiere anschließend die Fragmente
+        Anschließend wird die Userliste über einen Listener up-to-date gehalten
+        Der Listener ist an den Lifecycle der Activity gebunden
+         */
         usersQuery = FirebaseFirestore.getInstance().collection("wgs").document(groupID).collection("users");
         usersQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -100,8 +111,6 @@ public class HomeActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
             }
         });
-
-
         usersQuery.addSnapshotListener(HomeActivity.this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -112,13 +121,17 @@ public class HomeActivity extends AppCompatActivity {
         bottomNavigationView.setupWithViewPager(mView);
     }
 
+    /*
+    Unnötig, siehe oben....
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if(users != null)
             outState.putSerializable("users", users);
         super.onSaveInstanceState(outState);
     }
+    */
 
+    // Erzeugt eine Userliste mithilfe eines Snapshots aus der Datenbank
     private void retrieveUsers(QuerySnapshot documentSnapshots) {
         HashMap<String, User> userHashMap = new HashMap<>();
         for(DocumentSnapshot doc : documentSnapshots) {
@@ -137,10 +150,10 @@ public class HomeActivity extends AppCompatActivity {
         bottomView.setCurrentItem(2);
     }
 
+    // Liefert Zugriff auf die Userliste innherlab von Fragmenten
     public HashMap<String, User> getUsers() {
         return users;
     }
-
 
 
     private BottomNavigationViewEx bottomNavigationView;
@@ -148,6 +161,6 @@ public class HomeActivity extends AppCompatActivity {
     private ViewPager mView;
     private ProgressBar progressBar;
     private Query usersQuery;
-    private String userID, groupID;
+    private String groupID;
     private HashMap<String, User> users;
 }

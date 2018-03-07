@@ -20,11 +20,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import christian.eilers.flibber.Home.HomeActivity;
-import christian.eilers.flibber.Models.Wg;
+import christian.eilers.flibber.Models.Group;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 
-public class WgFragment extends Fragment {
+public class GroupFragment extends Fragment {
 
     @Nullable
     @Override
@@ -36,16 +36,16 @@ public class WgFragment extends Fragment {
         btn_new.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                WgErstellenFragment frag = WgErstellenFragment.newInstance();
-                frag.setTargetFragment(WgFragment.this, 1);
+                GroupCreationFragment frag = GroupCreationFragment.newInstance();
+                frag.setTargetFragment(GroupFragment.this, 1);
                 frag.show(getFragmentManager(), "wg_erstellen");
             }
         });
         btn_einladungen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EinladungenFragment frag = EinladungenFragment.newInstance();
-                frag.setTargetFragment(WgFragment.this, 2);
+                InvitationsFragment frag = InvitationsFragment.newInstance();
+                frag.setTargetFragment(GroupFragment.this, 2);
                 frag.show(getFragmentManager(), "einladungen");
             }
         });
@@ -84,11 +84,11 @@ public class WgFragment extends Fragment {
                 .collection("wgs")
                 .orderBy("timestamp");
 
-        FirestoreRecyclerOptions<Wg> options = new FirestoreRecyclerOptions.Builder<Wg>()
-                .setQuery(query, Wg.class)
+        FirestoreRecyclerOptions<Group> options = new FirestoreRecyclerOptions.Builder<Group>()
+                .setQuery(query, Group.class)
                 .build();
 
-        adapter = new FirestoreRecyclerAdapter<Wg, WgFragment.WgHolder>(options) {
+        adapter = new FirestoreRecyclerAdapter<Group, GroupFragment.WgHolder>(options) {
 
             // Set Placeholder-Visibility and ProgressBar-Visibility
             @Override
@@ -100,16 +100,16 @@ public class WgFragment extends Fragment {
             }
 
             @Override
-            public void onBindViewHolder(WgFragment.WgHolder holder, int position, Wg model) {
+            public void onBindViewHolder(GroupFragment.WgHolder holder, int position, Group model) {
                 holder.v_name.setText(model.getName());
                 holder.wg = model;
             }
 
             // Einmalige Zuweisung zum ViewHolder
             @Override
-            public WgFragment.WgHolder onCreateViewHolder(ViewGroup group, int i) {
+            public GroupFragment.WgHolder onCreateViewHolder(ViewGroup group, int i) {
                 View view = LayoutInflater.from(group.getContext()).inflate(R.layout.item_wg, group, false);
-                return new WgFragment.WgHolder(view);
+                return new GroupFragment.WgHolder(view);
             }
         };
 
@@ -120,7 +120,7 @@ public class WgFragment extends Fragment {
     // Custom ViewHolder for interacting with single items of the RecyclerView
     public class WgHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView v_name;
-        public Wg wg;
+        public Group wg;
 
         public WgHolder(View itemView) {
             super(itemView);

@@ -23,15 +23,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import christian.eilers.flibber.Models.User;
-import christian.eilers.flibber.Models.Wg;
+import christian.eilers.flibber.Models.Group;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 
-public class EinladungenFragment extends DialogFragment {
+public class InvitationsFragment extends DialogFragment {
 
     // Instanzierung des Dialogs
-    public static EinladungenFragment newInstance() {
-        if(thisDialog == null) thisDialog = new EinladungenFragment();
+    public static InvitationsFragment newInstance() {
+        if(thisDialog == null) thisDialog = new InvitationsFragment();
         return thisDialog;
     }
 
@@ -65,11 +65,11 @@ public class EinladungenFragment extends DialogFragment {
                 .collection("invitations")
                 .orderBy("timestamp");
 
-        FirestoreRecyclerOptions<Wg> options = new FirestoreRecyclerOptions.Builder<Wg>()
-                .setQuery(query, Wg.class)
+        FirestoreRecyclerOptions<Group> options = new FirestoreRecyclerOptions.Builder<Group>()
+                .setQuery(query, Group.class)
                 .build();
 
-        adapter = new FirestoreRecyclerAdapter<Wg, EinladungenFragment.WgHolder>(options) {
+        adapter = new FirestoreRecyclerAdapter<Group, InvitationsFragment.WgHolder>(options) {
 
             // Set Placeholder-Visibility and ProgressBar-Visibility
             @Override
@@ -81,16 +81,16 @@ public class EinladungenFragment extends DialogFragment {
             }
 
             @Override
-            public void onBindViewHolder(EinladungenFragment.WgHolder holder, int position, Wg model) {
+            public void onBindViewHolder(InvitationsFragment.WgHolder holder, int position, Group model) {
                 holder.v_name.setText(model.getName());
                 holder.wg = model;
             }
 
             // Einmalige Zuweisung zum ViewHolder
             @Override
-            public EinladungenFragment.WgHolder onCreateViewHolder(ViewGroup group, int i) {
+            public InvitationsFragment.WgHolder onCreateViewHolder(ViewGroup group, int i) {
                 View view = LayoutInflater.from(group.getContext()).inflate(R.layout.item_wg, group, false);
-                return new EinladungenFragment.WgHolder(view);
+                return new InvitationsFragment.WgHolder(view);
             }
         };
 
@@ -102,7 +102,7 @@ public class EinladungenFragment extends DialogFragment {
     // Custom ViewHolder for interacting with single items of the RecyclerView
     public class WgHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView v_name;
-        public Wg wg;
+        public Group wg;
 
         public WgHolder(View itemView) {
             super(itemView);
@@ -145,7 +145,7 @@ public class EinladungenFragment extends DialogFragment {
                             return;
                         }
                         // WG zu dem User hinzufügen
-                        Wg wg = document.toObject(Wg.class);
+                        Group wg = document.toObject(Group.class);
                         db.collection("users").document(userID).collection("wgs").document(wg.getKey()).set(wg);
                         // User zur WG hinzufügen
                         addUserToWg(wgKey);
@@ -184,7 +184,7 @@ public class EinladungenFragment extends DialogFragment {
         if(adapter != null) adapter.stopListening();
     }
 
-    private static EinladungenFragment thisDialog;
+    private static InvitationsFragment thisDialog;
 
     private View mainView;
     private RecyclerView recView;

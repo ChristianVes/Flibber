@@ -26,7 +26,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.HashMap;
 import java.util.Map;
 
-import christian.eilers.flibber.Models.Wg;
+import christian.eilers.flibber.Models.Group;
 import christian.eilers.flibber.ProfilAndWgs.ProfilActivity;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
@@ -149,7 +149,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
                     @Override
                     public void onSuccess(DocumentSnapshot currentWGSnapshot) {
                         // Create WG-Object of current WG
-                        final Wg currentWG = currentWGSnapshot.toObject(Wg.class);
+                        final Group currentWG = currentWGSnapshot.toObject(Group.class);
                         // Create Map of invited User
                         Map<String,Object> map_user = new HashMap<>();
                         map_user.put("email" , invitedUserSnapshot.getString("email"));

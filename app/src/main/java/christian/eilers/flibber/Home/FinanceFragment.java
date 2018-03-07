@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import christian.eilers.flibber.R;
 
-public class FinanzenFragment extends Fragment {
+public class FinanceFragment extends Fragment {
 
     @Nullable
     @Override

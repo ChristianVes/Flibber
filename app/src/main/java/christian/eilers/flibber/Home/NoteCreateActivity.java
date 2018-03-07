@@ -32,17 +32,14 @@ import christian.eilers.flibber.Models.Note;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 
-public class NoteCreateActivity extends AppCompatActivity implements TextView.OnEditorActionListener, View.OnClickListener {
+public class NoteCreateActivity extends AppCompatActivity implements TextView.OnEditorActionListener, View.OnClickListener, View.OnFocusChangeListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_create);
-        userID = LocalStorage.getUserID(this);
-        groupID = LocalStorage.getGroupID(this);
-        storage = FirebaseStorage.getInstance().getReference().child("notes");
-        db = FirebaseFirestore.getInstance();
         initializeViews();
+        initializeVariables();
     }
 
     // Initialize views from layout file
@@ -58,22 +55,34 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
         et_description.setOnEditorActionListener(this);
         et_title.setOnEditorActionListener(this);
 
+        et_description.setOnFocusChangeListener(this);
+        et_title.setOnFocusChangeListener(this);
+
         fab.setOnClickListener(this);
         fab_delete.setOnClickListener(this);
 
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        attachKeyboardListener();
+        setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
+        getSupportActionBar().setDisplayShowTitleEnabled(false); // Titel der Actionbar ausblenden
+    }
+
+    // Initialize variables
+    private void initializeVariables() {
+        userID = LocalStorage.getUserID(this);
+        groupID = LocalStorage.getGroupID(this);
+        storage = FirebaseStorage.getInstance().getReference().child(NOTES);
+        db = FirebaseFirestore.getInstance();
     }
 
     @Override
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.fab) {
+            // Intent zur Gallerie
             Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(galleryIntent, REQUEST_CODE_GALLERY);
         }
         else if (id == R.id.fab_delete) {
+            // Notiz-Image entfernen
             img_notiz.setImageDrawable(null);
             imageUri = null;
             fab_delete.setVisibility(View.GONE);
@@ -97,10 +106,9 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
         }
     }
 
-    // Gallery Intent
+    // Gewähltes Bild aus der Gallerie in ImageView laden
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Zuschneiden des Bildes auf 1:1 Ratio
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_GALLERY) {
             imageUri = data.getData();
             Glide.with(this).load(imageUri).into(img_notiz);
@@ -111,6 +119,10 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
 
     }
 
+    /*
+    Bei drücken des Action-Buttons auf dem Keyboard im Titel-Textfeld wird das
+    Beschreibung-Textfeld fokussiert und das Keyboard für dieses Feld geöffnet
+     */
     @Override
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
         if (i == EditorInfo.IME_ACTION_NEXT) {
@@ -126,6 +138,16 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
         return false;
     }
 
+    // Verberge Tastatur, wenn gegebene Views ihren Fokus verlieren
+    @Override
+    public void onFocusChange(View view, boolean hasFocus) {
+        if (!hasFocus) {
+            InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    // Speichere Notiz in Datenbank (und ggf. Bild im Storage) ab
     private void saveNote() {
         String title = et_title.getText().toString().trim();
         String description = et_description.getText().toString().trim();
@@ -149,6 +171,7 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
         }
     }
 
+    // Erstelle Datenbank-Eintrag für die Notiz
     private void createDbEntry(String notePicPath) {
         Note note = new Note(
                 et_title.getText().toString().trim(),
@@ -156,11 +179,12 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
                 userID,
                 notePicPath
         );
-        db.collection("wgs").document(groupID).collection("notes").document().set(note);
+        db.collection(GROUPS).document(groupID).collection(NOTES).document().set(note);
         toHomeActivity();
         progressBar.setVisibility(View.GONE);
     }
 
+    // Wechsel zur Home Activity
     private void toHomeActivity() {
         Intent intent_back = new Intent(NoteCreateActivity.this, HomeActivity.class);
         startActivity(intent_back);
@@ -168,26 +192,6 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
         finish();
     }
 
-    private void attachKeyboardListener() {
-        // Hide Keyboards on Click outside
-        et_title.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) hideKeyboard(v);
-            }
-        });
-        et_description.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) hideKeyboard(v);
-            }
-        });
-    }
-
-    private void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
 
     private Toolbar toolbar;
     private ImageView img_notiz;
@@ -200,5 +204,9 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
     private String userID, groupID;
     private Uri imageUri;
 
-    private static final int REQUEST_CODE_GALLERY = 0;
+    private final int REQUEST_CODE_GALLERY = 0;
+    private final String NOTES = "notes";
+    private final String GROUPS = "wgs";
+
+
 }
