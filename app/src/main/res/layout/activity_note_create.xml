@@ -1,147 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:focusableInTouchMode="true"
-    android:clickable="true"
-    android:focusable="true"
-    android:padding="10dp"
     tools:context="christian.eilers.flibber.Home.NoteCreateActivity">
 
-    <LinearLayout
-        android:id="@+id/bottomLayout"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="2"
-        android:layout_marginBottom="10dp"
-        android:layout_alignParentBottom="true">
+        android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/btn_cancel"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:background="@drawable/selector_button"
-            android:text="Abbrechen"
-            android:textColor="@android:color/white"
-            android:layout_marginRight="10dp"/>
-
-        <Button
-            android:id="@+id/btn_save"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:background="@drawable/selector_button"
-            android:text="Bestätigen"
-            android:textColor="@android:color/white"
-            android:layout_marginLeft="10dp"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_above="@+id/bottomLayout"
-        android:layout_alignParentTop="true"
-        android:layout_marginBottom="10dp">
-
-        <LinearLayout
+        <RelativeLayout
+            android:id="@+id/layout_top"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_alignParentTop="true">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profile_image"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                android:src="@mipmap/ic_launcher_round"
-                app:civ_border_color="@color/colorPrimary"
-                app:civ_border_width="1dp" />
-
-            <TextView
-                android:id="@+id/username"
-                android:layout_marginLeft="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:textSize="20sp"
-                android:text="Username" />
-
-            <TextView
-                android:id="@+id/datum"
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/note_appbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:gravity="right"
-                android:textSize="20sp"
-                android:text="Datum" />
-        </LinearLayout>
+                android:fitsSystemWindows="true">
 
-        <ScrollView
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/note_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:title="Neue Notiz"
+                    app:titleTextColor="@color/colorPrimaryDark"
+                    android:background="@drawable/layerlist_bottomedge"/>
+
+            </android.support.design.widget.AppBarLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fillViewport="true"
-            android:layout_marginBottom="20dp">
+            android:layout_height="match_parent"
+            android:layout_below="@+id/layout_top"
+            android:clickable="true"
+            android:focusableInTouchMode="true">
 
-            <LinearLayout
+            <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:focusableInTouchMode="true"
-                android:clickable="true"
-                android:focusable="true">
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                <ImageView
-                    android:id="@+id/image"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/img_placeholder"
-                    android:scaleType="fitXY"
-                    android:adjustViewBounds="true"
-                    android:layout_marginTop="10dp"
-                    />
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-                <EditText
-                    android:id="@+id/input_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/shape_rounded"
-                    android:hint="Titel"
-                    android:textSize="25sp"
-                    android:textStyle="bold"
-                    android:inputType="textCapSentences"
-                    android:maxLength="30"/>
+                    <android.support.design.widget.CoordinatorLayout
+                        android:id="@+id/imageLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                <EditText
-                    android:id="@+id/input_description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/shape_rounded"
-                    android:gravity="start"
-                    android:layout_marginTop="10dp"
-                    android:textSize="20sp"
-                    android:inputType="textMultiLine|textCapSentences"
-                    android:hint="Beschreibung...\n\n"/>
+                        <ImageView
+                            android:id="@+id/image"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scaleType="fitXY"
+                            android:adjustViewBounds="true"
+                            />
 
-            </LinearLayout>
+                        <android.support.design.widget.FloatingActionButton
+                            android:id="@+id/fab_delete"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            app:layout_anchor="@id/image"
+                            app:layout_anchorGravity="right"
+                            app:fabCustomSize="25dp"
+                            app:srcCompat="@android:drawable/ic_delete"
+                            android:visibility="gone"/>
 
-        </ScrollView>
+                    </android.support.design.widget.CoordinatorLayout>
 
-    </LinearLayout>
+
+                    <EditText
+                        android:id="@+id/input_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/shape_rounded"
+                        android:hint="Titel"
+                        android:textSize="25sp"
+                        android:textStyle="bold"
+                        android:inputType="textCapSentences"
+                        android:maxLength="30"
+                        android:imeOptions="actionNext"/>
+
+                    <EditText
+                        android:id="@+id/input_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/shape_rounded"
+                        android:gravity="start"
+                        android:layout_margin="10dp"
+                        android:textSize="20sp"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:hint="Beschreibung...\n\n"/>
+
+                </LinearLayout>
+
+            </android.support.v4.widget.NestedScrollView>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="20dp"
+        app:fabSize="normal"
+        app:srcCompat="@android:drawable/ic_menu_camera" />
 
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:visibility="gone"/>
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

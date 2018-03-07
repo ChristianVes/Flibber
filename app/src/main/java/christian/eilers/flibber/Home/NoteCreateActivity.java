@@ -1,28 +1,38 @@
 package christian.eilers.flibber.Home;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import christian.eilers.flibber.Models.Note;
 import christian.eilers.flibber.R;
-import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
-import de.hdodenhof.circleimageview.CircleImageView;
 
-public class NoteCreateActivity extends AppCompatActivity implements View.OnClickListener{
+public class NoteCreateActivity extends AppCompatActivity implements TextView.OnEditorActionListener, View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,48 +40,90 @@ public class NoteCreateActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_note_create);
         userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
-        userName = LocalStorage.getUsername(this);
-        picPath = LocalStorage.getPicPath(this);
-        storage = FirebaseStorage.getInstance().getReference().child("profile_pictures");
+        storage = FirebaseStorage.getInstance().getReference().child("notes");
         db = FirebaseFirestore.getInstance();
         initializeViews();
     }
 
     // Initialize views from layout file
     private void initializeViews() {
-        btn_cancel = findViewById(R.id.btn_cancel);
-        btn_save = findViewById(R.id.btn_save);
-        img_profile = findViewById(R.id.profile_image);
-        tv_datum = findViewById(R.id.datum);
-        tv_username = findViewById(R.id.username);
+        toolbar = findViewById(R.id.note_toolbar);
         img_notiz = findViewById(R.id.image);
         et_description = findViewById(R.id.input_description);
         et_title = findViewById(R.id.input_title);
-        btn_cancel.setOnClickListener(this);
-        btn_save.setOnClickListener(this);
+        fab = findViewById(R.id.fab);
+        fab_delete = findViewById(R.id.fab_delete);
+        progressBar = findViewById(R.id.progressBar);
 
-        tv_username.setText(userName);
-        if (picPath != null)
-            GlideApp.with(NoteCreateActivity.this)
-                    .load(storage.child(picPath))
-                    .dontAnimate()
-                    .placeholder(R.drawable.profile_placeholder)
-                    .into(img_profile);
-        tv_datum.setVisibility(View.GONE);
-        img_notiz.setVisibility(View.GONE);
+        et_description.setOnEditorActionListener(this);
+        et_title.setOnEditorActionListener(this);
 
+        fab.setOnClickListener(this);
+        fab_delete.setOnClickListener(this);
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         attachKeyboardListener();
     }
 
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.btn_cancel) {
-            toHomeActivity();
+        if (id == R.id.fab) {
+            Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(galleryIntent, REQUEST_CODE_GALLERY);
         }
-        else if (id == R.id.btn_save) {
-            saveNote();
+        else if (id == R.id.fab_delete) {
+            img_notiz.setImageDrawable(null);
+            imageUri = null;
+            fab_delete.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_note, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_send:
+                saveNote();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    // Gallery Intent
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Zuschneiden des Bildes auf 1:1 Ratio
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_GALLERY) {
+            imageUri = data.getData();
+            Glide.with(this).load(imageUri).into(img_notiz);
+            fab_delete.setVisibility(View.VISIBLE);
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
+
+    @Override
+    public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+        if (i == EditorInfo.IME_ACTION_NEXT) {
+            if (et_title.hasFocus()) {
+                et_description.requestFocus();
+                InputMethodManager imm = (InputMethodManager)
+                        getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(et_description, InputMethodManager.SHOW_IMPLICIT);
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
 
     private void saveNote() {
@@ -81,15 +133,32 @@ public class NoteCreateActivity extends AppCompatActivity implements View.OnClic
             Toast.makeText(this, "Titel oder Beschreibung eingeben...", Toast.LENGTH_SHORT).show();
             return;
         }
+        progressBar.setVisibility(View.VISIBLE);
+        if(imageUri == null) {
+            createDbEntry(null);
+        }
+        else {
+            // TODO: Random String Generator
+            final String notePicPath = imageUri.getLastPathSegment();
+            storage.child(notePicPath).putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                     createDbEntry(notePicPath);
+                }
+            });
+        }
+    }
 
+    private void createDbEntry(String notePicPath) {
         Note note = new Note(
                 et_title.getText().toString().trim(),
                 et_description.getText().toString().trim(),
                 userID,
-                null
+                notePicPath
         );
         db.collection("wgs").document(groupID).collection("notes").document().set(note);
         toHomeActivity();
+        progressBar.setVisibility(View.GONE);
     }
 
     private void toHomeActivity() {
@@ -120,14 +189,16 @@ public class NoteCreateActivity extends AppCompatActivity implements View.OnClic
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    private Button btn_cancel, btn_save;
-    private CircleImageView img_profile;
-    private TextView tv_username, tv_datum;
+    private Toolbar toolbar;
     private ImageView img_notiz;
     private EditText et_title, et_description;
+    private FloatingActionButton fab, fab_delete;
+    private ProgressBar progressBar;
 
     private StorageReference storage;
     private FirebaseFirestore db;
-    private String userID, groupID, userName, picPath;
+    private String userID, groupID;
+    private Uri imageUri;
 
+    private static final int REQUEST_CODE_GALLERY = 0;
 }

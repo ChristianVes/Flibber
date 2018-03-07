@@ -14,14 +14,15 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.HashMap;
 
 import christian.eilers.flibber.Models.Note;
 import christian.eilers.flibber.Models.User;
@@ -40,7 +41,8 @@ public class HomeFragment extends Fragment {
         storage = FirebaseStorage.getInstance().getReference();
         userID = LocalStorage.getUserID(getContext());
         groupID = LocalStorage.getGroupID(getContext());
-        loadData();
+        users = ((HomeActivity) getActivity()).getUsers();
+        if(users != null) loadData();
         return mainView;
     }
 
@@ -87,32 +89,32 @@ public class HomeFragment extends Fragment {
 
             // Bind data from the database to the UI-Object
             @Override
-            public void onBindViewHolder(final HomeFragment.NotesHolder holder, int position, final Note model) {
-                /*holder.note = model;
-                HashMap<String, User> users = ((HomeActivity) getActivity()).getUsers();
-                if(users == null) {
-                    // TODO !!!
-                    Toast.makeText(getContext(), "Fehler beim Laden der User", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                User user = users.get(model.getUserID());
+            public void onBindViewHolder(HomeFragment.NotesHolder holder, int position, Note model) {
+                final User user = users.get(model.getUserID());
 
                 if(model.getTitle() == null || model.getTitle().isEmpty())
                     holder.tv_title.setVisibility(View.GONE);
-                else
+                else {
+                    holder.tv_title.setVisibility(View.VISIBLE);
                     holder.tv_title.setText(model.getTitle());
+                }
 
                 if(model.getDescription() == null || model.getDescription().isEmpty())
                     holder.tv_description.setVisibility(View.GONE);
-                else
+                else {
+                    holder.tv_description.setVisibility(View.VISIBLE);
                     holder.tv_description.setText(model.getDescription());
+                }
 
                 holder.tv_username.setText(user.getName());
 
                 if(model.getTimestamp() != null)
-                    holder.tv_datum.setText(DateUtils.getRelativeTimeSpanString(model.getTimestamp().getTime()));
-                else
-                    holder.tv_datum.setText("Vor 0 Minuten");
+                    holder.tv_datum.setText(
+                            DateUtils.getRelativeTimeSpanString(model.getTimestamp().getTime(),
+                                    System.currentTimeMillis() + 10000,
+                                    DateUtils.MINUTE_IN_MILLIS,
+                                    DateUtils.FORMAT_ABBREV_RELATIVE));
+
 
                 if(user.getPicPath() != null)
                     GlideApp.with(getContext())
@@ -125,58 +127,10 @@ public class HomeFragment extends Fragment {
                     GlideApp.with(getContext())
                             .load(storage.child("notes").child(model.getImagePath()))
                             .dontAnimate()
-                            //.placeholder(R.drawable.profile_placeholder)
                             .into(holder.img_note);
-                else
-                    holder.img_note.setVisibility(View.GONE);*/
-
-
-                /////////////////////////////////////////////////////////////////////////////////////
-
-                holder.note = model;
-                holder.itemView.setVisibility(View.GONE);
-                FirebaseFirestore.getInstance().collection("wgs").document(groupID).collection("users").document(model.getUserID()).get()
-                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                User user = documentSnapshot.toObject(User.class);
-
-                                if(model.getTitle() == null || model.getTitle().isEmpty())
-                                    holder.tv_title.setVisibility(View.GONE);
-                                else
-                                    holder.tv_title.setText(model.getTitle());
-
-                                if(model.getDescription() == null || model.getDescription().isEmpty())
-                                    holder.tv_description.setVisibility(View.GONE);
-                                else
-                                    holder.tv_description.setText(model.getDescription());
-
-                                holder.tv_username.setText(user.getName());
-
-                                if(model.getTimestamp() != null)
-                                    holder.tv_datum.setText(DateUtils.getRelativeTimeSpanString(model.getTimestamp().getTime()));
-                                else
-                                    holder.tv_datum.setText("Vor 0 Minuten");
-
-                                if(user.getPicPath() != null)
-                                    GlideApp.with(getContext())
-                                            .load(storage.child("profile_pictures").child(user.getPicPath()))
-                                            .dontAnimate()
-                                            .placeholder(R.drawable.profile_placeholder)
-                                            .into(holder.img_profile);
-
-                                if(model.getImagePath() != null)
-                                    GlideApp.with(getContext())
-                                            .load(storage.child("notes").child(model.getImagePath()))
-                                            .dontAnimate()
-                                            //.placeholder(R.drawable.profile_placeholder)
-                                            .into(holder.img_note);
-                                else
-                                    holder.img_note.setVisibility(View.GONE);
-
-                                holder.itemView.setVisibility(View.VISIBLE);
-                            }
-                        });
+                else {
+                    Glide.with(getContext()).clear(holder.img_note);
+                }
             }
 
             // Einmalige Zuweisung zum ViewHolder
@@ -190,7 +144,10 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
+        adapter.notifyDataSetChanged();
         recView.setLayoutManager(layoutManager);
+//        recView.setItemViewCacheSize(20);
+//        recView.setDrawingCacheEnabled(true);
         recView.setAdapter(adapter);
     }
 
@@ -207,12 +164,11 @@ public class HomeFragment extends Fragment {
     }
 
     // Custom ViewHolder for interacting with single items of the RecyclerView
-    public class NotesHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        public View itemView;
-        public CircleImageView img_profile;
-        public TextView tv_username, tv_title, tv_description, tv_datum;
-        public ImageView img_note;
-        private Note note;
+    public class NotesHolder extends RecyclerView.ViewHolder {
+        View itemView;
+        CircleImageView img_profile;
+        TextView tv_username, tv_title, tv_description, tv_datum;
+        ImageView img_note;
 
         public NotesHolder(View itemView) {
             super(itemView);
@@ -224,11 +180,7 @@ public class HomeFragment extends Fragment {
             tv_username = itemView.findViewById(R.id.username);
             img_note = itemView.findViewById(R.id.image);
 
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
+//            itemView.setOnClickListener(this);
         }
     }
 
@@ -241,4 +193,5 @@ public class HomeFragment extends Fragment {
     private StorageReference storage;
 
     private String userID, groupID;
+    private HashMap<String, User> users;
 }

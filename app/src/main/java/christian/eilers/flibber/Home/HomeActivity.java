@@ -7,12 +7,14 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
@@ -32,14 +34,11 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
-        if(savedInstanceState != null) {
-            users = (HashMap<String, User>) savedInstanceState.getSerializable("users");
-        }
 
         mView = findViewById(R.id.container);
         bottomNavigationView = findViewById(R.id.bnve);
-
-
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
         // Checked-Item in Bottom Navigation View anpassen, je nachdem, welches Fragment gerade aktiv ist
         mView.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -57,7 +56,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
         mView.setOffscreenPageLimit(5);
-
 
         // Bottom Navigation View initialisieren und auf Home Screen setzen
         // Fragment wechseln, je nachdem welches Item der Bottom Navigation View angegklickt wurde
@@ -88,22 +86,28 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        if(savedInstanceState != null) {
+            users = (HashMap<String, User>) savedInstanceState.getSerializable("users");
+        }
         usersQuery = FirebaseFirestore.getInstance().collection("wgs").document(groupID).collection("users");
-        userListener = usersQuery.addSnapshotListener(HomeActivity.this, new EventListener<QuerySnapshot>() {
+        usersQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                HashMap<String, User> userHashMap = new HashMap<>();
-                for(DocumentSnapshot doc : documentSnapshots) {
-                    User user = doc.toObject(User.class);
-                    userHashMap.put(user.getUserID(), user);
-                }
-                users = (HashMap<String, User>) userHashMap.clone();
+            public void onSuccess(QuerySnapshot documentSnapshots) {
+                retrieveUsers(documentSnapshots);
+                adapterViewPager = new HomePagerAdapter(getSupportFragmentManager());
+                mView.setAdapter(adapterViewPager);
+                mView.setCurrentItem(2);
+                progressBar.setVisibility(View.GONE);
             }
         });
 
-        adapterViewPager = new HomePagerAdapter(getSupportFragmentManager());
-        mView.setAdapter(adapterViewPager);
-        mView.setCurrentItem(2);
+
+        usersQuery.addSnapshotListener(HomeActivity.this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                retrieveUsers(documentSnapshots);
+            }
+        });
 
         bottomNavigationView.setupWithViewPager(mView);
     }
@@ -113,6 +117,15 @@ public class HomeActivity extends AppCompatActivity {
         if(users != null)
             outState.putSerializable("users", users);
         super.onSaveInstanceState(outState);
+    }
+
+    private void retrieveUsers(QuerySnapshot documentSnapshots) {
+        HashMap<String, User> userHashMap = new HashMap<>();
+        for(DocumentSnapshot doc : documentSnapshots) {
+            User user = doc.toObject(User.class);
+            userHashMap.put(user.getUserID(), user);
+        }
+        users = (HashMap<String, User>) userHashMap.clone();
     }
 
     // Allgemeine Einstellungen für Bottom Navigation View
@@ -128,10 +141,12 @@ public class HomeActivity extends AppCompatActivity {
         return users;
     }
 
+
+
     private BottomNavigationViewEx bottomNavigationView;
     private FragmentPagerAdapter adapterViewPager;
     private ViewPager mView;
-    private ListenerRegistration userListener;
+    private ProgressBar progressBar;
     private Query usersQuery;
     private String userID, groupID;
     private HashMap<String, User> users;
