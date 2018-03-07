@@ -24,31 +24,15 @@ import christian.eilers.flibber.Models.Group;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 
-public class GroupFragment extends Fragment {
+public class GroupFragment extends Fragment implements View.OnClickListener{
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.fragment_wg, container, false);
-        initializeViews();
         userID = LocalStorage.getUserID(getContext());
+        initializeViews();
         loadData();
-        btn_new.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                GroupCreationFragment frag = GroupCreationFragment.newInstance();
-                frag.setTargetFragment(GroupFragment.this, 1);
-                frag.show(getFragmentManager(), "wg_erstellen");
-            }
-        });
-        btn_einladungen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                InvitationsFragment frag = InvitationsFragment.newInstance();
-                frag.setTargetFragment(GroupFragment.this, 2);
-                frag.show(getFragmentManager(), "einladungen");
-            }
-        });
         return mainView;
     }
 
@@ -60,6 +44,51 @@ public class GroupFragment extends Fragment {
         placeholder = mainView.findViewById(R.id.placeholder);
         progressBar = mainView.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
+
+        btn_new.setOnClickListener(this);
+        btn_einladungen.setOnClickListener(this);
+    }
+
+    // Lädt Gruppen des Users aus der Datenbank in den RecyclerView und hält sie up-to-date über einen Listener
+    private void loadData() {
+        Query groupsQuery = FirebaseFirestore.getInstance()
+                .collection(USERS)
+                .document(userID)
+                .collection(GROUPS)
+                .orderBy(TIMESTAMP);
+
+        FirestoreRecyclerOptions<Group> options = new FirestoreRecyclerOptions.Builder<Group>()
+                .setQuery(groupsQuery, Group.class)
+                .build();
+
+        adapter = new FirestoreRecyclerAdapter<Group, GroupFragment.GroupHolder>(options) {
+
+            // Aktualisiere Platzhalter und ProgressBar
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                if (getItemCount() == 0) placeholder.setVisibility(View.VISIBLE);
+                else placeholder.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
+            }
+
+            // Bind data from the database to the UI-Object
+            @Override
+            public void onBindViewHolder(GroupFragment.GroupHolder holder, int position, Group model) {
+                holder.v_name.setText(model.getName());
+                holder.group = model;
+            }
+
+            // Einmalige Zuweisung zum ViewHolder: GroupHolder
+            @Override
+            public GroupFragment.GroupHolder onCreateViewHolder(ViewGroup group, int i) {
+                View view = LayoutInflater.from(group.getContext()).inflate(R.layout.item_wg, group, false);
+                return new GroupFragment.GroupHolder(view);
+            }
+        };
+
+        recView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recView.setAdapter(adapter);
     }
 
     @Override
@@ -74,64 +103,36 @@ public class GroupFragment extends Fragment {
         adapter.stopListening();
     }
 
-    // Lade Liste an WG's des eingeloggten Users aus der Database
-    private void loadData() {
-        // Referenz: WG's des aktuellen Users
-        // nach Einzugsdatum soriert
-        Query query = FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(userID)
-                .collection("wgs")
-                .orderBy("timestamp");
-
-        FirestoreRecyclerOptions<Group> options = new FirestoreRecyclerOptions.Builder<Group>()
-                .setQuery(query, Group.class)
-                .build();
-
-        adapter = new FirestoreRecyclerAdapter<Group, GroupFragment.WgHolder>(options) {
-
-            // Set Placeholder-Visibility and ProgressBar-Visibility
-            @Override
-            public void onDataChanged() {
-                super.onDataChanged();
-                if (getItemCount() == 0) placeholder.setVisibility(View.VISIBLE);
-                else placeholder.setVisibility(View.GONE);
-                progressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onBindViewHolder(GroupFragment.WgHolder holder, int position, Group model) {
-                holder.v_name.setText(model.getName());
-                holder.wg = model;
-            }
-
-            // Einmalige Zuweisung zum ViewHolder
-            @Override
-            public GroupFragment.WgHolder onCreateViewHolder(ViewGroup group, int i) {
-                View view = LayoutInflater.from(group.getContext()).inflate(R.layout.item_wg, group, false);
-                return new GroupFragment.WgHolder(view);
-            }
-        };
-
-        recView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recView.setAdapter(adapter);
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.btn_new) {
+            GroupCreationFragment frag = new GroupCreationFragment();
+            frag.setTargetFragment(GroupFragment.this, GROUP_CREATE_REQUESTCODE);
+            frag.show(getFragmentManager(), "wg_erstellen");
+        }
+        else if(id == R.id.btn_einladungen) {
+            InvitationsFragment frag = new InvitationsFragment();
+            frag.setTargetFragment(GroupFragment.this, INVITATIONS_REQUESTCODE);
+            frag.show(getFragmentManager(), "einladungen");
+        }
     }
 
     // Custom ViewHolder for interacting with single items of the RecyclerView
-    public class WgHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        public TextView v_name;
-        public Group wg;
+    public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        TextView v_name;
+        Group group;
 
-        public WgHolder(View itemView) {
+        public GroupHolder(View itemView) {
             super(itemView);
             v_name = itemView.findViewById(R.id.wg_name);
             itemView.setOnClickListener(this);
         }
 
-        // Aktualisiere Profilbild, Speichere WG-Key lokal, Wechsel zur HomeActivity
+        // Wechsel zur HomeActivity
         @Override
         public void onClick(View view) {
-            LocalStorage.setGroupID(getContext(), wg.getKey());
+            LocalStorage.setGroupID(getContext(), group.getKey());
             Intent homeIntent = new Intent(getContext(), HomeActivity.class);
             startActivity(homeIntent);
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -146,4 +147,10 @@ public class GroupFragment extends Fragment {
 
     private FirestoreRecyclerAdapter adapter;
     private String userID;
+
+    private final int GROUP_CREATE_REQUESTCODE = 1;
+    private final int INVITATIONS_REQUESTCODE = 2;
+    private final String GROUPS = "wgs";
+    private final String USERS = "users";
+    private final String TIMESTAMP = "timestamp";
 }

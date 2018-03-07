@@ -45,12 +45,7 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.fragment_profil, container, false);
         initializeViews();
-        userID = LocalStorage.getUserID(getContext());
-        userName = LocalStorage.getUsername(getContext());
-        picPath = LocalStorage.getPicPath(getContext());
-        auth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
-        storage = FirebaseStorage.getInstance().getReference().child("profile_pictures");
+        initalizeVariables();
         loadData();
         return mainView;
     }
@@ -65,6 +60,16 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
         profileImage.setOnClickListener(this);
     }
 
+    // Initialize variables
+    private void initalizeVariables() {
+        userID = LocalStorage.getUserID(getContext());
+        userName = LocalStorage.getUsername(getContext());
+        picPath = LocalStorage.getPicPath(getContext());
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
+    }
+
     // Lade Usernamen und Profilbild aus dem Firebase Storage
     private void loadData() {
         v_name.setText(userName);
@@ -75,10 +80,11 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
                     .placeholder(R.drawable.profile_placeholder)
                     .into(profileImage);
     }
+
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        // Log out the current User, delete local-cached data and go to LoginActivity
+        // Log the current User out, delete local-cached data and go to LoginActivity
         if (id == R.id.btn_logout) {
             auth.signOut();
             LocalStorage.setData(getContext(), null, null, null, null);
@@ -94,7 +100,6 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    // Gallery Intent
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Zuschneiden des Bildes auf 1:1 Ratio
@@ -114,7 +119,6 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
                 imageUri = result.getUri();
                 saveImage();
             }
-            // On Error
             else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Crashlytics.logException(result.getError());
             }
@@ -124,7 +128,7 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    // Save the Image in the FirebaseStorage and the Reference in the Database
+    // Save the Image in the FirebaseStorage and its Reference in the Database
     private void saveImage() {
         progressBar.setVisibility(View.VISIBLE);
         // TODO: randomStringGenerator instead of LastPathSegment
@@ -153,20 +157,20 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
     // Update all References to the Profile-Picture of the current user in the database
     private void updateRefs() {
         final Map<String, Object> userData = new HashMap<>();
-        userData.put("picPath", picPath);
+        userData.put(PICPATH, picPath);
         // Update Reference in the users-collection
-        db.collection("users").document(userID).update(userData)
+        db.collection(USERS).document(userID).update(userData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        // Get all WGs the current user is part of
-                        db.collection("users").document(userID).collection("wgs").get()
+                        // Get all groups the user is part of
+                        db.collection("users").document(userID).collection(GROUPS).get()
                                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                     @Override
                                     public void onSuccess(QuerySnapshot documentSnapshots) {
-                                        // Update Picture-References in every WG the current user is part of
+                                        // Update Picture-References in each group
                                         for (DocumentSnapshot doc : documentSnapshots) {
-                                            db.collection("wgs").document(doc.getId()).collection("users").document(userID).update(userData);
+                                            db.collection(GROUPS).document(doc.getId()).collection(USERS).document(userID).update(userData);
                                         }
                                         LocalStorage.setPicPath(getContext(), picPath);
                                         loadData();
@@ -176,7 +180,6 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
                     }
                 });
     }
-
 
 
     private View mainView;
@@ -192,5 +195,9 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
     private Uri imageUri;
     private String userID, userName, picPath;
 
-    private static final int REQUEST_CODE_GALLERY = 0;
+    private final int REQUEST_CODE_GALLERY = 0;
+    private final String PROFILE = "profile_pictures";
+    private final String USERS = "users";
+    private final String GROUPS = "wgs";
+    private final String PICPATH = "picPath";
 }
