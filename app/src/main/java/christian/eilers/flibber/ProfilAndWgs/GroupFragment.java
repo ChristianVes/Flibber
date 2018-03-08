@@ -40,7 +40,7 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
     private void initializeViews() {
         recView = mainView.findViewById(R.id.recView);
         fab_new = mainView.findViewById(R.id.fab_new);
-        fab_invitations = mainView.findViewById(R.id.fab_invites);
+        fab_invitations = mainView.findViewById(R.id.fab_invitations);
         placeholder = mainView.findViewById(R.id.placeholder);
         progressBar = mainView.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
@@ -111,7 +111,7 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
             frag.setTargetFragment(GroupFragment.this, GROUP_CREATE_REQUESTCODE);
             frag.show(getFragmentManager(), "wg_erstellen");
         }
-        else if(id == R.id.fab_invites) {
+        else if(id == R.id.fab_invitations) {
             InvitationsFragment frag = new InvitationsFragment();
             frag.setTargetFragment(GroupFragment.this, INVITATIONS_REQUESTCODE);
             frag.show(getFragmentManager(), "einladungen");
