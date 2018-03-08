@@ -11,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,7 +18,6 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -32,7 +30,6 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.util.HashMap;
 import java.util.Map;
 
-import christian.eilers.flibber.LoginActivity;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
@@ -52,11 +49,9 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
 
     // Initialize views from layout file
     private void initializeViews() {
-        btn_logout = mainView.findViewById(R.id.btn_logout);
         v_name = mainView.findViewById(R.id.name);
         profileImage = mainView.findViewById(R.id.profile_image);
         progressBar = mainView.findViewById(R.id.progressBar);
-        btn_logout.setOnClickListener(this);
         profileImage.setOnClickListener(this);
     }
 
@@ -65,7 +60,6 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
         userID = LocalStorage.getUserID(getContext());
         userName = LocalStorage.getUsername(getContext());
         picPath = LocalStorage.getPicPath(getContext());
-        auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
     }
@@ -84,17 +78,8 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        // Log the current User out, delete local-cached data and go to LoginActivity
-        if (id == R.id.btn_logout) {
-            auth.signOut();
-            LocalStorage.setData(getContext(), null, null, null, null);
-            Intent login = new Intent(getActivity(), LoginActivity.class);
-            startActivity(login);
-            getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-            getActivity().finish();
-        }
         // To Gallery
-        else if (id == R.id.profile_image) {
+        if (id == R.id.profile_image) {
             Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(galleryIntent, REQUEST_CODE_GALLERY);
         }
@@ -183,12 +168,10 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
 
 
     private View mainView;
-    private Button btn_logout;
     private TextView v_name;
     private CircleImageView profileImage;
     private ProgressBar progressBar;
 
-    private FirebaseAuth auth;
     private FirebaseFirestore db;
     private StorageReference storage;
 

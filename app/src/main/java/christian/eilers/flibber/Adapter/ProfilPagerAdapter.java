@@ -4,11 +4,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import christian.eilers.flibber.ProfilAndWgs.ProfilFragment;
+import christian.eilers.flibber.Home.PutzplanFragment;
 import christian.eilers.flibber.ProfilAndWgs.GroupFragment;
+import christian.eilers.flibber.ProfilAndWgs.ProfilFragment;
 
 public class ProfilPagerAdapter extends FragmentPagerAdapter {
-    private int NUM_ITEMS = 2;
+    private int NUM_ITEMS = 3;
 
     public ProfilPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -18,9 +19,11 @@ public class ProfilPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new ProfilFragment();
+                return new PutzplanFragment();
             case 1:
                 return new GroupFragment();
+            case 2:
+                return new ProfilFragment();
             default:
                 return null;
         }
@@ -36,9 +39,11 @@ public class ProfilPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Profil";
+                return "???";
             case 1:
                 return "Gruppen";
+            case 2:
+                return "Profil";
             default:
                 return null;
         }

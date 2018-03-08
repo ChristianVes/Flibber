@@ -4,13 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -29,7 +29,7 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mainView = inflater.inflate(R.layout.fragment_wg, container, false);
+        mainView = inflater.inflate(R.layout.fragment_groups, container, false);
         userID = LocalStorage.getUserID(getContext());
         initializeViews();
         loadData();
@@ -39,14 +39,14 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
     // Initialize views from layout file
     private void initializeViews() {
         recView = mainView.findViewById(R.id.recView);
-        btn_new = mainView.findViewById(R.id.btn_new);
-        btn_einladungen = mainView.findViewById(R.id.btn_einladungen);
+        fab_new = mainView.findViewById(R.id.fab_new);
+        fab_invitations = mainView.findViewById(R.id.fab_invites);
         placeholder = mainView.findViewById(R.id.placeholder);
         progressBar = mainView.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
 
-        btn_new.setOnClickListener(this);
-        btn_einladungen.setOnClickListener(this);
+        fab_new.setOnClickListener(this);
+        fab_invitations.setOnClickListener(this);
     }
 
     // Lädt Gruppen des Users aus der Datenbank in den RecyclerView und hält sie up-to-date über einen Listener
@@ -106,12 +106,12 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.btn_new) {
+        if (id == R.id.fab_new) {
             GroupCreationFragment frag = new GroupCreationFragment();
             frag.setTargetFragment(GroupFragment.this, GROUP_CREATE_REQUESTCODE);
             frag.show(getFragmentManager(), "wg_erstellen");
         }
-        else if(id == R.id.btn_einladungen) {
+        else if(id == R.id.fab_invites) {
             InvitationsFragment frag = new InvitationsFragment();
             frag.setTargetFragment(GroupFragment.this, INVITATIONS_REQUESTCODE);
             frag.show(getFragmentManager(), "einladungen");
@@ -142,7 +142,7 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
     private View mainView;
     private RecyclerView recView;
     private TextView placeholder;
-    private Button btn_new, btn_einladungen;
+    private FloatingActionButton fab_new, fab_invitations;
     private ProgressBar progressBar;
 
     private FirestoreRecyclerAdapter adapter;
