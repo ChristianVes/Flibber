@@ -101,9 +101,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     LocalStorage.setData(RegisterActivity.this, null, userID, username, null);
                     // Speichere Username in DB
                     Map<String, Object> userData = new HashMap<>();
-                    userData.put("name", username);
-                    userData.put("email", email);
-                    FirebaseFirestore.getInstance().collection("users").document(userID).set(userData);
+                    userData.put(NAME, username);
+                    userData.put(EMAIL, email);
+                    FirebaseFirestore.getInstance().collection(USERS).document(userID).set(userData);
                     // Wechsel zum WG-Selector
                     Intent i_wgSelector = new Intent(RegisterActivity.this, ProfilActivity.class);
                     startActivity(i_wgSelector);
@@ -214,4 +214,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private Button btn_signup, btn_toLogin;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
+
+    private final String USERS = "users";
+    private final String NAME = "name";
+    private final String EMAIL = "email";
 }

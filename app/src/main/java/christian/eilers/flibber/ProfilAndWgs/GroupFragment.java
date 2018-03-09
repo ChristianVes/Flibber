@@ -9,6 +9,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +18,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -115,13 +120,66 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.fab_new) {
-            GroupCreationFragment frag = new GroupCreationFragment();
-            frag.setTargetFragment(GroupFragment.this, GROUP_CREATE_REQUESTCODE);
-            frag.show(getFragmentManager(), "wg_erstellen");
+            groupCreation();
         }
         else if(id == R.id.fab_invitations) {
             inviteDialog();
         }
+    }
+
+    public void groupCreation() {
+        MaterialDialog.Builder  builder = new MaterialDialog.Builder(getContext())
+                .title("Neue Gruppe erstellen")
+                .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS)
+                .input("Gruppenname", null, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+
+                    }
+                })
+                .positiveText("Erstellen")
+                .negativeText("Abbrechen")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        String groupname = dialog.getInputEditText().getText().toString().trim();
+                        if(TextUtils.isEmpty(groupname)) {
+                            Toast.makeText(getContext(), "Keinen Gruppennamen eingegeben", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        dialog.getInputEditText().setText("");
+                        createGroup(groupname);
+                    }
+                });
+
+        createDialog = builder.build();
+        createDialog.show();
+    }
+
+    private void createGroup(final String groupname) {
+        final DocumentReference reference = db.collection(GROUPS).document();
+        final Group group = new Group(groupname, reference.getId(), null);
+        reference.set(group);
+
+        // Add Group-Reference to the current user
+        db.collection(USERS).document(userID).collection(GROUPS).document(group.getKey()).set(group);
+
+        // Add user to the Group
+        db.collection(USERS).document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (!task.isSuccessful()) {
+                    Crashlytics.logException(task.getException());
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                }
+                final String username = task.getResult().getString(NAME);
+                final String email = task.getResult().getString(EMAIL);
+                final String picPath = task.getResult().getString(PICPATH);
+                final User user = new User(username, email, userID, picPath, 0.0);
+                db.collection(GROUPS).document(group.getKey()).collection(USERS).document(userID).set(user);
+            }
+        });
     }
 
     private void inviteDialog() {
@@ -206,7 +264,6 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
         }
     }
 
-
     // Custom ViewHolder for interacting with single items of the RecyclerView
     public class InvitationHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView v_name;
@@ -283,15 +340,15 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
     private FloatingActionButton fab_new, fab_invitations;
     private ProgressBar progressBar;
     private MaterialDialog invitesDialog;
+    private MaterialDialog createDialog;
 
     private FirestoreRecyclerAdapter adapter;
     private FirebaseFirestore db;
     private String userID;
 
     private final int GROUP_CREATE_REQUESTCODE = 1;
-    private final int INVITATIONS_REQUESTCODE = 2;
     private final String USERS = "users";
-    private final String GROUPS = "wgs";
+    private final String GROUPS = "groups";
     private final String NAME = "name";
     private final String EMAIL = "email";
     private final String PICPATH = "picPath";

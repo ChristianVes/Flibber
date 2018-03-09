@@ -179,8 +179,8 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
     private String userID, userName, picPath;
 
     private final int REQUEST_CODE_GALLERY = 0;
-    private final String PROFILE = "profile_pictures";
+    private final String PROFILE = "profile";
     private final String USERS = "users";
-    private final String GROUPS = "wgs";
+    private final String GROUPS = "groups";
     private final String PICPATH = "picPath";
 }

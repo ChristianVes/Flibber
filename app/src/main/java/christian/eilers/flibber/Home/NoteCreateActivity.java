@@ -206,7 +206,7 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
 
     private final int REQUEST_CODE_GALLERY = 0;
     private final String NOTES = "notes";
-    private final String GROUPS = "wgs";
+    private final String GROUPS = "groups";
 
 
 }

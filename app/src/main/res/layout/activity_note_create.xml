@@ -62,20 +62,19 @@
                             android:id="@+id/image"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:scaleType="fitXY"
                             android:adjustViewBounds="true"
-                            />
+                            android:scaleType="fitXY" />
 
                         <android.support.design.widget.FloatingActionButton
                             android:id="@+id/fab_delete"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="5dp"
+                            android:visibility="gone"
+                            app:fabCustomSize="25dp"
                             app:layout_anchor="@id/image"
                             app:layout_anchorGravity="right"
-                            app:fabCustomSize="25dp"
-                            app:srcCompat="@android:drawable/ic_delete"
-                            android:visibility="gone"/>
+                            app:srcCompat="@android:drawable/ic_delete" />
 
                     </android.support.design.widget.CoordinatorLayout>
 
@@ -87,22 +86,22 @@
                         android:layout_margin="10dp"
                         android:background="@drawable/shape_rounded"
                         android:hint="Titel"
-                        android:textSize="25sp"
-                        android:textStyle="bold"
+                        android:imeOptions="actionNext"
                         android:inputType="textCapSentences"
                         android:maxLength="30"
-                        android:imeOptions="actionNext"/>
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
 
                     <EditText
                         android:id="@+id/input_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
                         android:background="@drawable/shape_rounded"
                         android:gravity="start"
-                        android:layout_margin="10dp"
-                        android:textSize="20sp"
+                        android:hint="Beschreibung...\n\n"
                         android:inputType="textMultiLine|textCapSentences"
-                        android:hint="Beschreibung...\n\n"/>
+                        android:textSize="20sp" />
 
                 </LinearLayout>
 
@@ -119,7 +118,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="20dp"
         app:fabSize="normal"
-        app:srcCompat="@android:drawable/ic_menu_camera" />
+        app:srcCompat="@drawable/ic_photo" />
 
     <ProgressBar
         android:id="@+id/progressBar"

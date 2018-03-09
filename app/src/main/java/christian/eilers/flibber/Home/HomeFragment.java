@@ -201,10 +201,9 @@ public class HomeFragment extends Fragment {
     private String groupID;
     private HashMap<String, User> users;
 
-    // TODO: String-values verbessern
-    private final String GROUPS = "wgs";
+    private final String GROUPS = "groups";
     private final String NOTES = "notes";
     private final String TIMESTAMP = "timestamp";
-    private final String PROFILE = "profile_pictures";
+    private final String PROFILE = "profile";
     private final int BUFFER = 10000; // Millisekunden // entspricht 10 Sekunden
 }

@@ -22,7 +22,6 @@ public class Note implements Serializable{
         this.description = description;
         this.userID = userID;
         this.imagePath = imagePath;
-        this.timestamp = timestamp;
     }
 
     public String getTitle() {
