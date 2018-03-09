@@ -5,8 +5,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import christian.eilers.flibber.Home.PutzplanFragment;
-import christian.eilers.flibber.ProfilAndWgs.GroupFragment;
-import christian.eilers.flibber.ProfilAndWgs.ProfilFragment;
+import christian.eilers.flibber.Profil.GroupFragment;
+import christian.eilers.flibber.Profil.ProfilFragment;
 
 public class ProfilPagerAdapter extends FragmentPagerAdapter {
     private int NUM_ITEMS = 3;

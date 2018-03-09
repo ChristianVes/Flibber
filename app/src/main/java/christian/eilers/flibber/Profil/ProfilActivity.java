@@ -1,4 +1,4 @@
-package christian.eilers.flibber.ProfilAndWgs;
+package christian.eilers.flibber.Profil;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,7 +37,6 @@ public class ProfilActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.profil_toolbar);
 
         setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
-        getSupportActionBar().setDisplayShowTitleEnabled(false); // Titel der Actionbar ausblenden
 
         // Das "gecheckte" Item in der Bottom Navigation View anpassen, je nachdem, welches Fragment gerade aktiv ist
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -64,12 +63,15 @@ public class ProfilActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.ic_locked:
                         viewPager.setCurrentItem(0);
+                        getSupportActionBar().setTitle("???");
                         break;
                     case R.id.ic_home:
                         viewPager.setCurrentItem(1);
+                        getSupportActionBar().setTitle("Gruppen");
                         break;
                     case R.id.ic_profil:
                         viewPager.setCurrentItem(2);
+                        getSupportActionBar().setTitle("Profil");
                         break;
                 }
 

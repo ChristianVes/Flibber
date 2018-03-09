@@ -3,21 +3,19 @@ package christian.eilers.flibber.Home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -27,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import christian.eilers.flibber.Models.Group;
-import christian.eilers.flibber.ProfilAndWgs.ProfilActivity;
+import christian.eilers.flibber.Profil.ProfilActivity;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 
@@ -39,7 +37,6 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         mainView = inflater.inflate(R.layout.fragment_settings, container, false);
         initializeViews();
         db = FirebaseFirestore.getInstance();
-        userID = LocalStorage.getUserID(getContext());
         groupID = LocalStorage.getGroupID(getContext());
         return mainView;
     }
@@ -52,54 +49,16 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         btn_invite.setOnClickListener(this);
     }
 
-    // Creates Dialog for inviting new user
-    private void createDialog() {
-        final View v = getLayoutInflater().inflate(R.layout.dialog_invite, null);
-        final Button btn = v.findViewById(R.id.button_ok);
-        eT_email = v.findViewById(R.id.editText_email);
-        progressBar = v.findViewById(R.id.progressBar);
-        dialog = makeAlertDialog(v);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String email = eT_email.getText().toString().trim();
-                invite(email);
-            }
-        });
-        eT_email.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_ACTION_GO) {
-                    String email = eT_email.getText().toString().trim();
-                    invite(email);
-                    return true;
-                }
-                return false;
-            }
-        });
-    }
-
     // Send an Invitation to the user matching the given E-Mail Adress to join the WG
     private void invite(final String email) {
-        // Check if E-Mail is not empty
-        if(TextUtils.isEmpty(email)){
-            Toast.makeText(getContext(), "Keine E-Mail eingegeben", Toast.LENGTH_SHORT).show();
-            dialog.dismiss();
-            return;
-        }
-        // Set Loading Animation
-        progressBar.setVisibility(View.VISIBLE);
-        eT_email.setVisibility(View.GONE);
-
         // Check if user with the given email exists
-        db.collection("users").whereEqualTo("email", email).get()
+        db.collection(USERS).whereEqualTo(EMAIL, email).get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
                         // Check if user with the given email exists
                         if(documentSnapshots.isEmpty()) {
-                            Toast.makeText(getContext(), "User not found", Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
+                            Toast.makeText(getContext(), "User existiert nicht", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         // Get the Document with the matching email (IS ALWAYS A SINGLE DOCUMENT!)
@@ -112,13 +71,12 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
 
     // Check if user already is member of the WG
     private void checkIfMember(final DocumentSnapshot invitedUserSnapshot) {
-        invitedUserSnapshot.getReference().collection("wgs").document(groupID).get()
+        invitedUserSnapshot.getReference().collection(GROUPS).document(groupID).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if(documentSnapshot.exists()) {
-                            Toast.makeText(getContext(), "Already member of WG", Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
+                            Toast.makeText(getContext(), "User ist bereits Mitglied", Toast.LENGTH_SHORT).show();
                         } else {
                             checkIfInvited(invitedUserSnapshot);
                         }
@@ -128,13 +86,12 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
 
     // Check if user already has an invitation
     private void checkIfInvited(final DocumentSnapshot invitedUserSnapshot) {
-        invitedUserSnapshot.getReference().collection("invitations").document(groupID).get()
+        invitedUserSnapshot.getReference().collection(INVITATIONS).document(groupID).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if(documentSnapshot.exists()) {
-                            Toast.makeText(getContext(), "Already has an invitation", Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
+                            Toast.makeText(getContext(), "User bereits eingeladen", Toast.LENGTH_SHORT).show();
                         } else {
                             sendInvitation(invitedUserSnapshot);
                         }
@@ -144,7 +101,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
 
     // Create Invitation-Documents in the Users-Collection and WG-Collection
     private void sendInvitation(final DocumentSnapshot invitedUserSnapshot) {
-        db.collection("wgs").document(groupID).get()
+        db.collection(GROUPS).document(groupID).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot currentWGSnapshot) {
@@ -152,27 +109,46 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
                         final Group currentWG = currentWGSnapshot.toObject(Group.class);
                         // Create Map of invited User
                         Map<String,Object> map_user = new HashMap<>();
-                        map_user.put("email" , invitedUserSnapshot.getString("email"));
-                        map_user.put("name" , invitedUserSnapshot.getString("name"));
-                        map_user.put("picPath" , invitedUserSnapshot.getString("picPath"));
+                        map_user.put(EMAIL , invitedUserSnapshot.getString(EMAIL));
+                        map_user.put(NAME , invitedUserSnapshot.getString(NAME));
+                        map_user.put(PICPATH , invitedUserSnapshot.getString(PICPATH));
 
                         // Add invited User to Invitation-Collection of WG
-                        currentWGSnapshot.getReference().collection("invitations").document(invitedUserSnapshot.getId()).set(map_user);
+                        currentWGSnapshot.getReference().collection(INVITATIONS).document(invitedUserSnapshot.getId()).set(map_user);
                         // Add WG to Invitation-Collection of invited User
-                        invitedUserSnapshot.getReference().collection("invitations").document(groupID).set(currentWG);
-                        Toast.makeText(getContext(), "User invited", Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
+                        invitedUserSnapshot.getReference().collection(INVITATIONS).document(groupID).set(currentWG);
+                        Toast.makeText(getContext(), "Erfolgreich eingeladen!", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    // Make an AlertDialog from a View
-    public AlertDialog makeAlertDialog(View v) {
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
-        mBuilder.setView(v);
-        AlertDialog dialog = mBuilder.create();
-        dialog.show();
-        return dialog;
+    public void invitationDialog() {
+        MaterialDialog.Builder  builder = new MaterialDialog.Builder(getContext())
+                .title("Einladen")
+                .inputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+                .input("E-Mail", null, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+
+                    }
+                })
+                .positiveText("Einladen")
+                .negativeText("Abbrechen")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        final String email = dialog.getInputEditText().getText().toString().trim();
+                        if(TextUtils.isEmpty(email)) {
+                            Toast.makeText(getContext(), "Keine E-Mail Adresse eingegeben", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        dialog.getInputEditText().setText("");
+                        invite(email);
+                    }
+                });
+
+        inviteDialog = builder.build();
+        inviteDialog.show();
     }
 
     // Check which Button has been clicked
@@ -180,7 +156,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.btn_invite) {
-            createDialog();
+            invitationDialog();
         }
         else if (id == R.id.btn_profil) {
             // Lösche WG Key und wechsel zur WG&Profil Activity
@@ -196,9 +172,15 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
     private View mainView;
     private Button btn_invite, btn_profil;
     private FirebaseFirestore db;
-    private String userID, groupID;
-    // Dialog Variables
-    private ProgressBar progressBar;
-    private AlertDialog dialog;
-    private EditText eT_email;
+    private String groupID;
+
+    private MaterialDialog inviteDialog;
+
+    private final String USERS = "users";
+    private final String GROUPS = "groups";
+    private final String INVITATIONS = "invitations";
+    private final String EMAIL = "email";
+    private final String NAME = "name";
+    private final String PICPATH = "picPath";
+
 }

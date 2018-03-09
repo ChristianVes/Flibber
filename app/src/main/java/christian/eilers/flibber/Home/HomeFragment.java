@@ -39,6 +39,7 @@ public class HomeFragment extends Fragment {
         initializeViews();
         initializeVariables();
         if(users != null) loadData();
+        else getActivity().recreate();
         return mainView;
     }
 
@@ -72,7 +73,7 @@ public class HomeFragment extends Fragment {
                 .collection(GROUPS)
                 .document(groupID)
                 .collection(NOTES)
-                .orderBy(TIMESTAMP);
+                .orderBy(TIMESTAMP, Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<Note> options = new FirestoreRecyclerOptions.Builder<Note>()
                 .setQuery(notesQuery, Note.class)
@@ -147,26 +148,21 @@ public class HomeFragment extends Fragment {
             }
         };
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setReverseLayout(true);
-        layoutManager.setStackFromEnd(true);
-        adapter.notifyDataSetChanged();
-        recView.setLayoutManager(layoutManager);
-//        recView.setItemViewCacheSize(20);
-//        recView.setDrawingCacheEnabled(true);
+        recView.setLayoutManager(new LinearLayoutManager(getContext()));
         recView.setAdapter(adapter);
+        adapter.startListening();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        adapter.startListening();
+        if(adapter != null) adapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        adapter.stopListening();
+        if(adapter != null) adapter.stopListening();
     }
 
     // Custom ViewHolder for interacting with single items of the RecyclerView

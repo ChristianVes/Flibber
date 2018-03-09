@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 import christian.eilers.flibber.Home.HomeActivity;
-import christian.eilers.flibber.ProfilAndWgs.ProfilActivity;
+import christian.eilers.flibber.Profil.ProfilActivity;
 import christian.eilers.flibber.Utils.LocalStorage;
 
 public class MainActivity extends AppCompatActivity {

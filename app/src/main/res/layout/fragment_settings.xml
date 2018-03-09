@@ -3,28 +3,29 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:focusableInTouchMode="true"
-    android:clickable="true">
-
-    <Button
-        android:id="@+id/btn_profil"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:text="Profil and WG's"
-        android:textColor="@color/colorWhite"
-        android:background="@drawable/selector_button"
-        />
+    android:orientation="vertical">
 
     <Button
         android:id="@+id/btn_invite"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_margin="15dp"
         android:text="Einladen"
-        android:textColor="@color/colorWhite"
-        android:background="@drawable/selector_button"
+        android:textColor="@color/colorBlack"
         />
+
+
+    <Button
+        android:id="@+id/btn_profil"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_margin="15dp"
+        android:text="Ausloggen"
+        android:textColor="@color/colorBlack"
+        />
+
+
 
 </LinearLayout>

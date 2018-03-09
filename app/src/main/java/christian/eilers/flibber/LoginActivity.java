@@ -26,7 +26,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import christian.eilers.flibber.Models.User;
-import christian.eilers.flibber.ProfilAndWgs.ProfilActivity;
+import christian.eilers.flibber.Profil.ProfilActivity;
 import christian.eilers.flibber.Utils.LocalStorage;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener{

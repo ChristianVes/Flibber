@@ -27,7 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-import christian.eilers.flibber.ProfilAndWgs.ProfilActivity;
+import christian.eilers.flibber.Profil.ProfilActivity;
 import christian.eilers.flibber.Utils.LocalStorage;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener {

@@ -100,7 +100,7 @@ public class HomeActivity extends AppCompatActivity {
         Anschließend wird die Userliste über einen Listener up-to-date gehalten
         Der Listener ist an den Lifecycle der Activity gebunden
          */
-        usersQuery = FirebaseFirestore.getInstance().collection("wgs").document(groupID).collection("users");
+        usersQuery = FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(USERS);
         usersQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
@@ -163,4 +163,7 @@ public class HomeActivity extends AppCompatActivity {
     private Query usersQuery;
     private String groupID;
     private HashMap<String, User> users;
+
+    private final String GROUPS = "groups";
+    private final String USERS = "users";
 }

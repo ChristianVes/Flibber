@@ -1,4 +1,4 @@
-package christian.eilers.flibber.ProfilAndWgs;
+package christian.eilers.flibber.Profil;
 
 import android.content.DialogInterface;
 import android.content.Intent;

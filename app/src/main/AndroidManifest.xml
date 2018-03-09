@@ -32,7 +32,7 @@
             android:name=".Home.HomeActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".ProfilAndWgs.ProfilActivity"
+            android:name=".Profil.ProfilActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"

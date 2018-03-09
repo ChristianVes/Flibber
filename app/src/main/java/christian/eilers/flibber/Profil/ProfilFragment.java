@@ -1,4 +1,4 @@
-package christian.eilers.flibber.ProfilAndWgs;
+package christian.eilers.flibber.Profil;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -165,7 +165,6 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
                     }
                 });
     }
-
 
     private View mainView;
     private TextView v_name;

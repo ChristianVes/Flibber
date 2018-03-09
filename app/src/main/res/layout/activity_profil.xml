@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="christian.eilers.flibber.ProfilAndWgs.ProfilActivity">
+    tools:context="christian.eilers.flibber.Profil.ProfilActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
