@@ -1,5 +1,6 @@
 package christian.eilers.flibber.ProfilAndWgs;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,14 +14,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import christian.eilers.flibber.Home.HomeActivity;
 import christian.eilers.flibber.Models.Group;
+import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 
@@ -31,6 +38,7 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.fragment_groups, container, false);
         userID = LocalStorage.getUserID(getContext());
+        db = FirebaseFirestore.getInstance();
         initializeViews();
         loadData();
         return mainView;
@@ -51,7 +59,7 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
 
     // Lädt Gruppen des Users aus der Datenbank in den RecyclerView und hält sie up-to-date über einen Listener
     private void loadData() {
-        Query groupsQuery = FirebaseFirestore.getInstance()
+        Query groupsQuery = db
                 .collection(USERS)
                 .document(userID)
                 .collection(GROUPS)
@@ -112,10 +120,69 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
             frag.show(getFragmentManager(), "wg_erstellen");
         }
         else if(id == R.id.fab_invitations) {
-            InvitationsFragment frag = new InvitationsFragment();
-            frag.setTargetFragment(GroupFragment.this, INVITATIONS_REQUESTCODE);
-            frag.show(getFragmentManager(), "einladungen");
+            inviteDialog();
         }
+    }
+
+    private void inviteDialog() {
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(getContext())
+                .title("Einladungen")
+                .customView(R.layout.dialog_einladungen, true)
+                .cancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {// adapter -> stopListening
+                    }
+                });
+
+        invitesDialog = builder.build();
+        invitesDialog.show();
+
+        final View mainView = invitesDialog.getCustomView();
+        final RecyclerView list_invites = mainView.findViewById(R.id.recView);
+        final TextView placeholder = mainView.findViewById(R.id.placeholder);
+        final ProgressBar invitesProgressBar = mainView.findViewById(R.id.progressBar);
+
+        invitesProgressBar.setVisibility(View.VISIBLE);
+
+        Query invitesQuery = db
+                .collection(USERS)
+                .document(userID)
+                .collection(INVITATIONS)
+                .orderBy(TIMESTAMP);
+
+        FirestoreRecyclerOptions<Group> options = new FirestoreRecyclerOptions.Builder<Group>()
+                .setQuery(invitesQuery, Group.class)
+                .build();
+
+        FirestoreRecyclerAdapter invitesAdapter = new FirestoreRecyclerAdapter<Group, GroupFragment.InvitationHolder>(options) {
+
+            // Aktualisiere Platzhalter und ProgressBar
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                if (getItemCount() == 0) placeholder.setVisibility(View.VISIBLE);
+                else placeholder.setVisibility(View.GONE);
+                invitesProgressBar.setVisibility(View.GONE);
+            }
+
+            // Bind data from the database to the UI-Object
+            @Override
+            public void onBindViewHolder(GroupFragment.InvitationHolder holder, int position, Group model) {
+                holder.group = model;
+                holder.v_name.setText(model.getName());
+            }
+
+            // Einmalige Zuweisung zum ViewHolder: GroupHolder
+            @Override
+            public GroupFragment.InvitationHolder onCreateViewHolder(ViewGroup group, int i) {
+                View view = LayoutInflater.from(group.getContext()).inflate(R.layout.item_wg, group, false);
+                return new GroupFragment.InvitationHolder(view);
+            }
+        };
+
+        invitesAdapter.startListening();
+        list_invites.setLayoutManager(new LinearLayoutManager(getContext()));
+        list_invites.setAdapter(invitesAdapter);
     }
 
     // Custom ViewHolder for interacting with single items of the RecyclerView
@@ -139,18 +206,95 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
         }
     }
 
+
+    // Custom ViewHolder for interacting with single items of the RecyclerView
+    public class InvitationHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView v_name;
+        Group group;
+
+        public InvitationHolder(View itemView) {
+            super(itemView);
+            v_name = itemView.findViewById(R.id.wg_name);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            joinWG(group.getKey());
+            invitesDialog.dismiss();
+        }
+    }
+
+    // Join the Group with the given Group ID
+    private void joinWG(final String groupID) {
+        db.collection(USERS).document(userID).collection(GROUPS).document(groupID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                // Überprüfe ob der User bereits Mitglied in der Gruppe ist
+                if (task.getResult().exists()) {
+                    Toast.makeText(getContext(), "Already member of this Group", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                db.collection(GROUPS).document(groupID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        DocumentSnapshot document = task.getResult();
+                        // Überprüfe ob die Gruppe noch existiert
+                        if (!document.exists()) {
+                            Toast.makeText(getContext(), "Group does not exist", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        // Add Group-Reference to the user
+                        final Group group = document.toObject(Group.class);
+                        db.collection(USERS).document(userID).collection(GROUPS).document(group.getKey()).set(group);
+                        // User zur Gruppe hinzufügen
+                        addUserToGroup(groupID);
+                    }
+                });
+            }
+        });
+    }
+
+    // Add current User to the Group
+    private void addUserToGroup(final String groupID) {
+        db.collection(USERS).document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                final String username = task.getResult().getString(NAME);
+                final String email = task.getResult().getString(EMAIL);
+                final String picPath = task.getResult().getString(PICPATH);
+                final User user = new User(username, email, userID, picPath, 0.0);
+                db.collection(GROUPS).document(groupID).collection(USERS).document(userID).set(user);
+                deleteInvitation(groupID);
+            }
+        });
+    }
+
+    // Delete Invitation Documents
+    private void deleteInvitation(final String groupID) {
+        db.collection(USERS).document(userID).collection(INVITATIONS).document(groupID).delete();
+        db.collection(GROUPS).document(groupID).collection(INVITATIONS).document(userID).delete();
+    }
+
     private View mainView;
     private RecyclerView recView;
     private TextView placeholder;
     private FloatingActionButton fab_new, fab_invitations;
     private ProgressBar progressBar;
+    private MaterialDialog invitesDialog;
 
     private FirestoreRecyclerAdapter adapter;
+    private FirebaseFirestore db;
     private String userID;
 
     private final int GROUP_CREATE_REQUESTCODE = 1;
     private final int INVITATIONS_REQUESTCODE = 2;
-    private final String GROUPS = "wgs";
     private final String USERS = "users";
+    private final String GROUPS = "wgs";
+    private final String NAME = "name";
+    private final String EMAIL = "email";
+    private final String PICPATH = "picPath";
+    private final String INVITATIONS = "invitations";
     private final String TIMESTAMP = "timestamp";
 }

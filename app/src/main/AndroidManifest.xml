@@ -28,14 +28,18 @@
 
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".Home.HomeActivity" />
-        <activity android:name=".ProfilAndWgs.ProfilActivity" />
+        <activity
+            android:name=".Home.HomeActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ProfilAndWgs.ProfilActivity"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" /> <!-- optional (needed if default theme has no action bar) -->
         <activity
             android:name=".Home.NoteCreateActivity"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustPan"></activity>
     </application>
 
 </manifest>

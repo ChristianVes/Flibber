@@ -17,6 +17,7 @@
         <item name="colorControlActivated">@color/colorPrimary</item>
 
         <item name="actionMenuTextColor">@color/colorPrimaryDark</item>
+
     </style>
 
 </resources>

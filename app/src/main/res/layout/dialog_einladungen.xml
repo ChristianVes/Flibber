@@ -10,8 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_alignParentTop="true"
-        android:layout_margin="5dp">
+        android:layout_alignParentTop="true">
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -24,8 +23,6 @@
             android:id="@+id/placeholder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:gravity="center"
             android:visibility="gone"
             android:text="Keine Einladungen vorhanden..."
             android:textStyle="italic"/>
