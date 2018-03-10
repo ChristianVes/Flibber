@@ -98,7 +98,7 @@ public class HomeFragment extends Fragment {
 
             // Bind data from the database to the UI-Object
             @Override
-            public void onBindViewHolder(HomeFragment.NotesHolder holder, int position, Note model) {
+            public void onBindViewHolder(HomeFragment.NotesHolder holder, int position, final Note model) {
                 User user = users.get(model.getUserID());
                 holder.tv_username.setText(user.getName());
 
@@ -144,6 +144,16 @@ public class HomeFragment extends Fragment {
                 else {
                     Glide.with(getContext()).clear(holder.img_note);
                 }
+
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent i = new Intent(getContext(), NoteActivity.class);
+                        i.putExtra(NOTEID, model.getKey());
+                        startActivity(i);
+                        getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                    }
+                });
             }
 
             // Einmalige Zuweisung zum ViewHolder: NotesHolder
@@ -187,8 +197,6 @@ public class HomeFragment extends Fragment {
             tv_title = itemView.findViewById(R.id.title);
             tv_username = itemView.findViewById(R.id.username);
             img_note = itemView.findViewById(R.id.image);
-
-//          itemView.setOnClickListener(this);
         }
     }
 
@@ -207,5 +215,6 @@ public class HomeFragment extends Fragment {
     private final String NOTES = "notes";
     private final String TIMESTAMP = "timestamp";
     private final String PROFILE = "profile";
+    private final String NOTEID = "noteID";
     private final int BUFFER = 10000; // Millisekunden // entspricht 10 Sekunden
 }

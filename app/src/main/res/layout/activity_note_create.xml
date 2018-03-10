@@ -30,7 +30,7 @@
                     android:layout_height="?attr/actionBarSize"
                     app:title="Neue Notiz"
                     app:titleTextColor="@color/colorPrimaryDark"
-                    android:background="@drawable/layerlist_bottomedge"/>
+                    android:background="@drawable/layerlist_bottomedge_bright"/>
 
             </android.support.design.widget.AppBarLayout>
 

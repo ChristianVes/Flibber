@@ -11,17 +11,19 @@ public class Note implements Serializable{
     private String description;
     private String userID;
     private String imagePath;
+    private String key;
     private Date timestamp;
 
     public Note() {
 
     }
 
-    public Note(String title, String description, String userID, String imagePath) {
+    public Note(String title, String description, String userID, String imagePath, String key) {
         this.title = title;
         this.description = description;
         this.userID = userID;
         this.imagePath = imagePath;
+        this.key = key;
     }
 
     public String getTitle() {
@@ -54,6 +56,14 @@ public class Note implements Serializable{
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     @ServerTimestamp

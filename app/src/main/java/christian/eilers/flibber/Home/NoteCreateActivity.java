@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -173,13 +174,15 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
 
     // Erstelle Datenbank-Eintrag für die Notiz
     private void createDbEntry(String notePicPath) {
+        DocumentReference noteRef = db.collection(GROUPS).document(groupID).collection(NOTES).document();
         Note note = new Note(
                 et_title.getText().toString().trim(),
                 et_description.getText().toString().trim(),
                 userID,
-                notePicPath
+                notePicPath,
+                noteRef.getId()
         );
-        db.collection(GROUPS).document(groupID).collection(NOTES).document().set(note);
+        noteRef.set(note);
         toHomeActivity();
         progressBar.setVisibility(View.GONE);
     }

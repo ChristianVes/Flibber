@@ -12,20 +12,55 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/note_appbar"
+        <RelativeLayout
+            android:id="@+id/topLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fitsSystemWindows="true">
+            android:padding="5dp"
+            android:background="@drawable/layerlist_bottomedge_white">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/note_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:titleTextColor="@color/colorPrimaryDark"
-                android:background="@drawable/layerlist_bottomedge"/>
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profile_image"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:src="@drawable/profile_placeholder"
+                app:civ_border_color="@color/colorPrimary"
+                app:civ_border_width="1dp" />
 
-        </android.support.design.widget.AppBarLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@+id/profile_image"
+                android:layout_toEndOf="@+id/profile_image">
+
+                <TextView
+                    android:id="@+id/username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="username"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/datum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="datum"/>
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btn_more"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?android:selectableItemBackground"
+                app:srcCompat="@drawable/ic_more"
+                android:layout_alignParentRight="true"
+                />
+
+        </RelativeLayout>
 
 
         <android.support.v4.widget.NestedScrollView
@@ -33,7 +68,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/bottomLayout"
-            android:layout_below="@+id/note_appbar">
+            android:layout_below="@+id/topLayout">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -43,17 +78,33 @@
                 <ImageView
                     android:id="@+id/img_note"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:scaleType="fitXY"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/hq_logo"/>
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:text="Titel"/>
 
                 <TextView
                     android:id="@+id/description"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:textSize="15sp"
+                    android:text="Beschreibung"/>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/comments"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:padding="5dp">
 
                 </android.support.v7.widget.RecyclerView>
 
