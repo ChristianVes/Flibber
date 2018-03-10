@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -16,18 +17,24 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Comment;
+import christian.eilers.flibber.Models.Note;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
+import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -46,12 +53,15 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         groupID = LocalStorage.getGroupID(this);
         noteID = getIntent().getExtras().getString(NOTEID);
         db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance().getReference();
         if(noteID == null) {
             Intent main = new Intent(this, MainActivity.class);
             startActivity(main);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
         }
+        loadNote();
+        loadData();
     }
 
     // Initialize views from layout file
@@ -75,6 +85,38 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
 
     // Lade den Inhalt der Notiz und zeige sie an
     private void loadNote() {
+        db.collection(GROUPS).document(groupID).collection(NOTES).document(noteID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Note note = documentSnapshot.toObject(Note.class);
+                // TITEL & BESCHREIBUNG
+                tv_title.setText(note.getTitle());
+                tv_description.setText(note.getDescription());
+                // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
+                if(note.getTimestamp() != null)
+                    tv_datum.setText(
+                            DateUtils.getRelativeTimeSpanString(note.getTimestamp().getTime(),
+                                    System.currentTimeMillis() + BUFFER,
+                                    DateUtils.MINUTE_IN_MILLIS,
+                                    DateUtils.FORMAT_ABBREV_RELATIVE));
+                // NOTE PICTURE ("Clear" zum vermeiden falscher Zuweisungen)
+                if(note.getImagePath() != null)
+                    GlideApp.with(NoteActivity.this)
+                            .load(storage.child(NOTES).child(note.getImagePath()))
+                            .dontAnimate()
+                            .into(img_note);
+                else {
+                    Glide.with(NoteActivity.this).clear(img_note);
+                }
+
+                loadNoteUser(note.getUserID());
+            }
+        });
+    }
+
+    // Lade User-Informationen des Notes-Erstellers
+    private void loadNoteUser(String noteUserID) {
+        // TODO !!!!
 
     }
 
@@ -85,6 +127,8 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         Comment comment = new Comment(commentText, userID);
         db.collection(GROUPS).document(groupID).collection(NOTES).document(noteID).collection(COMMENTS)
                 .document().set(comment);
+        input.setText("");
+        // TODO: Hide Keyboard here now
     }
 
     // load and display the Comments
@@ -111,15 +155,23 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull final CommentsHolder holder, int position, @NonNull Comment model) {
-
+            protected void onBindViewHolder(@NonNull final CommentsHolder holder, int position, @NonNull final Comment model) {
+//                Toast.makeText(NoteActivity.this, position+"", Toast.LENGTH_SHORT).show();
                 db.collection(USERS).document(model.getUserID()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User user = documentSnapshot.toObject(User.class);
                         holder.comment_username.setText(user.getName());
 
-                        // TODO: Profilbild ebenfalls laden
+                        // NOTE PICTURE ("Clear" zum vermeiden falscher Zuweisungen)
+                        if(user.getPicPath() != null)
+                            GlideApp.with(NoteActivity.this)
+                                    .load(storage.child(PROFILE).child(user.getPicPath()))
+                                    .dontAnimate()
+                                    .into(holder.comment_img);
+                        else {
+                            Glide.with(NoteActivity.this).clear(holder.comment_img);
+                        }
                     }
                 });
 
@@ -136,6 +188,9 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
             }
         };
 
+        commentsView.setLayoutManager(new LinearLayoutManager(NoteActivity.this));
+        commentsView.setAdapter(adapter_comments);
+        adapter_comments.startListening();
     }
 
     public class CommentsHolder extends RecyclerView.ViewHolder {
@@ -174,6 +229,17 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (adapter_comments != null) adapter_comments.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (adapter_comments != null) adapter_comments.stopListening();
+    }
 
     private RecyclerView commentsView;
     private TextView tv_title, tv_description, tv_username, tv_datum;
@@ -183,6 +249,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
     private ImageButton btn_send, btn_more;
 
     private FirebaseFirestore db;
+    private StorageReference storage;
     private FirestoreRecyclerAdapter adapter_comments;
 
     private String noteID, userID, groupID;
@@ -191,6 +258,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
     private final String NOTES = "notes";
     private final String USERS = "users";
     private final String GROUPS = "groups";
+    private final String PROFILE = "profile";
     private final String COMMENTS = "comments";
     private final String TIMESTAMP = "timestamp";
     private final int BUFFER = 10000; // Millisekunden // entspricht 10 Sekunden

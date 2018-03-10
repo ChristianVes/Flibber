@@ -6,6 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:clickable="true"
+    android:focusableInTouchMode="true"
     tools:context="christian.eilers.flibber.Home.NoteActivity">
 
     <RelativeLayout
@@ -16,7 +18,7 @@
             android:id="@+id/topLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="5dp"
+            android:padding="10dp"
             android:background="@drawable/layerlist_bottomedge_white">
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -40,14 +42,14 @@
                     android:id="@+id/username"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="username"
+                    android:textSize="17sp"
                     android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/datum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="datum"/>
+                    android:textSize="13sp"/>
 
             </LinearLayout>
 
@@ -73,38 +75,38 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:focusableInTouchMode="true"
+                android:clickable="true">
 
                 <ImageView
                     android:id="@+id/img_note"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:scaleType="fitXY"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/hq_logo"/>
+                    android:adjustViewBounds="true"/>
 
                 <TextView
                     android:id="@+id/title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
+                    android:padding="10dp"
                     android:textStyle="bold"
-                    android:textSize="20sp"
-                    android:text="Titel"/>
+                    android:textSize="25sp"/>
 
                 <TextView
                     android:id="@+id/description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:textSize="15sp"
-                    android:text="Beschreibung"/>
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:textSize="20sp"/>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/comments"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="5dp">
+                    android:padding="10dp">
 
                 </android.support.v7.widget.RecyclerView>
 
