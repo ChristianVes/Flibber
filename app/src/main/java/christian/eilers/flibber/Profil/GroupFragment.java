@@ -107,13 +107,13 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onStart() {
         super.onStart();
-        adapter.startListening();
+        if (adapter != null) adapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        adapter.stopListening();
+        if (adapter != null) adapter.stopListening();
     }
 
     @Override
@@ -333,6 +333,7 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
         db.collection(USERS).document(userID).collection(INVITATIONS).document(groupID).delete();
         db.collection(GROUPS).document(groupID).collection(INVITATIONS).document(userID).delete();
     }
+
 
     private View mainView;
     private RecyclerView recView;

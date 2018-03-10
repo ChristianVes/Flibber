@@ -24,6 +24,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
 
+import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Note;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
@@ -39,7 +40,12 @@ public class HomeFragment extends Fragment {
         initializeViews();
         initializeVariables();
         if(users != null) loadData();
-        else getActivity().recreate();
+        else {
+            Intent main = new Intent(getContext(), MainActivity.class);
+            startActivity(main);
+            getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            getActivity().finish();
+        }
         return mainView;
     }
 
