@@ -41,6 +41,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /*
 Detail Ansicht einer Notiz und ihrer Kommentare
 Möglichkeit zum Kommentieren der Notiz
+HINWEIS: Um Keyboard auszublenden das Layout eines scrollbaren Layouts focusable/clickable machen
+         Hier: MainLayout, Layout unter NestedScrollView, List Item des Recycler Views
  */
 public class NoteActivity extends AppCompatActivity implements View.OnClickListener, View.OnFocusChangeListener{
 
@@ -153,8 +155,12 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     // load and display the Comments
+    /*
+    TODO: Beim Erstellen eines Kommentars wird onBindViewHolder 2mal aufgerufen:
+    Einmal bevor es zur Datenbank geschickt wird und einmal wenn es online geupdatet wurde
+    */
     private void loadData() {
-        Query commentsQuery = FirebaseFirestore.getInstance()
+        final Query commentsQuery = FirebaseFirestore.getInstance()
                 .collection(GROUPS)
                 .document(groupID)
                 .collection(NOTES)
@@ -178,23 +184,25 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             protected void onBindViewHolder(@NonNull final CommentsHolder holder, int position, @NonNull final Comment model) {
                 holder.itemView.setVisibility(View.GONE);
+
                 db.collection(USERS).document(model.getUserID()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        User user = documentSnapshot.toObject(User.class);
+                        final User user = documentSnapshot.toObject(User.class);
                         holder.comment_username.setText(user.getName());
 
-                        // NOTE PICTURE ("Clear" zum vermeiden falscher Zuweisungen)
+                        // Comment User's Profile Picture
                         if(user.getPicPath() != null)
                             GlideApp.with(NoteActivity.this)
                                     .load(storage.child(PROFILE).child(user.getPicPath()))
                                     .dontAnimate()
                                     .into(holder.comment_img);
-                        else {
-                            Glide.with(NoteActivity.this).clear(holder.comment_img);
-                        }
+                        else Glide.with(NoteActivity.this).clear(holder.comment_img);
+
+                        // Comment text
                         holder.comment_text.setText(model.getDescription());
-                        // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
+
+                        // Comment Timestamp
                         if(model.getTimestamp() != null)
                             holder.comment_datum.setText(
                                     DateUtils.getRelativeTimeSpanString(
@@ -203,7 +211,10 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                                             DateUtils.MINUTE_IN_MILLIS,
                                             DateUtils.FORMAT_ABBREV_RELATIVE)
                             );
-                        holder.itemView.setVisibility(View.VISIBLE);
+
+                        // Überprüft ob es sich um einen noch nicht an die Database gesendeten Comment handelt
+                        boolean offline = getSnapshots().getSnapshot(holder.getAdapterPosition()).getMetadata().hasPendingWrites();
+                        if(!offline) holder.itemView.setVisibility(View.VISIBLE);
                     }
                 });
 
@@ -215,13 +226,14 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         commentsView.setAdapter(adapter_comments);
     }
 
+    // Custom Viewholder for the Comments of that Note
     public class CommentsHolder extends RecyclerView.ViewHolder {
 
         View itemView;
         CircleImageView comment_img;
         TextView comment_username, comment_datum, comment_text;
 
-        public CommentsHolder(View itemView) {
+        public CommentsHolder(final View itemView) {
             super(itemView);
             this.itemView = itemView;
             comment_img = itemView.findViewById(R.id.profile_image);
