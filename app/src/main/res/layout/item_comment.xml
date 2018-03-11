@@ -38,7 +38,6 @@
                     android:id="@+id/username"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="username"
                     android:textSize="13sp"
                     android:textStyle="bold"/>
 
@@ -46,8 +45,7 @@
                     android:id="@+id/datum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="10sp"
-                    android:text="datum"/>
+                    android:textSize="10sp"/>
 
             </LinearLayout>
 
@@ -60,7 +58,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:textSize="17sp"
-            android:text="Text..."
             />
 
     </LinearLayout>

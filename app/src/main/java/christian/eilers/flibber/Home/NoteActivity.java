@@ -90,8 +90,17 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Note note = documentSnapshot.toObject(Note.class);
                 // TITEL & BESCHREIBUNG
-                tv_title.setText(note.getTitle());
-                tv_description.setText(note.getDescription());
+                if (note.getTitle() != null && !TextUtils.isEmpty(note.getTitle())) {
+                    tv_title.setVisibility(View.VISIBLE);
+                    tv_title.setText(note.getTitle());
+                }
+                else tv_title.setVisibility(View.GONE);
+                if (note.getDescription() != null && !TextUtils.isEmpty(note.getDescription())) {
+                    tv_description.setVisibility(View.VISIBLE);
+                    tv_description.setText(note.getDescription());
+                }
+                else tv_description.setVisibility(View.GONE);
+
                 // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
                 if(note.getTimestamp() != null)
                     tv_datum.setText(
@@ -99,15 +108,14 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                                     System.currentTimeMillis() + BUFFER,
                                     DateUtils.MINUTE_IN_MILLIS,
                                     DateUtils.FORMAT_ABBREV_RELATIVE));
+
                 // NOTE PICTURE ("Clear" zum vermeiden falscher Zuweisungen)
                 if(note.getImagePath() != null)
                     GlideApp.with(NoteActivity.this)
                             .load(storage.child(NOTES).child(note.getImagePath()))
                             .dontAnimate()
                             .into(img_note);
-                else {
-                    Glide.with(NoteActivity.this).clear(img_note);
-                }
+                else Glide.with(NoteActivity.this).clear(img_note);
 
                 loadNoteUser(note.getUserID());
             }
@@ -116,8 +124,20 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
 
     // Lade User-Informationen des Notes-Erstellers
     private void loadNoteUser(String noteUserID) {
-        // TODO !!!!
+        db.collection(USERS).document(noteUserID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                User user = documentSnapshot.toObject(User.class);
+                tv_username.setText(user.getName());
 
+                if (user.getPicPath() != null)
+                    GlideApp.with(NoteActivity.this)
+                    .load(storage.child(PROFILE).child(user.getPicPath()))
+                    .dontAnimate()
+                    .into(img_profile);
+                else Glide.with(NoteActivity.this).clear(img_profile);
+            }
+        });
     }
 
     // Save the comment specified to the note in the database
@@ -128,7 +148,8 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         db.collection(GROUPS).document(groupID).collection(NOTES).document(noteID).collection(COMMENTS)
                 .document().set(comment);
         input.setText("");
-        // TODO: Hide Keyboard here now
+        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(input.getWindowToken(), 0);
     }
 
     // load and display the Comments
@@ -156,7 +177,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             protected void onBindViewHolder(@NonNull final CommentsHolder holder, int position, @NonNull final Comment model) {
-//                Toast.makeText(NoteActivity.this, position+"", Toast.LENGTH_SHORT).show();
+                holder.itemView.setVisibility(View.GONE);
                 db.collection(USERS).document(model.getUserID()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -172,25 +193,26 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                         else {
                             Glide.with(NoteActivity.this).clear(holder.comment_img);
                         }
+                        holder.comment_text.setText(model.getDescription());
+                        // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
+                        if(model.getTimestamp() != null)
+                            holder.comment_datum.setText(
+                                    DateUtils.getRelativeTimeSpanString(
+                                            model.getTimestamp().getTime(),
+                                            System.currentTimeMillis() + BUFFER,
+                                            DateUtils.MINUTE_IN_MILLIS,
+                                            DateUtils.FORMAT_ABBREV_RELATIVE)
+                            );
+                        holder.itemView.setVisibility(View.VISIBLE);
                     }
                 });
 
-                holder.comment_text.setText(model.getDescription());
-                // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
-                if(model.getTimestamp() != null)
-                    holder.comment_datum.setText(
-                            DateUtils.getRelativeTimeSpanString(
-                                    model.getTimestamp().getTime(),
-                                    System.currentTimeMillis() + BUFFER,
-                                    DateUtils.MINUTE_IN_MILLIS,
-                                    DateUtils.FORMAT_ABBREV_RELATIVE)
-                    );
+
             }
         };
 
         commentsView.setLayoutManager(new LinearLayoutManager(NoteActivity.this));
         commentsView.setAdapter(adapter_comments);
-        adapter_comments.startListening();
     }
 
     public class CommentsHolder extends RecyclerView.ViewHolder {
@@ -208,7 +230,6 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
             comment_username = itemView.findViewById(R.id.username);
         }
     }
-
 
     @Override
     public void onClick(View v) {

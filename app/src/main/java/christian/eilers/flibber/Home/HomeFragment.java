@@ -94,6 +94,7 @@ public class HomeFragment extends Fragment {
                 if (getItemCount() == 0) placeholder.setVisibility(View.VISIBLE);
                 else placeholder.setVisibility(View.GONE);
                 progressBar.setVisibility(View.GONE);
+                adapter.notifyDataSetChanged();
             }
 
             // Bind data from the database to the UI-Object
@@ -166,7 +167,6 @@ public class HomeFragment extends Fragment {
 
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
         recView.setAdapter(adapter);
-        adapter.startListening();
     }
 
     @Override
