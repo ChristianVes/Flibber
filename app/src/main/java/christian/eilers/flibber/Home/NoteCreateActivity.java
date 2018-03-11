@@ -92,7 +92,7 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_note, menu);
+        getMenuInflater().inflate(R.menu.menu_note_create, menu);
         return true;
     }
 
@@ -183,14 +183,16 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
                 noteRef.getId()
         );
         noteRef.set(note);
-        toHomeActivity();
         progressBar.setVisibility(View.GONE);
+        toNoteActivity(noteRef.getId());
+
     }
 
     // Wechsel zur Home Activity
-    private void toHomeActivity() {
-        Intent intent_back = new Intent(NoteCreateActivity.this, HomeActivity.class);
-        startActivity(intent_back);
+    private void toNoteActivity(String key) {
+        Intent showNote = new Intent(NoteCreateActivity.this, NoteActivity.class);
+        showNote.putExtra(NOTEID, key);
+        startActivity(showNote);
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         finish();
     }
@@ -208,6 +210,7 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
     private Uri imageUri;
 
     private final int REQUEST_CODE_GALLERY = 0;
+    private final String NOTEID = "noteID";
     private final String NOTES = "notes";
     private final String GROUPS = "groups";
 

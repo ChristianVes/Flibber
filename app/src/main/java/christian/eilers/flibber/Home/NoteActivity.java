@@ -10,12 +10,17 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,10 +29,13 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.HashMap;
 
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Comment;
@@ -50,12 +58,12 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
-        initializeViews();
         userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
         noteID = getIntent().getExtras().getString(NOTEID);
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
+        initializeViews();
         if(noteID == null) {
             Intent main = new Intent(this, MainActivity.class);
             startActivity(main);
@@ -68,6 +76,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
 
     // Initialize views from layout file
     private void initializeViews() {
+        bottomLayout = findViewById(R.id.bottomLayout);
         commentsView = findViewById(R.id.comments);
         img_note = findViewById(R.id.img_note);
         img_profile = findViewById(R.id.profile_image);
@@ -78,11 +87,18 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         input = findViewById(R.id.input_comment);
         btn_send = findViewById(R.id.btn_send);
         btn_more = findViewById(R.id.btn_more);
+        et_description = findViewById(R.id.edit_description);
+        et_title = findViewById(R.id.edit_title);
+        btn_save = findViewById(R.id.btn_save);
+        progressBar = findViewById(R.id.progressBar);
 
         input.setOnFocusChangeListener(this);
+        et_title.setOnFocusChangeListener(this);
+        et_description.setOnFocusChangeListener(this);
 
         btn_send.setOnClickListener(this);
         btn_more.setOnClickListener(this);
+        btn_save.setOnClickListener(this);
     }
 
     // Lade den Inhalt der Notiz und zeige sie an
@@ -91,17 +107,17 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Note note = documentSnapshot.toObject(Note.class);
+                if(note.getUserID().equals(userID)) btn_more.setVisibility(View.VISIBLE);
+
                 // TITEL & BESCHREIBUNG
                 if (note.getTitle() != null && !TextUtils.isEmpty(note.getTitle())) {
                     tv_title.setVisibility(View.VISIBLE);
                     tv_title.setText(note.getTitle());
                 }
-                else tv_title.setVisibility(View.GONE);
                 if (note.getDescription() != null && !TextUtils.isEmpty(note.getDescription())) {
                     tv_description.setVisibility(View.VISIBLE);
                     tv_description.setText(note.getDescription());
                 }
-                else tv_description.setVisibility(View.GONE);
 
                 // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
                 if(note.getTimestamp() != null)
@@ -111,7 +127,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                                     DateUtils.MINUTE_IN_MILLIS,
                                     DateUtils.FORMAT_ABBREV_RELATIVE));
 
-                // NOTE PICTURE ("Clear" zum vermeiden falscher Zuweisungen)
+                // NOTE PICTURE
                 if(note.getImagePath() != null)
                     GlideApp.with(NoteActivity.this)
                             .load(storage.child(NOTES).child(note.getImagePath()))
@@ -119,6 +135,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                             .into(img_note);
                 else Glide.with(NoteActivity.this).clear(img_note);
 
+                // USER-INFORMATION
                 loadNoteUser(note.getUserID());
             }
         });
@@ -130,14 +147,17 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 User user = documentSnapshot.toObject(User.class);
+                // USERNAME
                 tv_username.setText(user.getName());
-
+                // PROFILE PICTURE
                 if (user.getPicPath() != null)
                     GlideApp.with(NoteActivity.this)
                     .load(storage.child(PROFILE).child(user.getPicPath()))
                     .dontAnimate()
                     .into(img_profile);
                 else Glide.with(NoteActivity.this).clear(img_profile);
+
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -250,8 +270,76 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
             saveComment();
         }
         else if (id == R.id.btn_more) {
-
+            PopupMenu menu = new PopupMenu(NoteActivity.this, btn_more);
+            menu.getMenuInflater().inflate(R.menu.menu_note, menu.getMenu());
+            menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    int itemID = item.getItemId();
+                    if (itemID == R.id.action_change) {
+                        changeLayout();
+                    }
+                    else if (itemID == R.id.action_delete) {
+                        deleteNote();
+                    }
+                    return true;
+                }
+            });
+            menu.show();
         }
+        else if (id == R.id.btn_save) {
+            updateNote();
+        }
+    }
+
+    private void changeLayout() {
+        bottomLayout.setVisibility(View.GONE);
+        btn_more.setVisibility(View.GONE);
+        tv_title.setVisibility(View.GONE);
+        tv_description.setVisibility(View.GONE);
+        et_title.setText(tv_title.getText().toString());
+        et_description.setText(tv_description.getText().toString());
+        et_title.setVisibility(View.VISIBLE);
+        et_description.setVisibility(View.VISIBLE);
+        btn_save.setVisibility(View.VISIBLE);
+    }
+
+    private void updateNote() {
+        final String title = et_title.getText().toString().trim();
+        final String description = et_description.getText().toString().trim();
+        if (TextUtils.isEmpty(title) && TextUtils.isEmpty(description)) return;
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(TITLE, title);
+        map.put(DESCRIPTION, description);
+        // map.put(TIMESTAMP, FieldValue.serverTimestamp());
+        progressBar.setVisibility(View.VISIBLE);
+        db.collection(GROUPS).document(groupID).collection(NOTES).document(noteID).update(map)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        updateLayout(title, description);
+                    }
+                });
+    }
+
+    private void updateLayout(String title, String description) {
+        et_title.setVisibility(View.GONE);
+        et_description.setVisibility(View.GONE);
+        btn_save.setVisibility(View.GONE);
+        tv_title.setText(title);
+        tv_description.setText(description);
+        bottomLayout.setVisibility(View.VISIBLE);
+        btn_more.setVisibility(View.VISIBLE);
+        tv_title.setVisibility(View.VISIBLE);
+        tv_description.setVisibility(View.VISIBLE);
+
+        progressBar.setVisibility(View.GONE);
+    }
+
+    // TODO: Use cloud function (Node.js/Python) to delete document with sub-collection
+    // https://firebase.google.com/docs/firestore/manage-data/delete-data?authuser=0
+    private void deleteNote() {
+        Toast.makeText(this, "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -274,12 +362,16 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         if (adapter_comments != null) adapter_comments.stopListening();
     }
 
+    private RelativeLayout bottomLayout;
     private RecyclerView commentsView;
     private TextView tv_title, tv_description, tv_username, tv_datum;
+    private EditText et_title, et_description;
     private ImageView img_note;
     private CircleImageView img_profile;
     private EditText input;
     private ImageButton btn_send, btn_more;
+    private Button btn_save;
+    private ProgressBar progressBar;
 
     private FirebaseFirestore db;
     private StorageReference storage;
@@ -294,6 +386,8 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
     private final String PROFILE = "profile";
     private final String COMMENTS = "comments";
     private final String TIMESTAMP = "timestamp";
+    private final String TITLE = "title";
+    private final String DESCRIPTION = "description";
     private final int BUFFER = 10000; // Millisekunden // entspricht 10 Sekunden
 
 
