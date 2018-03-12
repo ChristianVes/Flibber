@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:clickable="true"
-    android:focusable="true"
     android:focusableInTouchMode="true"
     tools:context="christian.eilers.flibber.Home.FinanceFragment">
 
@@ -24,12 +23,15 @@
             android:fitsSystemWindows="true">
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/note_toolbar"
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:title="Einkaufsliste"
                 app:titleTextColor="@color/colorPrimaryDark"
-                android:background="@drawable/layerlist_bottomedge_bright"/>
+                android:background="@drawable/layerlist_bottomedge_bright"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"/>
 
         </android.support.design.widget.AppBarLayout>
 
@@ -45,9 +47,7 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/shoppingList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-
+            android:layout_height="match_parent">
 
         </android.support.v7.widget.RecyclerView>
 
@@ -58,7 +58,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_margin="10dp">
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp">
 
         <EditText
             android:id="@+id/input_shopping"
@@ -68,17 +69,26 @@
             android:gravity="start"
             android:hint="Einkaufsartikel..."
             android:inputType="textMultiLine|textCapSentences"
-            android:textSize="20sp"
-            android:layout_alignParentLeft="true"
+            android:textSize="22sp"
+            android:layout_toRightOf="@+id/btn_more"
             android:layout_toLeftOf="@+id/btn_save" />
 
         <ImageButton
             android:id="@+id/btn_save"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="?android:selectableItemBackground"
-            app:srcCompat="@drawable/ic_send"
+            android:layout_alignBottom="@+id/input_shopping"
             android:layout_alignParentRight="true"
+            android:background="?android:selectableItemBackground"
+            app:srcCompat="@drawable/ic_send" />
+
+        <ImageButton
+            android:id="@+id/btn_more"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?android:selectableItemBackground"
+            app:srcCompat="@drawable/ic_add_blank"
+            android:layout_alignParentLeft="true"
             android:layout_alignBottom="@+id/input_shopping"
             />
 

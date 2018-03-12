@@ -8,6 +8,7 @@ import christian.eilers.flibber.Home.FinanceFragment;
 import christian.eilers.flibber.Home.HomeFragment;
 import christian.eilers.flibber.Home.PutzplanFragment;
 import christian.eilers.flibber.Home.SettingsFragment;
+import christian.eilers.flibber.Home.ShoppingFragment;
 
 public class HomePagerAdapter extends FragmentPagerAdapter {
     private static int NUM_ITEMS = 5;
@@ -29,7 +30,7 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return new PutzplanFragment();
             case 1:
-                return new PutzplanFragment();
+                return new ShoppingFragment();
             case 2:
                 return new HomeFragment();
             case 3:

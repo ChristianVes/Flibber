@@ -30,7 +30,7 @@
         <activity android:name=".RegisterActivity" />
         <activity
             android:name=".Home.HomeActivity"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Profil.ProfilActivity"
             android:windowSoftInputMode="adjustPan" />
