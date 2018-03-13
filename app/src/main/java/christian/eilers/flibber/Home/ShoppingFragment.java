@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -30,10 +31,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.storage.FirebaseStorage;
 
 import christian.eilers.flibber.Models.Article;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
+import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
 
 public class ShoppingFragment extends Fragment implements View.OnClickListener, View.OnFocusChangeListener{
@@ -70,10 +73,17 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         if (TextUtils.isEmpty(articleName)) return;
         et_article.setText("");
 
-        final Article article = new Article(articleName, userID);
+        final Article article = new Article(articleName, userID, true);
         db.collection(GROUPS).document(groupID)
                 .collection(USERS).document(userID)
                 .collection(SHOPPING).add(article);
+    }
+
+    private void deleteArticle(String key) {
+        db.collection(GROUPS).document(groupID)
+                .collection(USERS).document(userID)
+                .collection(SHOPPING).document(key)
+                .delete();
     }
 
     private void loadData() {
@@ -100,7 +110,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                User articleUser = documentSnapshot.toObject(User.class);
+                                final User articleUser = documentSnapshot.toObject(User.class);
                                 holder.tv_article.setText(model.getName());
                                 holder.tv_username.setText(articleUser.getName());
                                 if (model.getTimestamp() != null)
@@ -121,6 +131,13 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                                     public void onClick(View view) {
                                         new MaterialDialog.Builder(getContext())
                                                 .title(model.getName())
+                                                .inputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL)
+                                                .input("Preis", null, true, new MaterialDialog.InputCallback() {
+                                                    @Override
+                                                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+
+                                                    }
+                                                })
                                                 .positiveText("Eingekauft!")
                                                 .negativeText("Abbrechen")
                                                 .onPositive(new MaterialDialog.SingleButtonCallback() {
@@ -157,12 +174,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
 
     }
 
-    private void deleteArticle(String key) {
-        db.collection(GROUPS).document(groupID)
-                .collection(USERS).document(userID)
-                .collection(SHOPPING).document(key)
-                .delete();
-    }
+
 
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
@@ -189,6 +201,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         super.onStop();
         if (adapter != null) adapter.stopListening();
     }
+
 
     private FirebaseFirestore db;
     private FirestoreRecyclerAdapter adapter;

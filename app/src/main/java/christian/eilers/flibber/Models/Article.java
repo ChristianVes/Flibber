@@ -9,14 +9,15 @@ public class Article implements Serializable{
 
     private String name;
     private String userID;
+    private boolean isPrivate;
     private Date timestamp;
 
-    public Article() {
-    }
+    public Article(){}
 
-    public Article(String name, String userID) {
+    public Article(String name, String userID, boolean isPrivate) {
         this.name = name;
         this.userID = userID;
+        this.isPrivate = isPrivate;
     }
 
     public String getName() {
@@ -33,6 +34,14 @@ public class Article implements Serializable{
 
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean aPrivate) {
+        isPrivate = aPrivate;
     }
 
     @ServerTimestamp
