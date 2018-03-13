@@ -28,6 +28,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter_LifecycleAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -49,11 +51,12 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         initializeViews();
         userID = LocalStorage.getUserID(getContext());
         groupID = LocalStorage.getGroupID(getContext());
-        db = FirebaseFirestore.getInstance();
+        ref_shopping = FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(USERS).document(userID).collection(SHOPPING);
         loadData();
         return mainView;
     }
 
+    // Initialize Layout
     private void initializeViews() {
         toolbar = mainView.findViewById(R.id.toolbar);
         recView = mainView.findViewById(R.id.shoppingList);
@@ -68,28 +71,25 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         btn_more.setOnClickListener(this);
     }
 
+    // Add article to the user's database
     private void saveArticle() {
         final String articleName = et_article.getText().toString().trim();
         if (TextUtils.isEmpty(articleName)) return;
         et_article.setText("");
 
-        final Article article = new Article(articleName, userID, true);
-        db.collection(GROUPS).document(groupID)
-                .collection(USERS).document(userID)
-                .collection(SHOPPING).add(article);
+        DocumentReference ref_article = ref_shopping.document();
+        final Article article = new Article(ref_article.getId(), articleName, userID, true);
+        ref_article.set(article);
     }
 
+    // TODO: Kosten verrechnen
+    // Delete article from the shopping list and compute costs
     private void deleteArticle(String key) {
-        db.collection(GROUPS).document(groupID)
-                .collection(USERS).document(userID)
-                .collection(SHOPPING).document(key)
-                .delete();
+        ref_shopping.document(key).delete();
     }
 
     private void loadData() {
-        Query shoppingQuery = db.collection(GROUPS).document(groupID)
-                .collection(USERS).document(userID)
-                .collection(SHOPPING).orderBy(TIMESTAMP, Query.Direction.DESCENDING);
+        Query shoppingQuery = ref_shopping.orderBy(TIMESTAMP, Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<Article> options = new FirestoreRecyclerOptions.Builder<Article>()
                 .setQuery(shoppingQuery, Article.class)
@@ -106,7 +106,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             @Override
             protected void onBindViewHolder(@NonNull final ShoppingHolder holder, int position, @NonNull final Article model) {
                 holder.itemView.setVisibility(View.GONE);
-                db.collection(GROUPS).document(groupID).collection(USERS).document(model.getUserID()).get()
+                FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(USERS).document(model.getUserID()).get()
                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -122,17 +122,18 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                                                     DateUtils.FORMAT_ABBREV_RELATIVE)
                                     );
                                 // Überprüft ob es sich um einen noch nicht an die Database gesendeten Comment handelt
-                                boolean offline = getSnapshots().getSnapshot(holder.getAdapterPosition()).getMetadata().hasPendingWrites();
-                                if(!offline) holder.itemView.setVisibility(View.VISIBLE);
+                                /*boolean offline = getSnapshots().getSnapshot(holder.getAdapterPosition()).getMetadata().hasPendingWrites();
+                                if(!offline) holder.itemView.setVisibility(View.VISIBLE);*/
+                                holder.itemView.setVisibility(View.VISIBLE);
 
-                                // Öffne Dialog zum Löschen des Einkaufsartikels
+                                // Open Dialog onItemClick
                                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
                                         new MaterialDialog.Builder(getContext())
                                                 .title(model.getName())
                                                 .inputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL)
-                                                .input("Preis", null, true, new MaterialDialog.InputCallback() {
+                                                .input("Preis...", null, true, new MaterialDialog.InputCallback() {
                                                     @Override
                                                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
 
@@ -143,7 +144,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                                                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                                                     @Override
                                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                        deleteArticle(getSnapshots().getSnapshot(holder.getAdapterPosition()).getId());
+                                                        deleteArticle(model.getKey());
                                                     }
                                                 })
                                                 .show();
@@ -153,7 +154,6 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                         });
             }
         };
-
 
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
         recView.setAdapter(adapter);
@@ -203,7 +203,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     }
 
 
-    private FirebaseFirestore db;
+    private CollectionReference ref_shopping;
     private FirestoreRecyclerAdapter adapter;
     private String groupID, userID;
 

@@ -7,6 +7,7 @@ import java.util.Date;
 
 public class Article implements Serializable{
 
+    private String key;
     private String name;
     private String userID;
     private boolean isPrivate;
@@ -14,10 +15,19 @@ public class Article implements Serializable{
 
     public Article(){}
 
-    public Article(String name, String userID, boolean isPrivate) {
+    public Article(String key, String name, String userID, boolean isPrivate) {
+        this.key = key;
         this.name = name;
         this.userID = userID;
         this.isPrivate = isPrivate;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getName() {
