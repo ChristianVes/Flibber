@@ -102,6 +102,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
+                refreshLayout.setRefreshing(false);
                 if (getItemCount() == 0) placeholder.setVisibility(View.VISIBLE);
                 else placeholder.setVisibility(View.GONE);
                 progressBar.setVisibility(View.GONE);
@@ -173,7 +174,6 @@ public class HomeFragment extends Fragment {
                             @Override
                             public void onSuccess(QuerySnapshot documentSnapshots) {
                                 holder.tv_comments.setText(documentSnapshots.size()+"");
-                                refreshLayout.setRefreshing(false);
                             }
                         });
             }

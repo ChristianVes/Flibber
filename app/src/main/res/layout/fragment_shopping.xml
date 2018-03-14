@@ -44,12 +44,21 @@
         android:layout_below="@+id/layout_top"
         android:layout_above="@+id/bottomLayout">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/shoppingList"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/shoppingRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
-        </android.support.v7.widget.RecyclerView>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/shoppingList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </android.support.v7.widget.RecyclerView>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+
 
     </RelativeLayout>
 
@@ -68,10 +77,12 @@
             android:background="@drawable/shape_rounded"
             android:gravity="start"
             android:hint="Einkaufsartikel..."
-            android:inputType="textMultiLine|textCapSentences"
+            android:inputType="textCapSentences"
+            android:maxLines="1"
             android:textSize="22sp"
             android:layout_toRightOf="@+id/btn_more"
-            android:layout_toLeftOf="@+id/btn_save" />
+            android:layout_toLeftOf="@+id/btn_save"
+            android:imeOptions="actionGo"/>
 
         <ImageButton
             android:id="@+id/btn_save"

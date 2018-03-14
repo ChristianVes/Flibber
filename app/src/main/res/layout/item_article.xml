@@ -11,9 +11,10 @@
         android:id="@+id/checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
-        android:visibility="gone"/>
+        android:layout_centerVertical="true"
+        android:layout_marginRight="5dp"
+        android:checked="false" />
 
     <LinearLayout
         android:id="@+id/mainLayout"
@@ -32,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="10sp"
                 android:textColor="@color/colorPrimary"
-                android:text="Username"/>
+                android:text="..."/>
 
             <TextView
                 android:id="@+id/datum"
@@ -40,8 +41,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="10sp"
                 android:textColor="@color/colorPrimary"
-                android:layout_alignParentRight="true"
-                android:text="Datum"/>
+                android:layout_alignParentRight="true"/>
 
         </RelativeLayout>
 
@@ -57,7 +57,7 @@
                 android:layout_alignParentLeft="true"
                 android:textSize="25sp"
                 android:textStyle="bold"
-                android:text="Artikelname"/>
+                android:text="..."/>
 
             <ImageButton
                 android:id="@+id/btn_options"

@@ -6,26 +6,30 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter_LifecycleAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -33,12 +37,12 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.storage.FirebaseStorage;
+
+import java.util.HashMap;
 
 import christian.eilers.flibber.Models.Article;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
-import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
 
 public class ShoppingFragment extends Fragment implements View.OnClickListener, View.OnFocusChangeListener{
@@ -60,15 +64,34 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     private void initializeViews() {
         toolbar = mainView.findViewById(R.id.toolbar);
         recView = mainView.findViewById(R.id.shoppingList);
-        bottomLayout = mainView.findViewById(R.id.bottomLayout);
+        refreshLayout = mainView.findViewById(R.id.shoppingRefreshLayout);
         et_article = mainView.findViewById(R.id.input_shopping);
         btn_save = mainView.findViewById(R.id.btn_save);
         btn_more = mainView.findViewById(R.id.btn_more);
 
         et_article.setOnFocusChangeListener(this);
+        et_article.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_GO) saveArticle();
+                return true;
+            }
+        });
+
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                adapter.notifyDataSetChanged();
+            }
+        });
 
         btn_save.setOnClickListener(this);
         btn_more.setOnClickListener(this);
+
+        ((HomeActivity)getActivity()).setSupportActionBar(toolbar);
+        setHasOptionsMenu(true);
+
+        checkedItems = new HashMap<>();
     }
 
     // Add article to the user's database
@@ -82,12 +105,21 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         ref_article.set(article);
     }
 
-    // TODO: Kosten verrechnen
     // Delete article from the shopping list and compute costs
     private void deleteArticle(String key) {
         ref_shopping.document(key).delete();
     }
 
+    private void updateButtonVisibility() {
+        if (checkedItems.isEmpty()) {
+            menu.findItem(R.id.action_finish).setVisible(false);
+        }
+        else {
+            menu.findItem(R.id.action_finish).setVisible(true);
+        }
+    }
+
+    // Load the Shopping-List, update checkedItems and set Listeners
     private void loadData() {
         Query shoppingQuery = ref_shopping.orderBy(TIMESTAMP, Query.Direction.DESCENDING);
 
@@ -96,6 +128,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                 .build();
 
         adapter = new FirestoreRecyclerAdapter<Article, ShoppingHolder>(options) {
+
             @NonNull
             @Override
             public ShoppingHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -105,14 +138,16 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
 
             @Override
             protected void onBindViewHolder(@NonNull final ShoppingHolder holder, int position, @NonNull final Article model) {
-                holder.itemView.setVisibility(View.GONE);
+                holder.tv_article.setText(model.getName());
+
                 FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(USERS).document(model.getUserID()).get()
                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                 final User articleUser = documentSnapshot.toObject(User.class);
-                                holder.tv_article.setText(model.getName());
+
                                 holder.tv_username.setText(articleUser.getName());
+
                                 if (model.getTimestamp() != null)
                                     holder.tv_datum.setText(
                                             DateUtils.getRelativeTimeSpanString(
@@ -121,10 +156,6 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                                                     DateUtils.MINUTE_IN_MILLIS,
                                                     DateUtils.FORMAT_ABBREV_RELATIVE)
                                     );
-                                // Überprüft ob es sich um einen noch nicht an die Database gesendeten Comment handelt
-                                /*boolean offline = getSnapshots().getSnapshot(holder.getAdapterPosition()).getMetadata().hasPendingWrites();
-                                if(!offline) holder.itemView.setVisibility(View.VISIBLE);*/
-                                holder.itemView.setVisibility(View.VISIBLE);
 
                                 // Open Dialog onItemClick
                                 holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -145,6 +176,8 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                                                     @Override
                                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                                         deleteArticle(model.getKey());
+                                                        checkedItems.remove(model.getKey());
+                                                        updateButtonVisibility();
                                                     }
                                                 })
                                                 .show();
@@ -152,6 +185,28 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                                 });
                             }
                         });
+
+                if(checkedItems.containsKey(model.getKey())) holder.checkBox.setChecked(true);
+                else holder.checkBox.setChecked(false);
+                holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                        if(isChecked){
+                            checkedItems.put(model.getKey(), model);
+                        }
+                        else{
+                            checkedItems.remove(model.getKey());
+                        }
+                        updateButtonVisibility();
+                    }
+                });
+
+            }
+
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                refreshLayout.setRefreshing(false);
             }
         };
 
@@ -159,23 +214,30 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         recView.setAdapter(adapter);
     }
 
+    // Custom Viewholder for Shopping-Articles
     public class ShoppingHolder extends RecyclerView.ViewHolder {
         TextView tv_username, tv_datum, tv_article;
-        // CheckBox checkBox;
+        CheckBox checkBox;
 
         public ShoppingHolder(View itemView) {
             super(itemView);
             tv_username = itemView.findViewById(R.id.username);
             tv_datum = itemView.findViewById(R.id.datum);
             tv_article = itemView.findViewById(R.id.article);
-            // checkBox = itemView.findViewById(R.id.checkbox);
+            checkBox = itemView.findViewById(R.id.checkbox);
         }
-
-
     }
 
+    // Initalize Toolbar and their Buttons
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        this.menu = menu;
+        inflater.inflate(R.menu.menu_shopping, menu);
+        menu.findItem(R.id.action_finish).getActionView().setOnClickListener(this);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 
-
+    // Hide Keyboard on click outside
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
         if (!hasFocus) {
@@ -188,6 +250,13 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.btn_save) saveArticle();
+        else if (id == R.id.action_finish) {
+            for (Article a : checkedItems.values()) {
+                deleteArticle(a.getKey());
+            }
+            checkedItems.clear();
+            updateButtonVisibility();
+        }
     }
 
     @Override
@@ -206,13 +275,16 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     private CollectionReference ref_shopping;
     private FirestoreRecyclerAdapter adapter;
     private String groupID, userID;
+    private HashMap<String, Article> checkedItems;
+    private HashMap<String, User> users;  // TODO: userList aus Activity benutzen statt get() aus Database
 
     private View mainView;
     private Toolbar toolbar;
     private RecyclerView recView;
-    private RelativeLayout bottomLayout;
     private EditText et_article;
     private ImageButton btn_save, btn_more;
+    private Menu menu;
+    private SwipeRefreshLayout refreshLayout;
 
     private final String GROUPS = "groups";
     private final String USERS = "users";
