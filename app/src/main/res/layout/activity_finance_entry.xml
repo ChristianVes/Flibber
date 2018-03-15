@@ -67,7 +67,7 @@
 
 
         <EditText
-            android:id="@+id/input_title"
+            android:id="@+id/input_article"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -105,19 +105,19 @@
                 android:layout_weight="1">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Bezahler"
                     android:textSize="18sp"
                     android:textStyle="bold"/>
 
-                <ListView
+                <android.support.v7.widget.RecyclerView
                     android:id="@+id/listBezahler"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:choiceMode="singleChoice">
 
-                </ListView>
+                </android.support.v7.widget.RecyclerView>
 
             </LinearLayout>
 
@@ -129,19 +129,19 @@
                 android:layout_weight="1">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Beteiligte"
                     android:textSize="18sp"
                     android:textStyle="bold"/>
 
-                <ListView
+                <android.support.v7.widget.RecyclerView
                     android:id="@+id/listBeteiligte"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:choiceMode="multipleChoice">
 
-                </ListView>
+                </android.support.v7.widget.RecyclerView>
 
             </LinearLayout>
 
