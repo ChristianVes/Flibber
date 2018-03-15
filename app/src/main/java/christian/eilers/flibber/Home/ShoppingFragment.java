@@ -82,6 +82,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             @Override
             public void onRefresh() {
                 adapter.notifyDataSetChanged();
+                refreshLayout.setRefreshing(false);
             }
         });
 
@@ -201,12 +202,6 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                     }
                 });
 
-            }
-
-            @Override
-            public void onDataChanged() {
-                super.onDataChanged();
-                refreshLayout.setRefreshing(false);
             }
         };
 

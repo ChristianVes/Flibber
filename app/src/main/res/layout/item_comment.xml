@@ -8,8 +8,6 @@
     android:focusable="true"
     android:clickable="true"
     app:cardBackgroundColor="@color/cardview_light_background"
-    app:cardElevation="@dimen/cardview_default_elevation"
-    app:cardCornerRadius="@dimen/cardview_default_radius"
     app:cardUseCompatPadding="true">
 
     <LinearLayout

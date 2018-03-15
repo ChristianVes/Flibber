@@ -73,6 +73,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onRefresh() {
                 adapter.notifyDataSetChanged();
+                refreshLayout.setRefreshing(false);
             }
         });
     }
@@ -102,7 +103,6 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
-                refreshLayout.setRefreshing(false);
                 if (getItemCount() == 0) placeholder.setVisibility(View.VISIBLE);
                 else placeholder.setVisibility(View.GONE);
                 progressBar.setVisibility(View.GONE);
