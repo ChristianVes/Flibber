@@ -40,8 +40,10 @@
         <activity
             android:name=".Home.NoteCreateActivity"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".Home.NoteActivity"
-            android:windowSoftInputMode="adjustResize"></activity>
+        <activity
+            android:name=".Home.NoteActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".Home.FinanceEntryActivity"></activity>
     </application>
 
 </manifest>
