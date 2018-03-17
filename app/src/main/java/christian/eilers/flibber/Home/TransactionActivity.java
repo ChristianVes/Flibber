@@ -1,10 +1,12 @@
 package christian.eilers.flibber.Home;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -12,6 +14,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -22,11 +25,12 @@ import java.util.HashMap;
 
 import christian.eilers.flibber.Adapter.BeteiligteAdapter;
 import christian.eilers.flibber.Adapter.BezahlerAdapter;
+import christian.eilers.flibber.Models.Transaction;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 
-public class FinanceEntryActivity extends AppCompatActivity {
+public class TransactionActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +87,32 @@ public class FinanceEntryActivity extends AppCompatActivity {
         users = (HashMap<String, User>) userHashMap.clone();
     }
 
+    // Save the Transaction in the database
+    private void saveTransaction() {
+        String s_price = et_price.getText().toString().trim();
+        String title = et_article.getText().toString().trim();
+        String description = et_description.getText().toString().trim();
+        if (TextUtils.isEmpty(s_price)) return;
+        if (TextUtils.isEmpty(title)) return;
+
+        DocumentReference doc = db.collection(GROUPS).document(groupID).collection(FINANCES).document();
+
+        Transaction transaction = new Transaction(
+                doc.getId(),
+                title,
+                description,
+                adapter_bezahler.getBezahlerID(),
+                userID,
+                adapter_beteiligte.getInvolvedIDs(),
+                Double.parseDouble(s_price)
+        );
+
+        doc.set(transaction);
+
+        finish();
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_finanzen_eintrag, menu);
@@ -93,8 +123,7 @@ public class FinanceEntryActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                // TODO <->
-                Toast.makeText(this, "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
+                saveTransaction();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -113,4 +142,5 @@ public class FinanceEntryActivity extends AppCompatActivity {
 
     private final String GROUPS = "groups";
     private final String USERS = "users";
+    private final String FINANCES = "finances";
 }

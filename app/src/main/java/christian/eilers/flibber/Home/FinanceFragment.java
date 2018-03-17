@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
 
+import christian.eilers.flibber.Models.Transaction;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
@@ -40,6 +42,7 @@ public class FinanceFragment extends Fragment {
         initializeViews();
         initializeVariables();
         loadBilanz();
+        loadVerlauf();
         return mainView;
     }
 
@@ -52,7 +55,7 @@ public class FinanceFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getActivity().startActivity(new Intent(getContext(), FinanceEntryActivity.class));
+                getActivity().startActivity(new Intent(getContext(), TransactionActivity.class));
                 getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
@@ -68,7 +71,7 @@ public class FinanceFragment extends Fragment {
 
     private void loadBilanz() {
         Query query = db.collection(GROUPS).document(groupID)
-                .collection(USERS).orderBy(MONEY);
+                .collection(USERS).orderBy(MONEY, Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
                 .setQuery(query, User.class)
@@ -114,6 +117,61 @@ public class FinanceFragment extends Fragment {
         }
     }
 
+    private void loadVerlauf() {
+        Query query = db.collection(GROUPS).document(groupID)
+                .collection(FINANCES).orderBy(TIMESTAMP, Query.Direction.DESCENDING);
+
+        FirestoreRecyclerOptions<Transaction> options = new FirestoreRecyclerOptions.Builder<Transaction>()
+                .setQuery(query, Transaction.class)
+                .build();
+
+        adapterVerlauf = new FirestoreRecyclerAdapter<Transaction, TransactionHolder>(options) {
+            @NonNull
+            @Override
+            public TransactionHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_transaction, parent, false);
+                return new TransactionHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull TransactionHolder holder, int position, @NonNull Transaction model) {
+                holder.tv_title.setText(model.getTitle());
+                holder.tv_value.setText(model.getPrice() + " \u20ac");
+
+                // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
+                if(model.getTimestamp() != null)
+                    holder.tv_datum.setText(
+                            DateUtils.getRelativeTimeSpanString(model.getTimestamp().getTime(),
+                                    System.currentTimeMillis() + BUFFER,
+                                    DateUtils.MINUTE_IN_MILLIS,
+                                    DateUtils.FORMAT_ABBREV_RELATIVE));
+
+                holder.tv_name.setText(users.get(model.getPayerID()).getName());
+
+                /*for (String key : model.getInvolvedIDs().keySet()) {
+                    if (model.getInvolvedIDs().get(key)) {
+                        // Kommt hier rein für jeden Beteiligten User
+                    }
+                }*/
+            }
+        };
+
+        recVerlauf.setLayoutManager(new LinearLayoutManager(getContext()));
+        recVerlauf.setAdapter(adapterVerlauf);
+    }
+
+    public class TransactionHolder extends RecyclerView.ViewHolder {
+        TextView tv_title, tv_value, tv_name, tv_datum;
+
+        public TransactionHolder(View itemView) {
+            super(itemView);
+            tv_datum = itemView.findViewById(R.id.datum);
+            tv_name = itemView.findViewById(R.id.name);
+            tv_title = itemView.findViewById(R.id.title);
+            tv_value = itemView.findViewById(R.id.value);
+        }
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -145,4 +203,5 @@ public class FinanceFragment extends Fragment {
     private final String TIMESTAMP = "timestamp";
     private final String MONEY = "money";
     private final String PROFILE = "profile";
+    private final int BUFFER = 10000; // Millisekunden // entspricht 10 Sekunden
 }

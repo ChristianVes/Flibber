@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="christian.eilers.flibber.Home.FinanceEntryActivity">
+    tools:context="christian.eilers.flibber.Home.TransactionActivity">
 
     <RelativeLayout
         android:id="@+id/topLayout"

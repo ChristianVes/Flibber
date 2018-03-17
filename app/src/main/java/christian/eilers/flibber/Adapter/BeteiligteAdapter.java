@@ -14,6 +14,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
@@ -24,13 +25,16 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
 
     private final String PROFILE = "profile";
     private ArrayList<User> users;
-    private ArrayList<String> selectedUserKeys;
+    private HashMap<String,Boolean> involvedIDs;
     private Context context;
     private StorageReference storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
 
     public BeteiligteAdapter(ArrayList<User> users) {
         this.users = users;
-        selectedUserKeys = new ArrayList<>();
+        involvedIDs = new HashMap<>();
+        for (User user : users) {
+            involvedIDs.put(user.getUserID(), false);
+        }
     }
 
     @NonNull
@@ -60,8 +64,8 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
         return users.size();
     }
 
-    public ArrayList<String> getBeteiligteIDs() {
-        return selectedUserKeys;
+    public HashMap<String, Boolean> getInvolvedIDs() {
+        return involvedIDs;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -78,13 +82,13 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
                 public void onClick(View view) {
                     String userID = users.get(getAdapterPosition()).getUserID();
                     CardView cardView = itemView.findViewById(R.id.card);
-                    if (selectedUserKeys.contains(userID)) {
+                    if (involvedIDs.get(userID)) {
                         cardView.setCardBackgroundColor(context.getResources().getColor(R.color.cardview_light_background));
-                        selectedUserKeys.remove(userID);
+                        involvedIDs.put(userID, false);
                     }
                     else {
                         cardView.setCardBackgroundColor(context.getResources().getColor(R.color.colorAccent));
-                        selectedUserKeys.add(userID);
+                        involvedIDs.put(userID, true);
                     }
                 }
             });

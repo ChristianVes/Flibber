@@ -43,7 +43,7 @@
         <activity
             android:name=".Home.NoteActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".Home.FinanceEntryActivity"></activity>
+        <activity android:name=".Home.TransactionActivity"></activity>
     </application>
 
 </manifest>
