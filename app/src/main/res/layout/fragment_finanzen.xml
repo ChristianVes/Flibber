@@ -42,8 +42,8 @@
                 android:padding="10dp"
                 android:text="Bilanz"
                 android:textStyle="bold"
-                android:textSize="20sp"
-                android:textColor="@color/colorPrimary"/>
+                android:textSize="23sp"
+                android:textColor="@color/colorPrimaryDark"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recProfils"
@@ -59,8 +59,8 @@
                 android:padding="10dp"
                 android:text="Verlauf"
                 android:textStyle="bold"
-                android:textSize="20sp"
-                android:textColor="@color/colorPrimary"/>
+                android:textSize="23sp"
+                android:textColor="@color/colorPrimaryDark"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recVerlauf"

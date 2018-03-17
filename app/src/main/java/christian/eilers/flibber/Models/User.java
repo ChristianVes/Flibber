@@ -8,11 +8,11 @@ public class User implements Serializable {
     private String email;
     private String userID;
     private String picPath;
-    private double money;
+    private int money;
 
     public User() {}
 
-    public User(String name, String email, String userID, String picPath, double money) {
+    public User(String name, String email, String userID, String picPath, int money) {
         this.name = name;
         this.email = email;
         this.userID = userID;
@@ -44,11 +44,11 @@ public class User implements Serializable {
         this.picPath = picPath;
     }
 
-    public double getMoney() {
+    public int getMoney() {
         return money;
     }
 
-    public void setMoney(double money) {
+    public void setMoney(int money) {
         this.money = money;
     }
 

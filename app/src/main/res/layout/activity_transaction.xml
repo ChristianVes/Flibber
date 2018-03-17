@@ -37,33 +37,17 @@
         android:orientation="vertical"
         android:layout_below="@+id/topLayout">
 
-        <RelativeLayout
+        <com.blackcat.currencyedittext.CurrencyEditText
+            android:id="@+id/input_price"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/input_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@drawable/shape_rounded"
-                android:hint="Preis..."
-                android:imeOptions="actionNext"
-                android:inputType="numberDecimal"
-                android:maxLength="10"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/input_price"
-                android:layout_centerVertical="true"
-                android:textSize="25sp"
-                android:text="\u20ac"/>
-
-
-        </RelativeLayout>
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/shape_rounded"
+            android:imeOptions="actionNext"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimary"
+            />
 
 
         <EditText

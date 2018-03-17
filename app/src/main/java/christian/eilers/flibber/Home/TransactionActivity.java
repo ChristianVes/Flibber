@@ -1,6 +1,5 @@
 package christian.eilers.flibber.Home;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,18 +9,17 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Toast;
 
+import com.blackcat.currencyedittext.CurrencyEditText;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 import christian.eilers.flibber.Adapter.BeteiligteAdapter;
 import christian.eilers.flibber.Adapter.BezahlerAdapter;
@@ -35,7 +33,7 @@ public class TransactionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_finance_entry);
+        setContentView(R.layout.activity_transaction);
         initializeViews();
         initializeVariables();
     }
@@ -48,6 +46,10 @@ public class TransactionActivity extends AppCompatActivity {
         rec_beteiligte = findViewById(R.id.listBeteiligte);
         rec_bezahler = findViewById(R.id.listBezahler);
         rec_beteiligte = findViewById(R.id.listBeteiligte);
+
+
+        et_price.setLocale(Locale.GERMANY);
+        et_price.configureViewForLocale(Locale.GERMANY);
 
         rec_bezahler.setHasFixedSize(true);
         rec_bezahler.setLayoutManager(new LinearLayoutManager(this));
@@ -89,10 +91,10 @@ public class TransactionActivity extends AppCompatActivity {
 
     // Save the Transaction in the database
     private void saveTransaction() {
-        String s_price = et_price.getText().toString().trim();
+        int price = ((int) et_price.getRawValue());
         String title = et_article.getText().toString().trim();
         String description = et_description.getText().toString().trim();
-        if (TextUtils.isEmpty(s_price)) return;
+        if (price == 0) return;
         if (TextUtils.isEmpty(title)) return;
 
         DocumentReference doc = db.collection(GROUPS).document(groupID).collection(FINANCES).document();
@@ -104,7 +106,7 @@ public class TransactionActivity extends AppCompatActivity {
                 adapter_bezahler.getBezahlerID(),
                 userID,
                 adapter_beteiligte.getInvolvedIDs(),
-                Double.parseDouble(s_price)
+                price
         );
 
         doc.set(transaction);
@@ -137,7 +139,8 @@ public class TransactionActivity extends AppCompatActivity {
     private BeteiligteAdapter adapter_beteiligte;
 
     private Toolbar toolbar;
-    private EditText et_price, et_article, et_description;
+    private EditText et_article, et_description;
+    private CurrencyEditText et_price;
     private RecyclerView rec_bezahler, rec_beteiligte;
 
     private final String GROUPS = "groups";

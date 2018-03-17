@@ -23,8 +23,11 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.fabiomsr.moneytextview.MoneyTextView;
+
 import java.util.HashMap;
 
+import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Transaction;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
@@ -41,8 +44,16 @@ public class FinanceFragment extends Fragment {
         mainView= inflater.inflate(R.layout.fragment_finanzen, container, false);
         initializeViews();
         initializeVariables();
-        loadBilanz();
-        loadVerlauf();
+        if(users != null) {
+            loadBilanz();
+            loadVerlauf();
+        }
+        else {
+            Intent main = new Intent(getContext(), MainActivity.class);
+            startActivity(main);
+            getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            getActivity().finish();
+        }
         return mainView;
     }
 
@@ -88,7 +99,8 @@ public class FinanceFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull UserHolder holder, int position, @NonNull User model) {
                 holder.tv_username.setText(model.getName());
-                holder.tv_money.setText(model.getMoney() + " \u20ac");
+                holder.tv_money.setAmount(model.getMoney());
+
                 // PROFILE PICTURE
                 if(model.getPicPath() != null)
                     GlideApp.with(getContext())
@@ -107,7 +119,8 @@ public class FinanceFragment extends Fragment {
     public class UserHolder extends RecyclerView.ViewHolder {
 
         CircleImageView img_profile;
-        TextView tv_username, tv_money;
+        TextView tv_username;
+        MoneyTextView tv_money;
 
         public UserHolder(View itemView) {
             super(itemView);
@@ -136,7 +149,7 @@ public class FinanceFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull TransactionHolder holder, int position, @NonNull Transaction model) {
                 holder.tv_title.setText(model.getTitle());
-                holder.tv_value.setText(model.getPrice() + " \u20ac");
+                holder.tv_value.setAmount(model.getPrice());
 
                 // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
                 if(model.getTimestamp() != null)
@@ -161,7 +174,8 @@ public class FinanceFragment extends Fragment {
     }
 
     public class TransactionHolder extends RecyclerView.ViewHolder {
-        TextView tv_title, tv_value, tv_name, tv_datum;
+        TextView tv_title, tv_name, tv_datum;
+        MoneyTextView tv_value;
 
         public TransactionHolder(View itemView) {
             super(itemView);

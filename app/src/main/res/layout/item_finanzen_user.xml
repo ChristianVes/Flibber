@@ -40,15 +40,17 @@
                 android:textStyle="bold"
                 android:text="..."/>
 
-            <TextView
+            <org.fabiomsr.moneytextview.MoneyTextView
                 android:id="@+id/money"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:text="..."/>
+                app:symbol="€"
+                app:symbolGravity="end"
+                app:format="###0,00"
+                app:baseTextColor="@color/colorPrimary"
+                app:baseTextSize="20sp"/>
 
         </RelativeLayout>
 

@@ -10,12 +10,12 @@ public class Transaction implements Serializable{
 
     private String key, title, description, payerID, creatorID;
     private HashMap<String, Boolean> involvedIDs;
-    private double price;
+    private int price;
     private Date timestamp;
 
     public Transaction(){}
 
-    public Transaction(String key, String title, String description, String payerID, String creatorID, HashMap<String, Boolean> involvedIDs, double price) {
+    public Transaction(String key, String title, String description, String payerID, String creatorID, HashMap<String, Boolean> involvedIDs, int price) {
         this.key = key;
         this.title = title;
         this.description = description;
@@ -73,11 +73,11 @@ public class Transaction implements Serializable{
         this.involvedIDs = involvedIDs;
     }
 
-    public double getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 
