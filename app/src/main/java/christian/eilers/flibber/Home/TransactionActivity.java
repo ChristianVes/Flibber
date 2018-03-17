@@ -1,14 +1,19 @@
 package christian.eilers.flibber.Home;
 
+import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -28,7 +33,7 @@ import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 
-public class TransactionActivity extends AppCompatActivity {
+public class TransactionActivity extends AppCompatActivity implements View.OnFocusChangeListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +55,10 @@ public class TransactionActivity extends AppCompatActivity {
 
         et_price.setLocale(Locale.GERMANY);
         et_price.configureViewForLocale(Locale.GERMANY);
+
+        et_description.setOnFocusChangeListener(this);
+        et_article.setOnFocusChangeListener(this);
+        et_price.setOnFocusChangeListener(this);
 
         rec_bezahler.setHasFixedSize(true);
         rec_bezahler.setLayoutManager(new LinearLayoutManager(this));
@@ -114,6 +123,14 @@ public class TransactionActivity extends AppCompatActivity {
         finish();
     }
 
+    // Verberge Tastatur, wenn gegebene Views ihren Fokus verlieren
+    @Override
+    public void onFocusChange(View view, boolean hasFocus) {
+        if (!hasFocus) {
+            InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
