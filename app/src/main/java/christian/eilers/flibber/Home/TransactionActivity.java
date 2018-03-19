@@ -120,7 +120,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
 
         DocumentReference doc = db.collection(GROUPS).document(groupID).collection(FINANCES).document();
 
-        Payment payment = new Payment(
+        final Payment payment = new Payment(
                 doc.getId(),
                 title,
                 description,
@@ -136,15 +136,30 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         finish();
     }
 
-    private void chargeCosts(Payment payment) {
-        final CollectionReference ref = db.collection(GROUPS).document(groupID).collection(USERS);
+    private void chargeCosts(final Payment payment) {
+        final CollectionReference ref_users = db.collection(GROUPS).document(groupID).collection(USERS);
 
         db.runTransaction(new Transaction.Function<Void>() {
             @Nullable
             @Override
             public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                // DocumentSnapshot doc = transaction.get(ref.document(...));
+                HashMap<String, Long> map = new HashMap<>();
 
+                /*for (String involvedID : payment.getInvolvedIDs().keySet()) {
+                    // Überprüfe, ob User involviert ist
+                    if (!payment.getInvolvedIDs().get(involvedID)) continue;
+                    DocumentSnapshot snapshot = transaction.get(ref_users.document(involvedID));
+                    long partialPrice = payment.getPrice() / payment.getInvolvedIDs().size();
+                    if (involvedID.equals(payment.getPayerID())) {
+                        map.put(involvedID, snapshot.getLong(MONEY) + payment.getPrice() - partialPrice);
+                    }
+                    else map.put(involvedID, snapshot.getLong(MONEY) - partialPrice);
+                }
+
+                if (!map.containsKey(payment.getPayerID())) {
+                    DocumentSnapshot snap_bezahler = transaction.get(ref_users.document(payment.getPayerID()));
+                    map.put(payment.getPayerID(), snap_bezahler.getLong(MONEY) + payment.getPrice());
+                }*/
 
                 return null;
             }
@@ -191,4 +206,5 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
     private final String GROUPS = "groups";
     private final String USERS = "users";
     private final String FINANCES = "finances";
+    private final String MONEY = "money";
 }
