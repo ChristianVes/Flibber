@@ -25,16 +25,13 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
 
     private final String PROFILE = "profile";
     private ArrayList<User> users;
-    private HashMap<String,Boolean> involvedIDs;
+    private ArrayList<String> involvedIDs;
     private Context context;
     private StorageReference storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
 
     public BeteiligteAdapter(ArrayList<User> users) {
         this.users = users;
-        involvedIDs = new HashMap<>();
-        for (User user : users) {
-            involvedIDs.put(user.getUserID(), false);
-        }
+        involvedIDs = new ArrayList<>();
     }
 
     @NonNull
@@ -64,7 +61,7 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
         return users.size();
     }
 
-    public HashMap<String, Boolean> getInvolvedIDs() {
+    public ArrayList<String> getInvolvedIDs() {
         return involvedIDs;
     }
 
@@ -82,13 +79,13 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
                 public void onClick(View view) {
                     String userID = users.get(getAdapterPosition()).getUserID();
                     CardView cardView = itemView.findViewById(R.id.card);
-                    if (involvedIDs.get(userID)) {
+                    if (involvedIDs.contains(userID)) {
                         cardView.setCardBackgroundColor(context.getResources().getColor(R.color.cardview_light_background));
-                        involvedIDs.put(userID, false);
+                        involvedIDs.remove(userID);
                     }
                     else {
                         cardView.setCardBackgroundColor(context.getResources().getColor(R.color.colorAccent));
-                        involvedIDs.put(userID, true);
+                        involvedIDs.add(userID);
                     }
                 }
             });

@@ -3,19 +3,20 @@ package christian.eilers.flibber.Models;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
 public class Payment implements Serializable{
 
     private String key, title, description, payerID, creatorID;
-    private HashMap<String, Boolean> involvedIDs;
-    private int price;
+    private ArrayList<String> involvedIDs;
+    private long price;
     private Date timestamp;
 
     public Payment(){}
 
-    public Payment(String key, String title, String description, String payerID, String creatorID, HashMap<String, Boolean> involvedIDs, int price) {
+    public Payment(String key, String title, String description, String payerID, String creatorID, ArrayList<String> involvedIDs, long price) {
         this.key = key;
         this.title = title;
         this.description = description;
@@ -65,19 +66,19 @@ public class Payment implements Serializable{
         this.creatorID = creatorID;
     }
 
-    public HashMap<String, Boolean> getInvolvedIDs() {
+    public ArrayList<String> getInvolvedIDs() {
         return involvedIDs;
     }
 
-    public void setInvolvedIDs(HashMap<String, Boolean> involvedIDs) {
+    public void setInvolvedIDs(ArrayList<String> involvedIDs) {
         this.involvedIDs = involvedIDs;
     }
 
-    public int getPrice() {
+    public long getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(long price) {
         this.price = price;
     }
 

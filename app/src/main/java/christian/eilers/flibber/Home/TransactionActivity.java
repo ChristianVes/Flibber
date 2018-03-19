@@ -103,20 +103,12 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
 
     // Save the Payment in the database
     private void saveTransaction() {
-        int price = ((int) et_price.getRawValue());
+        long price = et_price.getRawValue();
         String title = et_article.getText().toString().trim();
         String description = et_description.getText().toString().trim();
-        if (price == 0) return;
+        if (price <= 0) return;
         if (TextUtils.isEmpty(title)) return;
-        // Check if any involved User is selected
-        Boolean hasInvolvedUser = false;
-        for (Boolean isInvolved : adapter_beteiligte.getInvolvedIDs().values()) {
-            if(isInvolved) {
-                hasInvolvedUser = true;
-                break;
-            }
-        }
-        if(!hasInvolvedUser) return;
+        if (adapter_beteiligte.getInvolvedIDs().isEmpty()) return;
 
         DocumentReference doc = db.collection(GROUPS).document(groupID).collection(FINANCES).document();
 
@@ -130,38 +122,52 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
                 price
         );
 
-        doc.set(payment);
+        // doc.set(payment); auf Transaction ausgelagert
         chargeCosts(payment);
-
-        finish();
     }
 
     private void chargeCosts(final Payment payment) {
         final CollectionReference ref_users = db.collection(GROUPS).document(groupID).collection(USERS);
+        final CollectionReference ref_finances = db.collection(GROUPS).document(groupID).collection(FINANCES);
 
         db.runTransaction(new Transaction.Function<Void>() {
             @Nullable
             @Override
             public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
                 HashMap<String, Long> map = new HashMap<>();
+                long partialPrice = Math.round(payment.getPrice() / payment.getInvolvedIDs().size());
 
-                /*for (String involvedID : payment.getInvolvedIDs().keySet()) {
-                    // Überprüfe, ob User involviert ist
-                    if (!payment.getInvolvedIDs().get(involvedID)) continue;
+                // Read-Operations
+                for (String involvedID : payment.getInvolvedIDs()) {
                     DocumentSnapshot snapshot = transaction.get(ref_users.document(involvedID));
-                    long partialPrice = payment.getPrice() / payment.getInvolvedIDs().size();
+                    // aktueller Beteiligter ist ebenfalls Bezahler
                     if (involvedID.equals(payment.getPayerID())) {
                         map.put(involvedID, snapshot.getLong(MONEY) + payment.getPrice() - partialPrice);
                     }
+                    // aktueller Beteiligte ist nicht auch Bezahler
                     else map.put(involvedID, snapshot.getLong(MONEY) - partialPrice);
                 }
 
+                // Bezahler Geld verrechnen, falls er noch nicht in Involviert-Schleife gemacht
                 if (!map.containsKey(payment.getPayerID())) {
-                    DocumentSnapshot snap_bezahler = transaction.get(ref_users.document(payment.getPayerID()));
-                    map.put(payment.getPayerID(), snap_bezahler.getLong(MONEY) + payment.getPrice());
-                }*/
+                    DocumentSnapshot snapshot = transaction.get(ref_users.document(payment.getPayerID()));
+                    map.put(payment.getPayerID(), snapshot.getLong(MONEY) + payment.getPrice());
+                }
+
+                // Write-Operations
+                for (String key : map.keySet()) {
+                    transaction.update(ref_users.document(key), MONEY, map.get(key));
+                }
+                // Speichere Payment in der Finanzen-Collection
+                transaction.set(ref_finances.document(payment.getKey()), payment);
 
                 return null;
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                // TODO: Message
+                finish();
             }
         });
     }
