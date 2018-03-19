@@ -100,8 +100,6 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
 
         ((HomeActivity)getActivity()).setSupportActionBar(toolbar);
         setHasOptionsMenu(true);
-
-        checkedItems = new HashMap<>();
     }
 
     // Add article to the user's database
@@ -143,6 +141,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             @NonNull
             @Override
             public ShoppingHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                checkedItems = new HashMap<>();
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_article, parent, false);
                 return new ShoppingHolder(view);
             }
@@ -194,10 +193,6 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                     }
                 });
 
-                // Falls andere User Artikel entfernen gibts sonst Errors!!! (reicht das hier?/Bessere Lösung?)
-                checkedItems.clear();
-                if(checkedItems.containsKey(model.getKey())) holder.checkBox.setChecked(true);
-                else holder.checkBox.setChecked(false);
                 holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
