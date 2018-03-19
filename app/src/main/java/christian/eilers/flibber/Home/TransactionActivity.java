@@ -14,8 +14,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
+import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -54,6 +58,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         rec_beteiligte = findViewById(R.id.listBeteiligte);
         rec_bezahler = findViewById(R.id.listBezahler);
         rec_beteiligte = findViewById(R.id.listBeteiligte);
+        progressBar = findViewById(R.id.progressBar);
 
         et_price.requestFocus();
         et_price.setLocale(Locale.GERMANY);
@@ -78,6 +83,8 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         groupID = LocalStorage.getGroupID(this);
         db = FirebaseFirestore.getInstance();
 
+        progressBar.setVisibility(View.VISIBLE);
+
         db.collection(GROUPS).document(groupID).collection(USERS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
@@ -87,6 +94,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
                 adapter_beteiligte = new BeteiligteAdapter(userList);
                 rec_bezahler.setAdapter(adapter_bezahler);
                 rec_beteiligte.setAdapter(adapter_beteiligte);
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -110,6 +118,8 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         if (TextUtils.isEmpty(title)) return;
         if (adapter_beteiligte.getInvolvedIDs().isEmpty()) return;
 
+        progressBar.setVisibility(View.VISIBLE);
+
         DocumentReference doc = db.collection(GROUPS).document(groupID).collection(FINANCES).document();
 
         final Payment payment = new Payment(
@@ -126,6 +136,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         chargeCosts(payment);
     }
 
+    // Compute costs for each involved user and write everything to the database as Transaction
     private void chargeCosts(final Payment payment) {
         final CollectionReference ref_users = db.collection(GROUPS).document(groupID).collection(USERS);
         final CollectionReference ref_finances = db.collection(GROUPS).document(groupID).collection(FINANCES);
@@ -166,8 +177,16 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         }).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                // TODO: Message
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(TransactionActivity.this, "Erfolgreich hinzugefügt!", Toast.LENGTH_SHORT).show();
                 finish();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                progressBar.setVisibility(View.GONE);
+                Crashlytics.logException(e);
+                Toast.makeText(TransactionActivity.this, "Fehler!", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -208,6 +227,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
     private EditText et_article, et_description;
     private CurrencyEditText et_price;
     private RecyclerView rec_bezahler, rec_beteiligte;
+    private ProgressBar progressBar;
 
     private final String GROUPS = "groups";
     private final String USERS = "users";

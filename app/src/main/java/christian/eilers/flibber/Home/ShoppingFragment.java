@@ -112,6 +112,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     }
 
     private void updateButtonVisibility() {
+        if (checkedItems == null) return;
         if (checkedItems.isEmpty()) {
             menu.findItem(R.id.action_finish).setVisible(false);
         }
@@ -229,6 +230,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         this.menu = menu;
         inflater.inflate(R.menu.menu_shopping, menu);
         menu.findItem(R.id.action_finish).getActionView().setOnClickListener(this);
+        updateButtonVisibility();
         super.onCreateOptionsMenu(menu, inflater);
     }
 

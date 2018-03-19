@@ -12,7 +12,6 @@
         android:id="@+id/action_finish"
         android:title="Eingekauft"
         app:actionLayout="@layout/shopping_done"
-        app:showAsAction="always"
-        android:visible="false"/>
+        app:showAsAction="always"/>
 
 </menu>
