@@ -5,6 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:clickable="true"
     tools:context="christian.eilers.flibber.Home.TransactionActivity">
 
     <RelativeLayout
@@ -23,6 +26,9 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:clickable="true"
                 app:title="Finanzeintrag"
                 app:titleTextColor="@color/colorPrimaryDark"
                 android:background="@drawable/layerlist_bottomedge_bright"/>

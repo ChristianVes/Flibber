@@ -6,16 +6,16 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 
-public class Transaction implements Serializable{
+public class Payment implements Serializable{
 
     private String key, title, description, payerID, creatorID;
     private HashMap<String, Boolean> involvedIDs;
     private int price;
     private Date timestamp;
 
-    public Transaction(){}
+    public Payment(){}
 
-    public Transaction(String key, String title, String description, String payerID, String creatorID, HashMap<String, Boolean> involvedIDs, int price) {
+    public Payment(String key, String title, String description, String payerID, String creatorID, HashMap<String, Boolean> involvedIDs, int price) {
         this.key = key;
         this.title = title;
         this.description = description;

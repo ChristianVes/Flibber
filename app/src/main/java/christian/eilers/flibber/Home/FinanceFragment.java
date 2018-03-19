@@ -28,7 +28,7 @@ import org.fabiomsr.moneytextview.MoneyTextView;
 import java.util.HashMap;
 
 import christian.eilers.flibber.MainActivity;
-import christian.eilers.flibber.Models.Transaction;
+import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
@@ -134,11 +134,11 @@ public class FinanceFragment extends Fragment {
         Query query = db.collection(GROUPS).document(groupID)
                 .collection(FINANCES).orderBy(TIMESTAMP, Query.Direction.DESCENDING);
 
-        FirestoreRecyclerOptions<Transaction> options = new FirestoreRecyclerOptions.Builder<Transaction>()
-                .setQuery(query, Transaction.class)
+        FirestoreRecyclerOptions<Payment> options = new FirestoreRecyclerOptions.Builder<Payment>()
+                .setQuery(query, Payment.class)
                 .build();
 
-        adapterVerlauf = new FirestoreRecyclerAdapter<Transaction, TransactionHolder>(options) {
+        adapterVerlauf = new FirestoreRecyclerAdapter<Payment, TransactionHolder>(options) {
             @NonNull
             @Override
             public TransactionHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -147,7 +147,7 @@ public class FinanceFragment extends Fragment {
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull TransactionHolder holder, int position, @NonNull Transaction model) {
+            protected void onBindViewHolder(@NonNull TransactionHolder holder, int position, @NonNull Payment model) {
                 holder.tv_title.setText(model.getTitle());
                 holder.tv_value.setAmount(model.getPrice());
 

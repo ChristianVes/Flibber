@@ -43,7 +43,10 @@
         <activity
             android:name=".Home.NoteActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".Home.TransactionActivity"></activity>
+        <activity
+            android:name=".Home.TransactionActivity"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>

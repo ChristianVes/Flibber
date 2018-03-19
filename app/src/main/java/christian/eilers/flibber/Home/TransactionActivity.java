@@ -1,26 +1,29 @@
 package christian.eilers.flibber.Home;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +31,7 @@ import java.util.Locale;
 
 import christian.eilers.flibber.Adapter.BeteiligteAdapter;
 import christian.eilers.flibber.Adapter.BezahlerAdapter;
-import christian.eilers.flibber.Models.Transaction;
+import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
@@ -52,7 +55,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         rec_bezahler = findViewById(R.id.listBezahler);
         rec_beteiligte = findViewById(R.id.listBeteiligte);
 
-
+        et_price.requestFocus();
         et_price.setLocale(Locale.GERMANY);
         et_price.configureViewForLocale(Locale.GERMANY);
 
@@ -98,17 +101,26 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         users = (HashMap<String, User>) userHashMap.clone();
     }
 
-    // Save the Transaction in the database
+    // Save the Payment in the database
     private void saveTransaction() {
         int price = ((int) et_price.getRawValue());
         String title = et_article.getText().toString().trim();
         String description = et_description.getText().toString().trim();
         if (price == 0) return;
         if (TextUtils.isEmpty(title)) return;
+        // Check if any involved User is selected
+        Boolean hasInvolvedUser = false;
+        for (Boolean isInvolved : adapter_beteiligte.getInvolvedIDs().values()) {
+            if(isInvolved) {
+                hasInvolvedUser = true;
+                break;
+            }
+        }
+        if(!hasInvolvedUser) return;
 
         DocumentReference doc = db.collection(GROUPS).document(groupID).collection(FINANCES).document();
 
-        Transaction transaction = new Transaction(
+        Payment payment = new Payment(
                 doc.getId(),
                 title,
                 description,
@@ -118,9 +130,25 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
                 price
         );
 
-        doc.set(transaction);
+        doc.set(payment);
+        chargeCosts(payment);
 
         finish();
+    }
+
+    private void chargeCosts(Payment payment) {
+        final CollectionReference ref = db.collection(GROUPS).document(groupID).collection(USERS);
+
+        db.runTransaction(new Transaction.Function<Void>() {
+            @Nullable
+            @Override
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                // DocumentSnapshot doc = transaction.get(ref.document(...));
+
+
+                return null;
+            }
+        });
     }
 
     // Verberge Tastatur, wenn gegebene Views ihren Fokus verlieren
