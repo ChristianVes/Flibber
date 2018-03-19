@@ -2,6 +2,7 @@ package christian.eilers.flibber.Home;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -40,6 +41,7 @@ import com.google.firebase.firestore.Query;
 
 import java.util.HashMap;
 
+import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Article;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
@@ -55,8 +57,15 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         initializeViews();
         userID = LocalStorage.getUserID(getContext());
         groupID = LocalStorage.getGroupID(getContext());
+        users = ((HomeActivity) getActivity()).getUsers();
         ref_shopping = FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(USERS).document(userID).collection(SHOPPING);
-        loadData();
+        if (users != null) loadData();
+        else {
+            Intent main = new Intent(getContext(), MainActivity.class);
+            startActivity(main);
+            getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            getActivity().finish();
+        }
         return mainView;
     }
 
@@ -140,54 +149,53 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
 
             @Override
             protected void onBindViewHolder(@NonNull final ShoppingHolder holder, int position, @NonNull final Article model) {
+                // Artikelname
                 holder.tv_article.setText(model.getName());
+                // Username
+                final User articleUser = users.get(model.getUserID());
+                holder.tv_username.setText(articleUser.getName());
+                // Timestamp
+                if (model.getTimestamp() != null)
+                    holder.tv_datum.setText(
+                            DateUtils.getRelativeTimeSpanString(
+                                    model.getTimestamp().getTime(),
+                                    System.currentTimeMillis() + BUFFER,
+                                    DateUtils.MINUTE_IN_MILLIS,
+                                    DateUtils.FORMAT_ABBREV_RELATIVE)
+                    );
 
-                FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(USERS).document(model.getUserID()).get()
-                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                final User articleUser = documentSnapshot.toObject(User.class);
-
-                                holder.tv_username.setText(articleUser.getName());
-
-                                if (model.getTimestamp() != null)
-                                    holder.tv_datum.setText(
-                                            DateUtils.getRelativeTimeSpanString(
-                                                    model.getTimestamp().getTime(),
-                                                    System.currentTimeMillis() + BUFFER,
-                                                    DateUtils.MINUTE_IN_MILLIS,
-                                                    DateUtils.FORMAT_ABBREV_RELATIVE)
-                                    );
-
-                                // Open Dialog onItemClick
-                                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                // Open Dialog onItemClick
+                // TODO: umschreiben sodass Item "gecheckt" wird...Dialog nur bei Button-Click
+                // TODO: Dialog hat Option: "als Finanzeintrag" sodass Beteiligte-Auswahl möglich ist
+                // TODO: Erstmal einkaufslisten ohne Finanzsystem, dafür User-übergreifend ermöglichen
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        new MaterialDialog.Builder(getContext())
+                                .title(model.getName())
+                                .inputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL)
+                                .input("Preis...", null, true, new MaterialDialog.InputCallback() {
                                     @Override
-                                    public void onClick(View view) {
-                                        new MaterialDialog.Builder(getContext())
-                                                .title(model.getName())
-                                                .inputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL)
-                                                .input("Preis...", null, true, new MaterialDialog.InputCallback() {
-                                                    @Override
-                                                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
 
-                                                    }
-                                                })
-                                                .positiveText("Eingekauft!")
-                                                .negativeText("Abbrechen")
-                                                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                                    @Override
-                                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                        deleteArticle(model.getKey());
-                                                        checkedItems.remove(model.getKey());
-                                                        updateButtonVisibility();
-                                                    }
-                                                })
-                                                .show();
                                     }
-                                });
-                            }
-                        });
+                                })
+                                .positiveText("Eingekauft!")
+                                .negativeText("Abbrechen")
+                                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                        deleteArticle(model.getKey());
+                                        checkedItems.remove(model.getKey());
+                                        updateButtonVisibility();
+                                    }
+                                })
+                                .show();
+                    }
+                });
 
+                // Falls andere User Artikel entfernen gibts sonst Errors!!! (reicht das hier?/Bessere Lösung?)
+                checkedItems.clear();
                 if(checkedItems.containsKey(model.getKey())) holder.checkBox.setChecked(true);
                 else holder.checkBox.setChecked(false);
                 holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -273,7 +281,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     private FirestoreRecyclerAdapter adapter;
     private String groupID, userID;
     private HashMap<String, Article> checkedItems;
-    private HashMap<String, User> users;  // TODO: userList aus Activity benutzen statt get() aus Database
+    private HashMap<String, User> users;
 
     private View mainView;
     private Toolbar toolbar;
