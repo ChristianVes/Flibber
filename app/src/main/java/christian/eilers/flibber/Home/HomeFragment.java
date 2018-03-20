@@ -56,7 +56,6 @@ public class HomeFragment extends Fragment {
     // Initialize views from layout file
     private void initializeViews() {
         recView = mainView.findViewById(R.id.recView);
-        refreshLayout = mainView.findViewById(R.id.refreshLayout);
         fab = mainView.findViewById(R.id.fab);
         progressBar = mainView.findViewById(R.id.progressBar);
         placeholder = mainView.findViewById(R.id.placeholder);
@@ -67,13 +66,6 @@ public class HomeFragment extends Fragment {
                 Intent intent_newNote = new Intent(getContext(), NoteCreateActivity.class);
                 getActivity().startActivity(intent_newNote);
                 getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-            }
-        });
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                adapter.notifyDataSetChanged();
-                refreshLayout.setRefreshing(false);
             }
         });
     }
@@ -224,7 +216,6 @@ public class HomeFragment extends Fragment {
 
     private View mainView;
     private RecyclerView recView;
-    private SwipeRefreshLayout refreshLayout;
     private ProgressBar progressBar;
     private TextView placeholder;
     private FirestoreRecyclerAdapter adapter;

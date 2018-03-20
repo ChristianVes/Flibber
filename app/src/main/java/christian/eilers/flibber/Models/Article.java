@@ -14,7 +14,7 @@ public class Article implements Serializable{
     private boolean isPrivate;
     private Date timestamp;
     @Exclude
-    public boolean isChecked = false;
+    public boolean isChecked = false; // Local Attribute (not added to the database)
 
     public Article(){}
 

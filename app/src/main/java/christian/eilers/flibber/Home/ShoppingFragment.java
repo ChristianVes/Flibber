@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -57,10 +58,12 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
 
         mainView = inflater.inflate(R.layout.fragment_shopping, container, false);
         initializeViews();
+        // Initialize Variables
         userID = LocalStorage.getUserID(getContext());
         groupID = LocalStorage.getGroupID(getContext());
         users = ((HomeActivity) getActivity()).getUsers();
         ref_shopping = FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(USERS).document(userID).collection(SHOPPING);
+        // Load Shopping-List if User-List exists
         if (users != null) loadData();
         else {
             Intent main = new Intent(getContext(), MainActivity.class);
@@ -75,7 +78,6 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     private void initializeViews() {
         toolbar = mainView.findViewById(R.id.toolbar);
         recView = mainView.findViewById(R.id.shoppingList);
-        refreshLayout = mainView.findViewById(R.id.shoppingRefreshLayout);
         et_article = mainView.findViewById(R.id.input_shopping);
         btn_save = mainView.findViewById(R.id.btn_save);
         btn_more = mainView.findViewById(R.id.btn_more);
@@ -89,17 +91,10 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             }
         });
 
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                // adapter.notifyDataSetChanged();
-                refreshLayout.setRefreshing(false);
-            }
-        });
-
         btn_save.setOnClickListener(this);
         btn_more.setOnClickListener(this);
 
+        // Setup Toolbar as Actionbar
         ((HomeActivity)getActivity()).setSupportActionBar(toolbar);
         setHasOptionsMenu(true);
     }
@@ -115,18 +110,27 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         ref_article.set(article);
     }
 
-    // Delete article from the shopping list and compute costs
+    // Delete article from the database
     private void deleteArticle(String key) {
         ref_shopping.document(key).delete();
     }
 
+    // Find all checked Articles and delete them
     private void findCheckedArticles() {
         for (int i = 0; i < adapter.getItemCount(); i++) {
-            CheckBox checkBox = ((ShoppingHolder) recView.findViewHolderForAdapterPosition(i)).checkBox;
-            if (checkBox.isChecked()) {
-                Article a = (Article) adapter.getItem(i);
-                deleteArticle(a.getKey());
+            try {
+                CheckBox checkBox = ((ShoppingHolder) recView.findViewHolderForAdapterPosition(i)).checkBox;
+                if (checkBox.isChecked()) {
+                    Article a = (Article) adapter.getItem(i);
+                    deleteArticle(a.getKey());
+                }
             }
+            // Falls onBindView noch nicht auf dem Item aufgerufen wurde (zb. wenn Article unmittelbar
+            // vorher hinzugefügt wird
+            catch (Exception e) {
+                Crashlytics.logException(e);
+            }
+
         }
     }
 
@@ -257,7 +261,6 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     private EditText et_article;
     private ImageButton btn_save, btn_more;
     private Menu menu;
-    private SwipeRefreshLayout refreshLayout;
 
     private final String GROUPS = "groups";
     private final String USERS = "users";
