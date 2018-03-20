@@ -138,6 +138,8 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                 .setQuery(shoppingQuery, Article.class)
                 .build();
 
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+
         adapter = new FirestoreRecyclerAdapter<Article, ShoppingHolder>(options) {
 
             @NonNull
@@ -178,9 +180,15 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                     }
                 });
             }
+
+            @Override
+            public void onDataChanged() {
+                layoutManager.scrollToPositionWithOffset(0,0);
+                super.onDataChanged();
+            }
         };
 
-        recView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recView.setLayoutManager(layoutManager);
         recView.setAdapter(adapter);
     }
 
