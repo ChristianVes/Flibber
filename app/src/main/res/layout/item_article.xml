@@ -14,7 +14,7 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="5dp"
-        android:checked="false" />
+        android:clickable="false"/>
 
     <LinearLayout
         android:id="@+id/mainLayout"

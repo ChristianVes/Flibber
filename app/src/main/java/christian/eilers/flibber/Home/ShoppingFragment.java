@@ -27,6 +27,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -39,6 +40,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import christian.eilers.flibber.MainActivity;
@@ -90,7 +92,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                adapter.notifyDataSetChanged();
+                // adapter.notifyDataSetChanged();
                 refreshLayout.setRefreshing(false);
             }
         });
@@ -118,13 +120,13 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         ref_shopping.document(key).delete();
     }
 
-    private void updateButtonVisibility() {
-        if (checkedItems == null) return;
-        if (checkedItems.isEmpty()) {
-            menu.findItem(R.id.action_finish).setVisible(false);
-        }
-        else {
-            menu.findItem(R.id.action_finish).setVisible(true);
+    private void findCheckedArticles() {
+        for (int i = 0; i < adapter.getItemCount(); i++) {
+            CheckBox checkBox = ((ShoppingHolder) recView.findViewHolderForAdapterPosition(i)).checkBox;
+            if (checkBox.isChecked()) {
+                Article a = (Article) adapter.getItem(i);
+                deleteArticle(a.getKey());
+            }
         }
     }
 
@@ -141,13 +143,13 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             @NonNull
             @Override
             public ShoppingHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                checkedItems = new HashMap<>();
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_article, parent, false);
                 return new ShoppingHolder(view);
             }
 
             @Override
             protected void onBindViewHolder(@NonNull final ShoppingHolder holder, int position, @NonNull final Article model) {
+                holder.checkBox.setChecked(model.isChecked);
                 // Artikelname
                 holder.tv_article.setText(model.getName());
                 // Username
@@ -163,49 +165,18 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                                     DateUtils.FORMAT_ABBREV_RELATIVE)
                     );
 
-                // Open Dialog onItemClick
-                // TODO: umschreiben sodass Item "gecheckt" wird...Dialog nur bei Button-Click
-                // TODO: Dialog hat Option: "als Finanzeintrag" sodass Beteiligte-Auswahl möglich ist
-                // TODO: Erstmal einkaufslisten ohne Finanzsystem, dafür User-übergreifend ermöglichen
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        new MaterialDialog.Builder(getContext())
-                                .title(model.getName())
-                                .inputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL)
-                                .input("Preis...", null, true, new MaterialDialog.InputCallback() {
-                                    @Override
-                                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-
-                                    }
-                                })
-                                .positiveText("Eingekauft!")
-                                .negativeText("Abbrechen")
-                                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                        deleteArticle(model.getKey());
-                                        checkedItems.remove(model.getKey());
-                                        updateButtonVisibility();
-                                    }
-                                })
-                                .show();
+                        if (model.isChecked) {
+                            holder.checkBox.setChecked(false);
+                            model.isChecked = false;
+                        } else {
+                            holder.checkBox.setChecked(true);
+                            model.isChecked = true;
+                        }
                     }
                 });
-
-                holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                        if(isChecked){
-                            checkedItems.put(model.getKey(), model);
-                        }
-                        else{
-                            checkedItems.remove(model.getKey());
-                        }
-                        updateButtonVisibility();
-                    }
-                });
-
             }
         };
 
@@ -233,7 +204,6 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         this.menu = menu;
         inflater.inflate(R.menu.menu_shopping, menu);
         menu.findItem(R.id.action_finish).getActionView().setOnClickListener(this);
-        updateButtonVisibility();
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -251,11 +221,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         int id = view.getId();
         if (id == R.id.btn_save) saveArticle();
         else if (id == R.id.action_finish) {
-            for (Article a : checkedItems.values()) {
-                deleteArticle(a.getKey());
-            }
-            checkedItems.clear();
-            updateButtonVisibility();
+            findCheckedArticles();
         }
     }
 
@@ -275,7 +241,6 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     private CollectionReference ref_shopping;
     private FirestoreRecyclerAdapter adapter;
     private String groupID, userID;
-    private HashMap<String, Article> checkedItems;
     private HashMap<String, User> users;
 
     private View mainView;

@@ -1,5 +1,6 @@
 package christian.eilers.flibber.Models;
 
+import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.io.Serializable;
@@ -12,6 +13,8 @@ public class Article implements Serializable{
     private String userID;
     private boolean isPrivate;
     private Date timestamp;
+    @Exclude
+    public boolean isChecked = false;
 
     public Article(){}
 
