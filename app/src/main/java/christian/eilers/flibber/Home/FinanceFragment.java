@@ -267,7 +267,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                 TransactionHolder transHolder = (TransactionHolder) holder;
 
                 transHolder.tv_title.setText(model.getTitle()); // set the Title (of the transaction)
-                transHolder.tv_name.setText(users.get(model.getPayerID()).getName()); // set Payer-Name
+                transHolder.tv_name.setText(users.get(model.getCreatorID()).getName()); // set Creator-Name
 
                 // Compute the Costs for the current user
                 long partialPrice = Math.round((double) model.getPrice() / model.getInvolvedIDs().size());
@@ -299,7 +299,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
 
     // Custom ViewHolder for a Transaction
     public class TransactionHolder extends RecyclerView.ViewHolder {
-        TextView tv_title, tv_name, tv_datum;
+        TextView tv_title, tv_name, tv_datum, tv_text;
         MoneyTextView tv_value;
 
         public TransactionHolder(View itemView) {
@@ -308,6 +308,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
             tv_name = itemView.findViewById(R.id.name);
             tv_title = itemView.findViewById(R.id.title);
             tv_value = itemView.findViewById(R.id.value);
+            tv_text = itemView.findViewById(R.id.text);
         }
     }
 

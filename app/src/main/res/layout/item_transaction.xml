@@ -55,7 +55,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:textSize="13sp"
-                android:text="Gekauft von "/>
+                android:text="Eingetragen von "/>
 
             <TextView
                 android:id="@+id/name"
