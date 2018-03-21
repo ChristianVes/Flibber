@@ -15,6 +15,7 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -91,9 +92,10 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         users = ((HomeActivity) getActivity()).getUsers();
     }
 
+    // Load user's finance-balance
     private void loadBilanz() {
         Query query = db.collection(GROUPS).document(groupID)
-                .collection(USERS).orderBy(MONEY, Query.Direction.DESCENDING);
+                .collection(USERS).orderBy(MONEY, Query.Direction.DESCENDING); // order by money-value
 
         FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
                 .setQuery(query, User.class)
@@ -109,6 +111,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
 
             @Override
             protected void onBindViewHolder(@NonNull UserHolder holder, int position, @NonNull final User model) {
+                // USERNAME & MONEY
                 holder.tv_username.setText(model.getName());
                 holder.tv_money.setAmount(model.getMoney());
 
@@ -120,34 +123,41 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                             .placeholder(R.drawable.profile_placeholder)
                             .into(holder.img_profile);
 
+                // Open Dialog for "Quick-Transaction" with the clicked-User
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (userID.equals(model.getUserID())) return;
+                        if (userID.equals(model.getUserID())) return; // don't allow transaction with oneself
                         MaterialDialog dialog = new MaterialDialog.Builder(getContext())
                                 .title("Überweisung an " + model.getName())
                                 .customView(R.layout.dialog_uberweisung, true)
                                 .positiveText("Speichern")
                                 .negativeText("Abbrechen")
                                 .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                    // Read out the input value & description and save the transaction
                                     @Override
                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                         View v = dialog.getCustomView();
                                         CurrencyEditText et_value = v.findViewById(R.id.input_price);
                                         EditText et_description = v.findViewById(R.id.input_description);
+
                                         final long value = et_value.getRawValue();
                                         final String description = et_description.getText().toString().trim();
                                         if (value <= 0) return;
                                         if (TextUtils.isEmpty(description)) return;
+
                                         saveTransaction(value, description);
                                     }
 
-                                    private void saveTransaction(long value, String description) {
+                                    // Save the Payment to the database and offset the costs/money
+                                    private void saveTransaction(final long value, final String description) {
                                         final CollectionReference ref_finances = db.collection(GROUPS).document(groupID).collection(FINANCES);
                                         final CollectionReference ref_users = db.collection(GROUPS).document(groupID).collection(USERS);
-                                        ArrayList<String> involved = new ArrayList<>();
+
+                                        ArrayList<String> involved = new ArrayList<>(); // Save the current user as Array-List
                                         involved.add(userID);
-                                        final Payment payment = new Payment(
+
+                                        final Payment payment = new Payment(        // Create the Payment-Object
                                                 ref_finances.document().getId(),
                                                 "Überweisung",
                                                 description,
@@ -156,6 +166,9 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                                                 involved,
                                                 value
                                         );
+
+                                        // Run a Transaction to charge the costs between the two user's and save the payment
+                                        // in the finance-collection
                                         db.runTransaction(new Transaction.Function<Void>() {
                                             @Nullable
                                             @Override
@@ -179,6 +192,8 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                                     }
                                 })
                                 .show();
+                        // Show the Keyboard
+                        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
                     }
                 });
             }
@@ -189,6 +204,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
 
     }
 
+    // Custom Viewholder for the User's
     public class UserHolder extends RecyclerView.ViewHolder {
 
         CircleImageView img_profile;
@@ -203,15 +219,18 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         }
     }
 
+    // Load the (TO-DO: last few) past transactions/payments
     private void loadVerlauf() {
         Query query = db.collection(GROUPS).document(groupID)
-                .collection(FINANCES).orderBy(TIMESTAMP, Query.Direction.DESCENDING);
+                .collection(FINANCES).orderBy(TIMESTAMP, Query.Direction.DESCENDING);   // order by Date
 
         FirestoreRecyclerOptions<Payment> options = new FirestoreRecyclerOptions.Builder<Payment>()
                 .setQuery(query, Payment.class)
                 .build();
 
         adapterVerlauf = new FirestoreRecyclerAdapter<Payment, RecyclerView.ViewHolder>(options) {
+
+            // Create normal/empty Viewholder depending on whether the user is involved in this transaction
             @NonNull
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -227,6 +246,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                 }
             }
 
+            // Determine whether the user is involved in the transaction at the given adapter-position
             @Override
             public int getItemViewType(int position) {
                 boolean isPayer = getSnapshots().get(position).getPayerID().equals(userID);
@@ -237,12 +257,15 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
 
             @Override
             protected void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull Payment model) {
-                if (holder.getItemViewType() == HIDE) return;
+                if (holder.getItemViewType() == HIDE) return; // show nothing if user is not involved
 
+                // specialize the ViewHolder as TransactionHolder to bind the data to the item
                 TransactionHolder transHolder = (TransactionHolder) holder;
-                transHolder.tv_title.setText(model.getTitle());
 
-                // Costs for the current user
+                transHolder.tv_title.setText(model.getTitle()); // set the Title (of the transaction)
+                transHolder.tv_name.setText(users.get(model.getPayerID()).getName()); // set Payer-Name
+
+                // Compute the Costs for the current user
                 long partialPrice = Math.round((double) model.getPrice() / model.getInvolvedIDs().size());
                 long totalPriceRounded = partialPrice * model.getInvolvedIDs().size();
 
@@ -253,7 +276,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                 } else {
                     if (model.getPayerID().equals(userID))
                         transHolder.tv_value.setAmount(totalPriceRounded);
-                    else Crashlytics.logException(new Exception("Falscher Viewholder angezeigt!"));
+                    else Crashlytics.logException(new Exception("Falscher Viewholder angezeigt!")); // should never get in this case
                 }
 
                 // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
@@ -263,10 +286,6 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                                     System.currentTimeMillis() + BUFFER,
                                     DateUtils.MINUTE_IN_MILLIS,
                                     DateUtils.FORMAT_ABBREV_RELATIVE));
-
-                // Payer-Name
-                transHolder.tv_name.setText(users.get(model.getPayerID()).getName());
-
             }
         };
 
@@ -274,6 +293,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         recVerlauf.setAdapter(adapterVerlauf);
     }
 
+    // Custom ViewHolder for a Transaction
     public class TransactionHolder extends RecyclerView.ViewHolder {
         TextView tv_title, tv_name, tv_datum;
         MoneyTextView tv_value;
@@ -287,6 +307,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         }
     }
 
+    // Just an Empty Viewholder (for transactions the current user is not involved in)
     public class EmptyHolder extends RecyclerView.ViewHolder {
 
         public EmptyHolder(View itemView) {
