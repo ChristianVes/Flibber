@@ -163,7 +163,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                                                 DocumentSnapshot snap_from = transaction.get(ref_users.document(userID));
                                                 long money_from = snap_from.getLong(MONEY) - payment.getPrice();
                                                 DocumentSnapshot snap_to = transaction.get(ref_users.document(payment.getPayerID()));
-                                                long money_to = snap_from.getLong(MONEY) + payment.getPrice();
+                                                long money_to = snap_to.getLong(MONEY) + payment.getPrice();
 
                                                 transaction.update(ref_users.document(userID), MONEY, money_from);
                                                 transaction.update(ref_users.document(payment.getPayerID()), MONEY, money_to);
