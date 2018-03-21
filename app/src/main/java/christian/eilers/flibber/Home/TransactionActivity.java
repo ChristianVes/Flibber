@@ -146,14 +146,15 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
             @Override
             public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
                 HashMap<String, Long> map = new HashMap<>();
-                long partialPrice = Math.round(payment.getPrice() / payment.getInvolvedIDs().size());
+                long partialPrice = Math.round((double) payment.getPrice() / payment.getInvolvedIDs().size());
+                long totalPriceRounded = partialPrice * payment.getInvolvedIDs().size();
 
                 // Read-Operations
                 for (String involvedID : payment.getInvolvedIDs()) {
                     DocumentSnapshot snapshot = transaction.get(ref_users.document(involvedID));
                     // aktueller Beteiligter ist ebenfalls Bezahler
                     if (involvedID.equals(payment.getPayerID())) {
-                        map.put(involvedID, snapshot.getLong(MONEY) + payment.getPrice() - partialPrice);
+                        map.put(involvedID, snapshot.getLong(MONEY) + totalPriceRounded - partialPrice);
                     }
                     // aktueller Beteiligte ist nicht auch Bezahler
                     else map.put(involvedID, snapshot.getLong(MONEY) - partialPrice);
@@ -162,7 +163,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
                 // Bezahler Geld verrechnen, falls er noch nicht in Involviert-Schleife gemacht
                 if (!map.containsKey(payment.getPayerID())) {
                     DocumentSnapshot snapshot = transaction.get(ref_users.document(payment.getPayerID()));
-                    map.put(payment.getPayerID(), snapshot.getLong(MONEY) + payment.getPrice());
+                    map.put(payment.getPayerID(), snapshot.getLong(MONEY) + totalPriceRounded);
                 }
 
                 // Write-Operations
@@ -194,6 +195,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
     // Verberge Tastatur, wenn gegebene Views ihren Fokus verlieren
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
+        if (et_article.hasFocus() || et_price.hasFocus() || et_description.hasFocus()) return;
         if (!hasFocus) {
             InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);

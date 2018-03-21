@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -76,6 +77,7 @@ public class FinanceFragment extends Fragment {
     private void initializeVariables() {
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
+        userID = LocalStorage.getUserID(getContext());
         groupID = LocalStorage.getGroupID(getContext());
         users = ((HomeActivity) getActivity()).getUsers();
     }
@@ -138,34 +140,62 @@ public class FinanceFragment extends Fragment {
                 .setQuery(query, Payment.class)
                 .build();
 
-        adapterVerlauf = new FirestoreRecyclerAdapter<Payment, TransactionHolder>(options) {
+        adapterVerlauf = new FirestoreRecyclerAdapter<Payment, RecyclerView.ViewHolder>(options) {
             @NonNull
             @Override
-            public TransactionHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_transaction, parent, false);
-                return new TransactionHolder(view);
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                switch (viewType) {
+                    case SHOW: {
+                        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_transaction, parent, false);
+                        return new TransactionHolder(view);
+                    }
+                    default: {
+                        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_empty, parent, false);
+                        return new EmptyHolder(view);
+                    }
+                }
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull TransactionHolder holder, int position, @NonNull Payment model) {
-                holder.tv_title.setText(model.getTitle());
-                holder.tv_value.setAmount(model.getPrice());
+            public int getItemViewType(int position) {
+                boolean isPayer = getSnapshots().get(position).getPayerID().equals(userID);
+                boolean isInvolved = getSnapshots().get(position).getInvolvedIDs().contains(userID);
+                if (isPayer || isInvolved) return SHOW;
+                return HIDE;
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull Payment model) {
+                if (holder.getItemViewType() == HIDE) return;
+
+                TransactionHolder transHolder = (TransactionHolder) holder;
+                transHolder.tv_title.setText(model.getTitle());
+
+                // Costs for the current user
+                long partialPrice = Math.round((double) model.getPrice() / model.getInvolvedIDs().size());
+                long totalPriceRounded = partialPrice * model.getInvolvedIDs().size();
+
+                if (model.getInvolvedIDs().contains(userID)) {
+                    if (model.getPayerID().equals(userID))
+                        transHolder.tv_value.setAmount(totalPriceRounded - partialPrice);
+                    else transHolder.tv_value.setAmount(-partialPrice);
+                } else {
+                    if (model.getPayerID().equals(userID))
+                        transHolder.tv_value.setAmount(totalPriceRounded);
+                    else Crashlytics.logException(new Exception("Falscher Viewholder angezeigt!"));
+                }
 
                 // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
-                if(model.getTimestamp() != null)
-                    holder.tv_datum.setText(
+                if (model.getTimestamp() != null)
+                    transHolder.tv_datum.setText(
                             DateUtils.getRelativeTimeSpanString(model.getTimestamp().getTime(),
                                     System.currentTimeMillis() + BUFFER,
                                     DateUtils.MINUTE_IN_MILLIS,
                                     DateUtils.FORMAT_ABBREV_RELATIVE));
 
-                holder.tv_name.setText(users.get(model.getPayerID()).getName());
+                // Payer-Name
+                transHolder.tv_name.setText(users.get(model.getPayerID()).getName());
 
-                /*for (String key : model.getInvolvedIDs().keySet()) {
-                    if (model.getInvolvedIDs().get(key)) {
-                        // Kommt hier rein für jeden Beteiligten User
-                    }
-                }*/
             }
         };
 
@@ -186,6 +216,14 @@ public class FinanceFragment extends Fragment {
         }
     }
 
+    public class EmptyHolder extends RecyclerView.ViewHolder {
+
+        public EmptyHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+
     @Override
     public void onStart() {
         super.onStart();
@@ -203,6 +241,7 @@ public class FinanceFragment extends Fragment {
     private StorageReference storage;
     private FirebaseFirestore db;
     private String groupID;
+    private String userID;
     private HashMap<String, User> users;
 
     private View mainView;
@@ -218,4 +257,6 @@ public class FinanceFragment extends Fragment {
     private final String MONEY = "money";
     private final String PROFILE = "profile";
     private final int BUFFER = 10000; // Millisekunden // entspricht 10 Sekunden
+    private final int HIDE = 0;
+    private final int SHOW = 1;
 }

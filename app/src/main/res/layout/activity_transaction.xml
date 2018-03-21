@@ -65,7 +65,7 @@
             android:hint="Gekaufter Artikel"
             android:imeOptions="actionNext"
             android:inputType="textCapSentences"
-            android:maxLength="30"
+            android:maxLength="20"
             android:textSize="20sp"
             android:textStyle="bold" />
 

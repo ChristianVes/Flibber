@@ -53,20 +53,20 @@
                 android:id="@+id/article"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@+id/btn_options"
+                android:layout_toLeftOf="@+id/img_group"
                 android:layout_alignParentLeft="true"
                 android:textSize="25sp"
                 android:textStyle="bold"
                 android:text="..."/>
 
-            <ImageButton
-                android:id="@+id/btn_options"
+            <ImageView
+                android:id="@+id/img_group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:background="?android:selectableItemBackground"
-                app:srcCompat="@drawable/ic_arrow_drop_down"
+                app:srcCompat="@drawable/ic_group"
+                android:tint="@color/colorPrimary"
                 android:visibility="gone"/>
 
         </RelativeLayout>
