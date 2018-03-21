@@ -10,22 +10,35 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.blackcat.currencyedittext.CurrencyEditText;
 import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import org.fabiomsr.moneytextview.MoneyTextView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import christian.eilers.flibber.MainActivity;
@@ -36,7 +49,7 @@ import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class FinanceFragment extends Fragment {
+public class FinanceFragment extends Fragment implements View.OnClickListener{
 
     @Nullable
     @Override
@@ -63,14 +76,10 @@ public class FinanceFragment extends Fragment {
         recBilanz = mainView.findViewById(R.id.recProfils);
         recVerlauf = mainView.findViewById(R.id.recVerlauf);
         fab = mainView.findViewById(R.id.fab);
+        btn_verlauf = mainView.findViewById(R.id.zumVerlauf);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getActivity().startActivity(new Intent(getContext(), TransactionActivity.class));
-                getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-            }
-        });
+        fab.setOnClickListener(this);
+        btn_verlauf.setOnClickListener(this);
     }
 
     // Initialize variables
@@ -99,7 +108,7 @@ public class FinanceFragment extends Fragment {
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull UserHolder holder, int position, @NonNull User model) {
+            protected void onBindViewHolder(@NonNull UserHolder holder, int position, @NonNull final User model) {
                 holder.tv_username.setText(model.getName());
                 holder.tv_money.setAmount(model.getMoney());
 
@@ -110,6 +119,68 @@ public class FinanceFragment extends Fragment {
                             .dontAnimate()
                             .placeholder(R.drawable.profile_placeholder)
                             .into(holder.img_profile);
+
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (userID.equals(model.getUserID())) return;
+                        MaterialDialog dialog = new MaterialDialog.Builder(getContext())
+                                .title("Überweisung an " + model.getName())
+                                .customView(R.layout.dialog_uberweisung, true)
+                                .positiveText("Speichern")
+                                .negativeText("Abbrechen")
+                                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                        View v = dialog.getCustomView();
+                                        CurrencyEditText et_value = v.findViewById(R.id.input_price);
+                                        EditText et_description = v.findViewById(R.id.input_description);
+                                        final long value = et_value.getRawValue();
+                                        final String description = et_description.getText().toString().trim();
+                                        if (value <= 0) return;
+                                        if (TextUtils.isEmpty(description)) return;
+                                        saveTransaction(value, description);
+                                    }
+
+                                    private void saveTransaction(long value, String description) {
+                                        final CollectionReference ref_finances = db.collection(GROUPS).document(groupID).collection(FINANCES);
+                                        final CollectionReference ref_users = db.collection(GROUPS).document(groupID).collection(USERS);
+                                        ArrayList<String> involved = new ArrayList<>();
+                                        involved.add(userID);
+                                        final Payment payment = new Payment(
+                                                ref_finances.document().getId(),
+                                                "Überweisung",
+                                                description,
+                                                model.getUserID(),
+                                                userID,
+                                                involved,
+                                                value
+                                        );
+                                        db.runTransaction(new Transaction.Function<Void>() {
+                                            @Nullable
+                                            @Override
+                                            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                                                DocumentSnapshot snap_from = transaction.get(ref_users.document(userID));
+                                                long money_from = snap_from.getLong(MONEY) - payment.getPrice();
+                                                DocumentSnapshot snap_to = transaction.get(ref_users.document(payment.getPayerID()));
+                                                long money_to = snap_from.getLong(MONEY) + payment.getPrice();
+
+                                                transaction.update(ref_users.document(userID), MONEY, money_from);
+                                                transaction.update(ref_users.document(payment.getPayerID()), MONEY, money_to);
+                                                transaction.set(ref_finances.document(payment.getKey()), payment);
+                                                return null;
+                                            }
+                                        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Toast.makeText(getContext(), "Erfolgreich überwiesen!", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+                                })
+                                .show();
+                    }
+                });
             }
         };
 
@@ -223,6 +294,18 @@ public class FinanceFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.fab:
+                getActivity().startActivity(new Intent(getContext(), TransactionActivity.class));
+                getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                break;
+            case R.id.zumVerlauf:
+                // TODO: Verlauf Fragment (damit man users weiter benutzen kann)
+                break;
+        }
+    }
 
     @Override
     public void onStart() {
@@ -249,6 +332,7 @@ public class FinanceFragment extends Fragment {
     private RecyclerView recBilanz, recVerlauf;
     private FirestoreRecyclerAdapter adapterBilanz, adapterVerlauf;
     private FloatingActionButton fab;
+    private RelativeLayout btn_verlauf;
 
     private final String GROUPS = "groups";
     private final String USERS = "users";
