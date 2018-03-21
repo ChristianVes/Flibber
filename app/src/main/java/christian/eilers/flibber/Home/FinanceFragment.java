@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -78,6 +79,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         recVerlauf = mainView.findViewById(R.id.recVerlauf);
         fab = mainView.findViewById(R.id.fab);
         btn_verlauf = mainView.findViewById(R.id.zumVerlauf);
+        progressBar = mainView.findViewById(R.id.progressBar);
 
         fab.setOnClickListener(this);
         btn_verlauf.setOnClickListener(this);
@@ -151,6 +153,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
 
                                     // Save the Payment to the database and offset the costs/money
                                     private void saveTransaction(final long value, final String description) {
+                                        progressBar.setVisibility(View.VISIBLE);
                                         final CollectionReference ref_finances = db.collection(GROUPS).document(groupID).collection(FINANCES);
                                         final CollectionReference ref_users = db.collection(GROUPS).document(groupID).collection(USERS);
 
@@ -186,6 +189,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                                         }).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
+                                                progressBar.setVisibility(View.GONE);
                                                 Toast.makeText(getContext(), "Erfolgreich überwiesen!", Toast.LENGTH_SHORT).show();
                                             }
                                         });
@@ -354,6 +358,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
     private FirestoreRecyclerAdapter adapterBilanz, adapterVerlauf;
     private FloatingActionButton fab;
     private RelativeLayout btn_verlauf;
+    private ProgressBar progressBar;
 
     private final String GROUPS = "groups";
     private final String USERS = "users";
