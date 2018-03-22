@@ -12,6 +12,7 @@ public class Note implements Serializable{
     private String userID;
     private String imagePath;
     private String key;
+    private long commentsCount;
     private Date timestamp;
 
     public Note() {
@@ -24,6 +25,7 @@ public class Note implements Serializable{
         this.userID = userID;
         this.imagePath = imagePath;
         this.key = key;
+        commentsCount = 0;
     }
 
     public String getTitle() {
@@ -60,6 +62,14 @@ public class Note implements Serializable{
 
     public String getKey() {
         return key;
+    }
+
+    public long getCommentsCount() {
+        return commentsCount;
+    }
+
+    public void setCommentsCount(long commentsCount) {
+        this.commentsCount = commentsCount;
     }
 
     public void setKey(String key) {

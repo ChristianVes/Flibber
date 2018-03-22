@@ -104,6 +104,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onBindViewHolder(final HomeFragment.NotesHolder holder, int position, final Note model) {
                 User user = users.get(model.getUserID());
+                // USERNAME
                 holder.tv_username.setText(user.getName());
 
                 // TITEL
@@ -133,7 +134,7 @@ public class HomeFragment extends Fragment {
 
                 // PROFILE PICTURE
                 if(user.getPicPath() != null)
-                    GlideApp.with(getContext())
+                    GlideApp.with(holder.itemView.getContext())
                             .load(storage.child(PROFILE).child(user.getPicPath()))
                             .dontAnimate()
                             .placeholder(R.drawable.profile_placeholder)
@@ -141,13 +142,12 @@ public class HomeFragment extends Fragment {
 
                 // NOTE PICTURE ("Clear" zum vermeiden falscher Zuweisungen)
                 if(model.getImagePath() != null)
-                    GlideApp.with(getContext())
+                    GlideApp.with(holder.itemView.getContext())
                             .load(storage.child(NOTES).child(model.getImagePath()))
                             .dontAnimate()
                             .into(holder.img_note);
-                else {
-                    Glide.with(getContext()).clear(holder.img_note);
-                }
+                else Glide.with(holder.itemView.getContext()).clear(holder.img_note);
+
 
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -159,15 +159,7 @@ public class HomeFragment extends Fragment {
                     }
                 });
 
-
-                holder.tv_comments.setText("...");
-                getSnapshots().getSnapshot(position).getReference().collection(COMMENTS).get()
-                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                            @Override
-                            public void onSuccess(QuerySnapshot documentSnapshots) {
-                                holder.tv_comments.setText(documentSnapshots.size()+"");
-                            }
-                        });
+                holder.tv_comments.setText(model.getCommentsCount()+"");
             }
 
             // Einmalige Zuweisung zum ViewHolder: NotesHolder

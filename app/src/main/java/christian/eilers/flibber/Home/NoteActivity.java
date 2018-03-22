@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,10 +29,13 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -164,12 +168,27 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
 
     // Save the comment specified to the note in the database
     private void saveComment() {
-        String commentText = input.getText().toString().trim();
+        final String commentText = input.getText().toString().trim();
         if(TextUtils.isEmpty(commentText)) return;
-        Comment comment = new Comment(commentText, userID);
-        db.collection(GROUPS).document(groupID).collection(NOTES).document(noteID).collection(COMMENTS)
-                .document().set(comment);
-        input.setText("");
+
+        // save Comment in Database
+        final Comment comment = new Comment(commentText, userID);
+        final DocumentReference ref_note = db.collection(GROUPS).document(groupID).collection(NOTES).document(noteID);
+        ref_note.collection(COMMENTS).document().set(comment);
+
+        // Update the commentsCount to +1
+        db.runTransaction(new Transaction.Function<Void>() {
+            @Nullable
+            @Override
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                DocumentSnapshot snapshot = transaction.get(ref_note);
+                long newCount = snapshot.getLong(COMMENTSCOUNT) + 1;
+                transaction.update(ref_note, COMMENTSCOUNT, newCount);
+                return null;
+            }
+        });
+        input.setText(""); // Clear Comments-Input Field
+        // Hide Keyboard
         InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(input.getWindowToken(), 0);
     }
@@ -388,6 +407,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
     private final String TIMESTAMP = "timestamp";
     private final String TITLE = "title";
     private final String DESCRIPTION = "description";
+    private final String COMMENTSCOUNT = "commentsCount";
     private final int BUFFER = 10000; // Millisekunden // entspricht 10 Sekunden
 
 
