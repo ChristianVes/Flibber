@@ -62,7 +62,8 @@ public class VerlaufAdapter extends FirestoreRecyclerAdapter<Payment, RecyclerVi
     public int getItemViewType(int position) {
         boolean isPayer = getSnapshots().get(position).getPayerID().equals(userID);
         boolean isInvolved = getSnapshots().get(position).getInvolvedIDs().contains(userID);
-        if (isPayer || isInvolved) return SHOW;
+        boolean isDeleted = getSnapshots().get(position).isDeleted();
+        if ((isPayer || isInvolved) && !isDeleted) return SHOW;
         return HIDE;
     }
 
@@ -104,8 +105,7 @@ public class VerlaufAdapter extends FirestoreRecyclerAdapter<Payment, RecyclerVi
                 MaterialDialog dialog = new MaterialDialog.Builder(holder.itemView.getContext())
                         .title(model.getTitle())
                         .customView(R.layout.dialog_verlauf, true)
-                        .positiveText("Schließen")
-                        .neutralText("Löschen")
+                        .positiveText("Okay")
                         .show();
 
                 View v = dialog.getCustomView();

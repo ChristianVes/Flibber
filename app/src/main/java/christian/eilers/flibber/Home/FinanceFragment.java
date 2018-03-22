@@ -135,7 +135,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                                 .title("Überweisung an " + model.getName())
                                 .customView(R.layout.dialog_uberweisung, true)
                                 .positiveText("Speichern")
-                                .negativeText("Abbrechen")
+                                .neutralText("Abbrechen")
                                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                                     // Read out the input value & description and save the transaction
                                     @Override

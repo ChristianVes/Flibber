@@ -5,13 +5,13 @@ import com.google.firebase.firestore.ServerTimestamp;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 public class Payment implements Serializable{
 
     private String key, title, description, payerID, creatorID;
     private ArrayList<String> involvedIDs;
     private long price;
+    private boolean isDeleted;
     private Date timestamp;
 
     public Payment(){}
@@ -24,6 +24,7 @@ public class Payment implements Serializable{
         this.creatorID = creatorID;
         this.involvedIDs = involvedIDs;
         this.price = price;
+        isDeleted = false;
     }
 
     public String getKey() {
@@ -80,6 +81,14 @@ public class Payment implements Serializable{
 
     public void setPrice(long price) {
         this.price = price;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
     @ServerTimestamp
