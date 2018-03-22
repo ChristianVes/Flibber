@@ -39,6 +39,7 @@ import com.google.firebase.storage.StorageReference;
 import org.fabiomsr.moneytextview.MoneyTextView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import christian.eilers.flibber.Adapter.VerlaufAdapter;
@@ -225,7 +226,9 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
     // Load the last 5 transactions/payments
     private void loadVerlauf() {
         Query query = db.collection(GROUPS).document(groupID)
-                .collection(FINANCES).orderBy(TIMESTAMP, Query.Direction.DESCENDING).limit(5);   // order by Date, limit to 5
+                .collection(FINANCES)
+                .orderBy(TIMESTAMP, Query.Direction.DESCENDING) // order by date
+                .whereGreaterThan(TIMESTAMP, new Date(System.currentTimeMillis() - 7L * 24 * 3600 * 1000)); // only from last 7 Days
 
         FirestoreRecyclerOptions<Payment> options = new FirestoreRecyclerOptions.Builder<Payment>()
                 .setQuery(query, Payment.class)

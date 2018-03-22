@@ -147,7 +147,8 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     }
 
     // Find all checked Articles and delete them
-    private void findCheckedArticles() {
+    private void findCheckedArticles()
+    {
         for (int i = 0; i < adapter.getItemCount(); i++) {
             try {
                 CheckBox checkBox = ((ShoppingHolder) recView.findViewHolderForAdapterPosition(i)).checkBox;
