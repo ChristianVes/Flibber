@@ -41,6 +41,7 @@ import org.fabiomsr.moneytextview.MoneyTextView;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import christian.eilers.flibber.Adapter.VerlaufAdapter;
 import christian.eilers.flibber.MainActivity;
@@ -198,6 +199,9 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                                 .show();
                         // Show the Keyboard
                         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                        CurrencyEditText et_price = dialog.getCustomView().findViewById(R.id.input_price);
+                        et_price.setLocale(Locale.GERMANY);
+                        et_price.configureViewForLocale(Locale.GERMANY);
                     }
                 });
             }

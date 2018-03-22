@@ -213,11 +213,11 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
 
                         // Comment User's Profile Picture
                         if(user.getPicPath() != null)
-                            GlideApp.with(NoteActivity.this)
+                            GlideApp.with(holder.itemView.getContext())
                                     .load(storage.child(PROFILE).child(user.getPicPath()))
                                     .dontAnimate()
                                     .into(holder.comment_img);
-                        else Glide.with(NoteActivity.this).clear(holder.comment_img);
+                        else Glide.with(holder.itemView.getContext()).clear(holder.comment_img);
 
                         // Comment text
                         holder.comment_text.setText(model.getDescription());
