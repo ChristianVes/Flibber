@@ -88,14 +88,6 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         /*
-        Lokales Laden der User-Liste aus dem Cache
-        Unnötig, da sowieso jedes mal die get() Methode aufgerufen wird, bevor die Fragmente initialisiert werden
-        if(savedInstanceState != null) {
-            users = (HashMap<String, User>) savedInstanceState.getSerializable("users");
-        }
-        */
-
-        /*
         Lade Liste aller User dieser Gruppe einmalig und initalisiere anschließend die Fragmente
         Anschließend wird die Userliste über einen Listener up-to-date gehalten
         Der Listener ist an den Lifecycle der Activity gebunden
@@ -120,16 +112,6 @@ public class HomeActivity extends AppCompatActivity {
 
         bottomNavigationView.setupWithViewPager(mView);
     }
-
-    /*
-    Unnötig, siehe oben....
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        if(users != null)
-            outState.putSerializable("users", users);
-        super.onSaveInstanceState(outState);
-    }
-    */
 
     // Erzeugt eine Userliste mithilfe eines Snapshots aus der Datenbank
     private void retrieveUsers(QuerySnapshot documentSnapshots) {

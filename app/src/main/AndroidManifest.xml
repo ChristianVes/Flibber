@@ -45,8 +45,8 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Home.TransactionActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".Home.VerlaufActivity"></activity>
     </application>
 
 </manifest>
