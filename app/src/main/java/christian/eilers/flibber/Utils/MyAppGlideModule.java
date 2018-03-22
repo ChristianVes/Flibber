@@ -21,4 +21,13 @@ public class MyAppGlideModule extends AppGlideModule{
         registry.append(StorageReference.class, InputStream.class,
                 new FirebaseImageLoader.Factory());
     }
+
+    // Fix für:
+    // Fatal Exception: java.lang.IllegalArgumentException
+    // You cannot start a load for a destroyed activity
+    @Override
+    public boolean isManifestParsingEnabled() {
+        return false;
+    }
+
 }
