@@ -23,8 +23,9 @@ import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -55,25 +56,15 @@ Detail Ansicht einer Notiz und ihrer Kommentare
 Möglichkeit zum Kommentieren der Notiz
 HINWEIS: Um Keyboard auszublenden das Layout eines scrollbaren Layouts focusable/clickable machen
          Hier: MainLayout, Layout unter NestedScrollView, List Item des Recycler Views
- */
+*/
 public class NoteActivity extends AppCompatActivity implements View.OnClickListener, View.OnFocusChangeListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
-        userID = LocalStorage.getUserID(this);
-        groupID = LocalStorage.getGroupID(this);
-        noteID = getIntent().getExtras().getString(NOTEID);
-        db = FirebaseFirestore.getInstance();
-        storage = FirebaseStorage.getInstance().getReference();
+        initializeVariables();
         initializeViews();
-        if(noteID == null) {
-            Intent main = new Intent(this, MainActivity.class);
-            startActivity(main);
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-            finish();
-        }
         loadNote();
         loadData();
     }
@@ -105,13 +96,27 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         btn_save.setOnClickListener(this);
     }
 
-    // Lade den Inhalt der Notiz und zeige sie an
+    private void initializeVariables() {
+        userID = LocalStorage.getUserID(this);
+        groupID = LocalStorage.getGroupID(this);
+        db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance().getReference();
+        noteID = getIntent().getExtras().getString(NOTEID);
+        if(noteID == null) {
+            Intent main = new Intent(this, MainActivity.class);
+            startActivity(main);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            finish();
+        }
+    }
+
+    // Lade den Inhalt der Notiz aus DB und zeige sie an
     private void loadNote() {
         db.collection(GROUPS).document(groupID).collection(NOTES).document(noteID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Note note = documentSnapshot.toObject(Note.class);
-                if(note.getUserID().equals(userID)) btn_more.setVisibility(View.VISIBLE);
+                final Note note = documentSnapshot.toObject(Note.class); // retrieve Note-Object
+                if(note.getUserID().equals(userID)) btn_more.setVisibility(View.VISIBLE); // Option-Button nur für Ersteller sichtbar machen
 
                 // TITEL & BESCHREIBUNG
                 if (note.getTitle() != null && !TextUtils.isEmpty(note.getTitle())) {
@@ -145,12 +150,12 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    // Lade User-Informationen des Notes-Erstellers
+    // Lade User-Informationen des Notes-Erstellers aus DB
     private void loadNoteUser(String noteUserID) {
         db.collection(USERS).document(noteUserID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                User user = documentSnapshot.toObject(User.class);
+                final User user = documentSnapshot.toObject(User.class); // retrieve User-Object
                 // USERNAME
                 tv_username.setText(user.getName());
                 // PROFILE PICTURE
@@ -196,16 +201,12 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
     // load and display the Comments
     /*
     TODO: Beim Erstellen eines Kommentars wird onBindViewHolder 2mal aufgerufen:
-    Einmal bevor es zur Datenbank geschickt wird und einmal wenn es online geupdatet wurde
+          Einmal bevor es zur Datenbank geschickt wird und einmal wenn es online geupdatet wurde
     */
     private void loadData() {
-        final Query commentsQuery = FirebaseFirestore.getInstance()
-                .collection(GROUPS)
-                .document(groupID)
-                .collection(NOTES)
-                .document(noteID)
-                .collection(COMMENTS)
-                .orderBy(TIMESTAMP);
+        final Query commentsQuery = db.collection(GROUPS).document(groupID)
+                .collection(NOTES).document(noteID)
+                .collection(COMMENTS).orderBy(TIMESTAMP);
 
         FirestoreRecyclerOptions<Comment> options = new FirestoreRecyclerOptions.Builder<Comment>()
                 .setQuery(commentsQuery, Comment.class)
@@ -223,14 +224,14 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             protected void onBindViewHolder(@NonNull final CommentsHolder holder, int position, @NonNull final Comment model) {
                 holder.itemView.setVisibility(View.GONE);
-
                 db.collection(USERS).document(model.getUserID()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         final User user = documentSnapshot.toObject(User.class);
+                        // USERNAME
                         holder.comment_username.setText(user.getName());
 
-                        // Comment User's Profile Picture
+                        // PROFILE-PICTURE
                         if(user.getPicPath() != null)
                             GlideApp.with(holder.itemView.getContext())
                                     .load(storage.child(PROFILE).child(user.getPicPath()))
@@ -238,10 +239,10 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                                     .into(holder.comment_img);
                         else Glide.with(holder.itemView.getContext()).clear(holder.comment_img);
 
-                        // Comment text
+                        // TEXT
                         holder.comment_text.setText(model.getDescription());
 
-                        // Comment Timestamp
+                        // TIMESTAMP
                         if(model.getTimestamp() != null)
                             holder.comment_datum.setText(
                                     DateUtils.getRelativeTimeSpanString(
@@ -251,9 +252,11 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                                             DateUtils.FORMAT_ABBREV_RELATIVE)
                             );
 
+                        holder.itemView.setVisibility(View.VISIBLE);
+
                         // Überprüft ob es sich um einen noch nicht an die Database gesendeten Comment handelt
-                        boolean offline = getSnapshots().getSnapshot(holder.getAdapterPosition()).getMetadata().hasPendingWrites();
-                        if(!offline) holder.itemView.setVisibility(View.VISIBLE);
+                        /*boolean offline = getSnapshots().getSnapshot(holder.getAdapterPosition()).getMetadata().hasPendingWrites();
+                        if(!offline) holder.itemView.setVisibility(View.VISIBLE);*/
                     }
                 });
 
@@ -311,6 +314,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    // Change visibility of layout-objects when user likes to modify the NOTE
     private void changeLayout() {
         bottomLayout.setVisibility(View.GONE);
         btn_more.setVisibility(View.GONE);
@@ -323,14 +327,17 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         btn_save.setVisibility(View.VISIBLE);
     }
 
+    // Update the modified NOTE
     private void updateNote() {
         final String title = et_title.getText().toString().trim();
         final String description = et_description.getText().toString().trim();
         if (TextUtils.isEmpty(title) && TextUtils.isEmpty(description)) return;
-        HashMap<String, Object> map = new HashMap<>();
-        map.put(TITLE, title);
-        map.put(DESCRIPTION, description);
-        // map.put(TIMESTAMP, FieldValue.serverTimestamp());
+
+        final HashMap<String, Object> map = new HashMap<>();
+        map.put(TITLE, title); // new title
+        map.put(DESCRIPTION, description); // new description
+        map.put(TIMESTAMP, FieldValue.serverTimestamp()); // new Timestamp
+
         progressBar.setVisibility(View.VISIBLE);
         db.collection(GROUPS).document(groupID).collection(NOTES).document(noteID).update(map)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -341,6 +348,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                 });
     }
 
+    // Update Layout after changing the Note
     private void updateLayout(String title, String description) {
         et_title.setVisibility(View.GONE);
         et_description.setVisibility(View.GONE);
@@ -355,10 +363,21 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         progressBar.setVisibility(View.GONE);
     }
 
-    // TODO: Use cloud function (Node.js/Python) to delete document with sub-collection
-    // https://firebase.google.com/docs/firestore/manage-data/delete-data?authuser=0
+    // Lösche Notiz und lösche Kommentare via CloudFunction
+    // Beende diese Activity bei Löschbestätigung
     private void deleteNote() {
-        Toast.makeText(this, "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
+        new MaterialDialog.Builder(NoteActivity.this)
+                .title("Notiz endgültig löschen?")
+                .positiveText("Löschen")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        db.collection(GROUPS).document(groupID).collection(NOTES).document(noteID).delete();
+                        finish();
+                    }
+                })
+                .negativeText("Abbrechen")
+                .show();
     }
 
     @Override
