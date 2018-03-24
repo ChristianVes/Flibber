@@ -23,6 +23,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -95,6 +96,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     final String userID = auth.getCurrentUser().getUid();
+                    final String deviceToken = FirebaseInstanceId.getInstance().getToken();
                     // TODO: E-Mail verification wieder einbauen
                     // sendEmailVerification();
 
@@ -103,6 +105,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     Map<String, Object> userData = new HashMap<>();
                     userData.put(NAME, username);
                     userData.put(EMAIL, email);
+                    userData.put(DEVICETOKEN, deviceToken);
                     FirebaseFirestore.getInstance().collection(USERS).document(userID).set(userData);
                     // Wechsel zum WG-Selector
                     Intent i_wgSelector = new Intent(RegisterActivity.this, ProfilActivity.class);
@@ -218,4 +221,5 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private final String USERS = "users";
     private final String NAME = "name";
     private final String EMAIL = "email";
+    private final String DEVICETOKEN = "deviceToken";
 }

@@ -5,27 +5,82 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btn_invite"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_margin="15dp"
-        android:text="Einladen"
-        android:textColor="@color/colorBlack"
+        android:text="Allgemeines"
+        android:textSize="22sp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"
+        android:padding="10dp"
+        android:background="@drawable/layerlist_bottomedge_white"
         />
-
 
     <Button
         android:id="@+id/btn_profil"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_margin="15dp"
-        android:text="Ausloggen"
-        android:textColor="@color/colorBlack"
+        android:background="?selectableItemBackground"
+        android:text="Zum Profil"
+        android:textAlignment="gravity"
+        android:gravity="left|center_vertical"
+        android:textColor="@color/colorAccent"
+        android:textSize="18sp"
+        android:padding="10dp"
+        android:layout_marginLeft="10dp"
+        android:textAllCaps="false"
         />
 
+    <Button
+        android:id="@+id/btn_invite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:text="Einladen"
+        android:textAlignment="gravity"
+        android:gravity="left|center_vertical"
+        android:textColor="@color/colorAccent"
+        android:textSize="18sp"
+        android:padding="10dp"
+        android:layout_marginLeft="10dp"
+        android:textAllCaps="false"
+        />
+
+    <Button
+        android:id="@+id/btn_verlassen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:text="Gruppe verlassen"
+        android:textAlignment="gravity"
+        android:gravity="left|center_vertical"
+        android:textColor="@color/colorAccent"
+        android:textSize="18sp"
+        android:padding="10dp"
+        android:layout_marginLeft="10dp"
+        android:textAllCaps="false"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Benachrichtigungen"
+        android:textSize="22sp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"
+        android:padding="10dp"
+        android:background="@drawable/layerlist_bottomedge_white"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="..."
+        android:textSize="22sp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"
+        android:padding="10dp"
+        />
 
 
 </LinearLayout>

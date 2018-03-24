@@ -12,8 +12,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import christian.eilers.flibber.Adapter.ProfilPagerAdapter;
 import christian.eilers.flibber.LoginActivity;
@@ -96,12 +102,23 @@ public class ProfilActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_logout:
-                auth.signOut();
-                LocalStorage.setData(this, null, null, null, null);
-                Intent login = new Intent(ProfilActivity.this, LoginActivity.class);
-                startActivity(login);
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                finish();
+                // Delete the DeviceToken from the current User
+                Map<String,Object> devicetoken = new HashMap<>();
+                devicetoken.put(DEVICETOKEN, FieldValue.delete());
+                FirebaseFirestore.getInstance().collection(USERS).document(auth.getCurrentUser().getUid()).update(devicetoken)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                auth.signOut(); // sign out the current user
+                                // delete local data
+                                LocalStorage.setData(ProfilActivity.this, null, null, null, null);
+                                // switch to LoginActivity
+                                Intent login = new Intent(ProfilActivity.this, LoginActivity.class);
+                                startActivity(login);
+                                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                                finish();
+                            }
+                        });
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -124,4 +141,7 @@ public class ProfilActivity extends AppCompatActivity {
     private FragmentPagerAdapter adapter;
 
     private FirebaseAuth auth;
+
+    private final String USERS = "users";
+    private final String DEVICETOKEN = "deviceToken";
 }

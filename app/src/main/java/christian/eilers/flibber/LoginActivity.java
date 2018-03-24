@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -17,13 +18,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.Profil.ProfilActivity;
@@ -78,30 +84,48 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                eT_password.setText("");
                 if(task.isSuccessful()) {
                     // TODO: check if user is EmailVerified durch -> auth.getCurrentUser().isEmailVerified();
                     final String userID = auth.getCurrentUser().getUid();
-                    FirebaseFirestore.getInstance().collection("users").document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    final String deviceToken = FirebaseInstanceId.getInstance().getToken();
+                    final FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    final DocumentReference ref_user = db.collection("users").document(userID);
+                    db.runTransaction(new Transaction.Function<User>() {
+                        @Nullable
                         @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            progressBar.setVisibility(View.GONE);
-                            if(!task.isSuccessful()) {
-                                Crashlytics.logException(task.getException());
-                                return;
-                            }
-                            final User mUser = task.getResult().toObject(User.class);
-                            LocalStorage.setData(LoginActivity.this, null, userID, mUser.getName(), mUser.getPicPath());
+                        public User apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                            // Read out user-information
+                            DocumentSnapshot snapshot_user = transaction.get(ref_user);
+                            User user = snapshot_user.toObject(User.class);
 
-                            Intent i_wgSelector = new Intent(LoginActivity.this, ProfilActivity.class);
-                            startActivity(i_wgSelector);
+                            // Update Devicetoken
+                            transaction.update(ref_user, DEVICETOKEN, deviceToken);
+                            return user;
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<User>() {
+                        @Override
+                        public void onSuccess(User user) {
+                            eT_password.setText("");
+                            // Set Local Data
+                            LocalStorage.setData(LoginActivity.this, null, userID, user.getName(), user.getPicPath());
+                            // Start ProfilActivity
+                            progressBar.setVisibility(View.GONE);
+                            startActivity(new Intent(LoginActivity.this, ProfilActivity.class));
                             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                            // TODO: Alle Activies im Backstack löschen
                             finish();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            eT_password.setText("");
+                            auth.signOut();
+                            Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
                         }
                     });
 
                 } else {
+                    eT_password.setText("");
                     Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.GONE);
                 }
@@ -209,5 +233,5 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private ProgressBar progressBar;
     private FirebaseAuth auth;
 
-
+    private final String DEVICETOKEN = "deviceToken";
 }

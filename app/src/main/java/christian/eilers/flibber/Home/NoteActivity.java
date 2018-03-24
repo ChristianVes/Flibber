@@ -115,37 +115,37 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         db.collection(GROUPS).document(groupID).collection(NOTES).document(noteID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                final Note note = documentSnapshot.toObject(Note.class); // retrieve Note-Object
-                if(note.getUserID().equals(userID)) btn_more.setVisibility(View.VISIBLE); // Option-Button nur für Ersteller sichtbar machen
+                thisNote = documentSnapshot.toObject(Note.class); // retrieve Note-Object
+                if(thisNote.getUserID().equals(userID)) btn_more.setVisibility(View.VISIBLE); // Option-Button nur für Ersteller sichtbar machen
 
                 // TITEL & BESCHREIBUNG
-                if (note.getTitle() != null && !TextUtils.isEmpty(note.getTitle())) {
+                if (thisNote.getTitle() != null && !TextUtils.isEmpty(thisNote.getTitle())) {
                     tv_title.setVisibility(View.VISIBLE);
-                    tv_title.setText(note.getTitle());
+                    tv_title.setText(thisNote.getTitle());
                 }
-                if (note.getDescription() != null && !TextUtils.isEmpty(note.getDescription())) {
+                if (thisNote.getDescription() != null && !TextUtils.isEmpty(thisNote.getDescription())) {
                     tv_description.setVisibility(View.VISIBLE);
-                    tv_description.setText(note.getDescription());
+                    tv_description.setText(thisNote.getDescription());
                 }
 
                 // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
-                if(note.getTimestamp() != null)
+                if(thisNote.getTimestamp() != null)
                     tv_datum.setText(
-                            DateUtils.getRelativeTimeSpanString(note.getTimestamp().getTime(),
+                            DateUtils.getRelativeTimeSpanString(thisNote.getTimestamp().getTime(),
                                     System.currentTimeMillis() + BUFFER,
                                     DateUtils.MINUTE_IN_MILLIS,
                                     DateUtils.FORMAT_ABBREV_RELATIVE));
 
                 // NOTE PICTURE
-                if(note.getImagePath() != null)
+                if(thisNote.getImagePath() != null)
                     GlideApp.with(NoteActivity.this)
-                            .load(storage.child(NOTES).child(note.getImagePath()))
+                            .load(storage.child(NOTES).child(groupID).child(thisNote.getImagePath()))
                             .dontAnimate()
                             .into(img_note);
                 else Glide.with(NoteActivity.this).clear(img_note);
 
                 // USER-INFORMATION
-                loadNoteUser(note.getUserID());
+                loadNoteUser(thisNote.getUserID());
             }
         });
     }
@@ -367,11 +367,12 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
     // Beende diese Activity bei Löschbestätigung
     private void deleteNote() {
         new MaterialDialog.Builder(NoteActivity.this)
-                .title("Notiz endgültig löschen?")
+                .title("Notiz wirklich löschen?")
                 .positiveText("Löschen")
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        if (thisNote.getImagePath() != null) storage.child(NOTES).child(groupID).child(thisNote.getImagePath()).delete();
                         db.collection(GROUPS).document(groupID).collection(NOTES).document(noteID).delete();
                         finish();
                     }
@@ -414,6 +415,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseFirestore db;
     private StorageReference storage;
     private FirestoreRecyclerAdapter adapter_comments;
+    private Note thisNote;
 
     private String noteID, userID, groupID;
 

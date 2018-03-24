@@ -70,7 +70,7 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
     private void initializeVariables() {
         userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
-        storage = FirebaseStorage.getInstance().getReference().child(NOTES);
+        storage = FirebaseStorage.getInstance().getReference().child(NOTES).child(groupID);
         db = FirebaseFirestore.getInstance();
     }
 

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -14,15 +13,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -143,7 +139,7 @@ public class HomeFragment extends Fragment {
                 // NOTE PICTURE ("Clear" zum vermeiden falscher Zuweisungen)
                 if(model.getImagePath() != null)
                     GlideApp.with(holder.itemView.getContext())
-                            .load(storage.child(NOTES).child(model.getImagePath()))
+                            .load(storage.child(NOTES).child(groupID).child(model.getImagePath()))
                             .dontAnimate()
                             .into(holder.img_note);
                 else Glide.with(holder.itemView.getContext()).clear(holder.img_note);

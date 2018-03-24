@@ -29,7 +29,7 @@
             android:padding="10dp"
             android:gravity="center"
             android:visibility="visible"
-            android:text="Keine WG's vorhanden..."
+            android:text="Noch keine Gruppen vorhanden..."
             android:textStyle="italic"/>
 
         <android.support.v7.widget.RecyclerView
