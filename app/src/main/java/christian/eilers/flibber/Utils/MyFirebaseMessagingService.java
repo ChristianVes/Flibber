@@ -35,7 +35,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         inboxStyle.setBigContentTitle("Einkaufsliste");
         inboxStyle.setSummaryText("Summary");
-        for(int i = 0; i < messages.size(); i++) inboxStyle.addLine(messages.get(i) + " added");
+        for(int i = 0; i < messages.size(); i++) inboxStyle.addLine(messages.get(i));
+
 
         Intent intent = new Intent(this, HomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -46,7 +47,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notiBuilder = new NotificationCompat.Builder(this, channelID)
                 .setSmallIcon(R.drawable.recipes_book)
                 .setContentTitle("Einkaufsliste")
-                .setContentText(articleName + " hinzugefügt")
+                .setContentText(articleName)
+                .setNumber(messages.size())
                 .setAutoCancel(true)
                 .setStyle(inboxStyle)
                 .setSound(defaultSoundUri)
