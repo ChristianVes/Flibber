@@ -13,14 +13,10 @@ import android.support.v4.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.util.ArrayList;
-
 import christian.eilers.flibber.Home.HomeActivity;
 import christian.eilers.flibber.R;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
-
-    public ArrayList<String> messages = new ArrayList<>();
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -28,15 +24,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         if (remoteMessage.getData().size() == 0) return;
         String articleName = remoteMessage.getData().get("name");
-        String channelID = getString(R.string.fcm_fallback_notification_channel_label);
-
-        if (messages != null) messages.add(articleName);
+        String channelID = getString(R.string.app_name);
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        inboxStyle.setBigContentTitle("Einkaufsliste");
-        inboxStyle.setSummaryText("Summary");
-        for(int i = 0; i < messages.size(); i++) inboxStyle.addLine(messages.get(i));
-
+        inboxStyle.setBigContentTitle("Neu in Einkaufsliste:");
+        inboxStyle.addLine(articleName);
 
         Intent intent = new Intent(this, HomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -46,13 +38,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         NotificationCompat.Builder notiBuilder = new NotificationCompat.Builder(this, channelID)
                 .setSmallIcon(R.drawable.recipes_book)
-                .setContentTitle("Einkaufsliste")
-                .setContentText(articleName)
-                .setNumber(messages.size())
+                .setContentTitle("Default Title")
+                .setContentText("Default Text")
                 .setAutoCancel(true)
-                .setStyle(inboxStyle)
+                .setNumber(1)
                 .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
+                .setContentIntent(pendingIntent)
+                .setStyle(inboxStyle);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
