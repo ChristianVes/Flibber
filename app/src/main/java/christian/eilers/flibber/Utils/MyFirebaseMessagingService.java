@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -22,6 +23,14 @@ import christian.eilers.flibber.R;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     public ArrayList<String> messages = new ArrayList<>();
+
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (messages != null) messages.clear();
+            unregisterReceiver(this);
+        }
+    };
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -40,6 +49,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 , intent, PendingIntent.FLAG_ONE_SHOT);
 
+        Intent delete_intent = new Intent("Deleted");
+        PendingIntent delete_PendingIntent = PendingIntent.getBroadcast(this, 5, delete_intent, 0);
+        registerReceiver(receiver, new IntentFilter("Deleted"));
+
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         NotificationCompat.Builder notiBuilder = new NotificationCompat.Builder(this, channelID)
@@ -48,7 +61,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setAutoCancel(true)
                 .setStyle(inboxStyle)
                 .setSound(defaultSoundUri)
-                .setDeleteIntent(PendingIntent.getBroadcast(this,101,new Intent(this, NotificationDismissReceiver.class),PendingIntent.FLAG_CANCEL_CURRENT))
+                .setDeleteIntent(delete_PendingIntent)
                 .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
@@ -62,15 +75,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify((int) System.currentTimeMillis(), notiBuilder.build());
+        int notificationID = (int) System.currentTimeMillis();
+        notificationManager.notify(1, notiBuilder.build());
     }
 
 
-    public class NotificationDismissReceiver extends BroadcastReceiver {
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (messages != null) messages.clear();
-        }
-    }
 }
