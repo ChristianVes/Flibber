@@ -9,6 +9,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -18,32 +19,38 @@ import christian.eilers.flibber.R;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
+    private final int SHOPPING = 123;
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-
         if (remoteMessage.getData().size() == 0) return;
-        String articleName = remoteMessage.getData().get("name");
-        String channelID = getString(R.string.app_name);
 
+        // Read out the article name from the data-message
+        String articleName = remoteMessage.getData().get("name");
+        String channelID = getString(R.string.app_name); // set a channelID
+
+        // Configure the Inbox-Style to make multiple lines
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        inboxStyle.setBigContentTitle("Neu in Einkaufsliste:");
+        inboxStyle.setBigContentTitle("Einkaufsliste:");
         inboxStyle.addLine(articleName);
 
-        Intent intent = new Intent(this, HomeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 , intent, PendingIntent.FLAG_ONE_SHOT);
+        // Intent for onClick-Event
+        Intent clickIntent = new Intent(this, HomeActivity.class);
+        clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent clickPendingIntent = PendingIntent.getActivity(this, 0 , clickIntent, PendingIntent.FLAG_ONE_SHOT);
 
+        // Default Notification Sound
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        NotificationCompat.Builder notiBuilder = new NotificationCompat.Builder(this, channelID)
+        // Build the Notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelID)
                 .setSmallIcon(R.drawable.recipes_book)
-                .setContentTitle("Default Title")
-                .setContentText("Default Text")
+                .setContentTitle(articleName)
+                .setContentText("wurde zur Einkaufsliste hinzugefügt")
                 .setAutoCancel(true)
-                .setNumber(1)
                 .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent)
+                .setContentIntent(clickPendingIntent)
                 .setStyle(inboxStyle);
 
         NotificationManager notificationManager =
@@ -51,12 +58,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelID,
-                    "Flibber",
+            NotificationChannel channel = new NotificationChannel(channelID, "Flibber",
                     NotificationManager.IMPORTANCE_DEFAULT);
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(123, notiBuilder.build());
+        notificationManager.notify(SHOPPING, builder.build());
     }
 }
