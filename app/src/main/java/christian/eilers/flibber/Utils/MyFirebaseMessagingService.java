@@ -3,7 +3,6 @@ package christian.eilers.flibber.Utils;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
@@ -34,7 +33,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (messages != null) messages.add(articleName);
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        for(int i = 0; i < messages.size(); i++) inboxStyle.addLine(messages.get(i));
+        inboxStyle.setBigContentTitle("Einkaufsliste");
+        inboxStyle.setSummaryText("Summary");
+        for(int i = 0; i < messages.size(); i++) inboxStyle.addLine(messages.get(i) + " added");
 
         Intent intent = new Intent(this, HomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -45,6 +46,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notiBuilder = new NotificationCompat.Builder(this, channelID)
                 .setSmallIcon(R.drawable.recipes_book)
                 .setContentTitle("Einkaufsliste")
+                .setContentText(articleName + " hinzugefügt")
                 .setAutoCancel(true)
                 .setStyle(inboxStyle)
                 .setSound(defaultSoundUri)
