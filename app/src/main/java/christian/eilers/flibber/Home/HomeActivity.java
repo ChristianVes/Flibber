@@ -1,5 +1,7 @@
 package christian.eilers.flibber.Home;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -111,6 +113,15 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         bottomNavigationView.setupWithViewPager(mView);
+    }
+
+    // Delete the recent Articles from the SharedPreferences for Shopping-List-Notifications
+    @Override
+    protected void onStart() {
+        super.onStart();
+        SharedPreferences.Editor editor = getSharedPreferences("NOTIFICATIONS", Context.MODE_PRIVATE).edit();
+        editor.putStringSet("SHOPPING", null);
+        editor.apply();
     }
 
     // Erzeugt eine Userliste mithilfe eines Snapshots aus der Datenbank
