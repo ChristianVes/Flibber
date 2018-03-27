@@ -26,21 +26,24 @@
             android:name="io.fabric.ApiKey"
             android:value="6f8c3dd0bc38a28bbc7acf2996898d15b8bbb108" />
 
-        <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.
-             See README(https://goo.gl/l4GJaQ) for more. -->
+        <!--
+             Set custom default icon. This is used when no icon is set for incoming notification messages.
+             See README(https://goo.gl/l4GJaQ) for more.
+        -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/hq_logo" />
-        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
-             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <!--
+             Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
 
-        <service
-            android:name=".Utils.MyFirebaseMessagingService">
+        <service android:name=".Utils.MyFirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
@@ -63,9 +66,9 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Home.TransactionActivity"
-            android:screenOrientation="portrait"></activity>
-
-        <activity android:name=".Home.VerlaufActivity"></activity>
+            android:screenOrientation="portrait" />
+        <activity android:name=".Home.VerlaufActivity" />
+        <activity android:name=".Home.NewTaskActivity"></activity>
     </application>
 
 </manifest>

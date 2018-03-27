@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import christian.eilers.flibber.Home.FinanceFragment;
 import christian.eilers.flibber.Home.HomeFragment;
-import christian.eilers.flibber.Home.PutzplanFragment;
+import christian.eilers.flibber.Home.TaskFragment;
 import christian.eilers.flibber.Home.SettingsFragment;
 import christian.eilers.flibber.Home.ShoppingFragment;
 
@@ -28,7 +28,7 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new PutzplanFragment();
+                return new TaskFragment();
             case 1:
                 return new ShoppingFragment();
             case 2:
