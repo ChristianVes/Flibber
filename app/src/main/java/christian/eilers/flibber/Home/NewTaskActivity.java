@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -13,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.Switch;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -21,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import christian.eilers.flibber.Adapter.BeteiligteAdapter;
+import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
@@ -53,6 +58,7 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
         recView_beteiligte.setLayoutManager(new LinearLayoutManager(this));
 
         setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
+        getSupportActionBar().setDisplayShowTitleEnabled(false); // Titel der Actionbar ausblenden
     }
 
     // Initialize variables
@@ -71,6 +77,31 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
                 adapter_beteiligte = new BeteiligteAdapter(userList);
                 recView_beteiligte.setAdapter(adapter_beteiligte);
                 progressBar.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void saveTask() {
+        String title = et_name.getText().toString().trim();
+        String s_frequenz = et_frequenz.getText().toString().trim();
+        String s_points = et_points.getText().toString().trim();
+
+        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(s_frequenz) || TextUtils.isEmpty(s_points)) return;
+        if (adapter_beteiligte.getInvolvedIDs().isEmpty()) return;
+
+        progressBar.setVisibility(View.VISIBLE);
+        long frequenz = Long.valueOf(s_frequenz);
+        long points = Long.valueOf(s_points);
+        boolean hasOrder = switch_order.isChecked();
+
+        DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document();
+
+        TaskModel task = new TaskModel(title, frequenz, points, adapter_beteiligte.getInvolvedIDs(), hasOrder);
+        doc.set(task).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                progressBar.setVisibility(View.GONE);
+                finish();
             }
         });
     }
@@ -94,6 +125,23 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_new_task, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save:
+                saveTask();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private Toolbar toolbar;
     private EditText et_name, et_frequenz, et_points;
     private Switch switch_order;
@@ -107,5 +155,6 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
 
     private final String GROUPS = "groups";
     private final String USERS = "users";
+    private final String TASKS = "tasks";
 
 }

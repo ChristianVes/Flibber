@@ -47,7 +47,7 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Putzplan";
+                return "Aufgaben";
             case 1:
                 return "Einkaufsliste";
             case 2:
