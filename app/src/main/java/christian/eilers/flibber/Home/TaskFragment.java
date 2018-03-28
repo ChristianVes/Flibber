@@ -80,8 +80,6 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
 
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
         recView.setAdapter(adapter);
-
-        Toast.makeText(getContext(), "Hier", Toast.LENGTH_SHORT).show();
     }
 
     @Override

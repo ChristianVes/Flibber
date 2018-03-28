@@ -4,7 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import christian.eilers.flibber.Home.TaskFragment;
+import christian.eilers.flibber.Profil.EmptyFragment;
 import christian.eilers.flibber.Profil.GroupFragment;
 import christian.eilers.flibber.Profil.ProfilFragment;
 
@@ -19,7 +19,7 @@ public class ProfilPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new TaskFragment();
+                return new EmptyFragment();
             case 1:
                 return new GroupFragment();
             case 2:
