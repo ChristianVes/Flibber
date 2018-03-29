@@ -11,16 +11,16 @@ public class TaskModel {
     private long frequenz, points;
     private ArrayList<String> involvedIDs;
     private Date timestamp;
-    private boolean hasOrder;
+    private boolean ordered;
 
     public TaskModel() {}
 
-    public TaskModel(String title, long frequenz, long points, ArrayList<String> involvedIDs, boolean hasOrder, Date timestamp) {
+    public TaskModel(String title, long frequenz, long points, ArrayList<String> involvedIDs, boolean ordered, Date timestamp) {
         this.title = title;
         this.frequenz = frequenz;
         this.points = points;
         this.involvedIDs = involvedIDs;
-        this.hasOrder = hasOrder;
+        this.ordered = ordered;
         this.timestamp = timestamp;
     }
 
@@ -64,11 +64,11 @@ public class TaskModel {
         this.timestamp = timestamp;
     }
 
-    public boolean isHasOrder() {
-        return hasOrder;
+    public boolean isOrdered() {
+        return ordered;
     }
 
-    public void setHasOrder(boolean hasOrder) {
-        this.hasOrder = hasOrder;
+    public void setOrdered(boolean ordered) {
+        this.ordered = ordered;
     }
 }

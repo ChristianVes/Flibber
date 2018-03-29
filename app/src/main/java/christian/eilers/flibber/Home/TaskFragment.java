@@ -78,7 +78,7 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
                 .setQuery(query, TaskModel.class)
                 .build();
 
-        adapter = new TasksAdapter(options, userID, users) {
+        adapter = new TasksAdapter(options, userID, groupID, users) {
             @Override
             public void onDataChanged() {
                 if (getItemCount() == 0) placeholder.setVisibility(View.VISIBLE);
