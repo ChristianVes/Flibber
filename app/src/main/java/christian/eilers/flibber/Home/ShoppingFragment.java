@@ -76,6 +76,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         et_article = mainView.findViewById(R.id.input_shopping);
         btn_save = mainView.findViewById(R.id.btn_save);
         btn_group = mainView.findViewById(R.id.btn_group);
+        placeholder = mainView.findViewById(R.id.placeholder);
 
         et_article.setOnFocusChangeListener(this);
         et_article.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -221,6 +222,8 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             @Override
             public void onDataChanged() {
                 layoutManager.scrollToPositionWithOffset(0,0);
+                if (getItemCount() == 0) placeholder.setVisibility(View.VISIBLE);
+                else placeholder.setVisibility(View.GONE);
                 super.onDataChanged();
             }
         };
@@ -302,6 +305,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     private RecyclerView recView;
     private EditText et_article;
     private ImageButton btn_save, btn_group;
+    private TextView placeholder;
     private Menu menu;
 
     private final String GROUPS = "groups";

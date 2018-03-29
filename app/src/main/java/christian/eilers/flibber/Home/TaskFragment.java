@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -55,6 +56,7 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
         fab = mainView.findViewById(R.id.fab);
         progressBar = mainView.findViewById(R.id.progressBar);
         toolbar = mainView.findViewById(R.id.toolbar);
+        placeholder = mainView.findViewById(R.id.placeholder);
 
         fab.setOnClickListener(this);
     }
@@ -76,7 +78,15 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
                 .setQuery(query, TaskModel.class)
                 .build();
 
-        adapter = new TasksAdapter(options, userID, users);
+        adapter = new TasksAdapter(options, userID, users) {
+            @Override
+            public void onDataChanged() {
+                if (getItemCount() == 0) placeholder.setVisibility(View.VISIBLE);
+                else placeholder.setVisibility(View.GONE);
+                super.onDataChanged();
+            }
+        };
+
 
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
         recView.setAdapter(adapter);
@@ -109,6 +119,7 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
     private FloatingActionButton fab;
     private ProgressBar progressBar;
     private Toolbar toolbar;
+    private TextView placeholder;
 
     private FirebaseFirestore db;
     private String userID, groupID;
