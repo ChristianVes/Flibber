@@ -140,6 +140,7 @@ public class HomeFragment extends Fragment {
                 if(model.getImagePath() != null)
                     GlideApp.with(holder.itemView.getContext())
                             .load(storage.child(NOTES).child(groupID).child(model.getImagePath()))
+                            .centerInside()
                             .dontAnimate()
                             .into(holder.img_note);
                 else Glide.with(holder.itemView.getContext()).clear(holder.img_note);
