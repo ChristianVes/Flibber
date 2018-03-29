@@ -22,7 +22,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import christian.eilers.flibber.Adapter.BeteiligteAdapter;
 import christian.eilers.flibber.Models.TaskModel;
@@ -96,7 +98,10 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
 
         DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document();
 
-        TaskModel task = new TaskModel(title, frequenz, points, adapter_beteiligte.getInvolvedIDs(), hasOrder);
+        TaskModel task = new TaskModel(title, frequenz, points, adapter_beteiligte.getInvolvedIDs(),
+                hasOrder,
+                new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(frequenz)));
+
         doc.set(task).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {

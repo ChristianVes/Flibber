@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -51,19 +52,37 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, TasksAdapt
 
     @Override
     protected void onBindViewHolder(@NonNull final TaskHolder holder, int position, @NonNull final TaskModel model) {
-
+        // TITLE
         holder.tv_title.setText(model.getTitle());
+        // DATUM
+        holder.tv_datum.setText(DateUtils.getRelativeTimeSpanString(model.getTimestamp().getTime(),
+                System.currentTimeMillis(),
+                DateUtils.DAY_IN_MILLIS,
+                DateUtils.FORMAT_ABBREV_RELATIVE));
+        // USER-ORDER
+        User nextUser = users.get(model.getInvolvedIDs().get(0));
+        holder.tv_order_first.setText(nextUser.getName());
+        if (model.getInvolvedIDs().size() == 1) { // case: only one User involved
+            holder.tv_order_second.setText(nextUser.getName());
+        } else { // case: multiple User involved -> also display the after-next User
+            User secUser = users.get(model.getInvolvedIDs().get(1));
+            holder.tv_order_second.setText(secUser.getName());
+        }
+        // PASS-BUTTON Visibility
+        if (nextUser.getUserID().equals(userID)) holder.btn_pass.setVisibility(View.VISIBLE);
+        else holder.btn_pass.setVisibility(View.GONE);
     }
 
     // Custom ViewHolder for a Transaction
     public class TaskHolder extends RecyclerView.ViewHolder {
-        TextView tv_title, tv_datum, tv_order;
-        Button btn_done, btn_pass, btn_remind;
+        TextView tv_title, tv_datum, tv_order_first, tv_order_second;
+        ImageButton btn_done, btn_pass, btn_remind;
 
         public TaskHolder(View itemView) {
             super(itemView);
             tv_datum = itemView.findViewById(R.id.datum);
-            tv_order = itemView.findViewById(R.id.order);
+            tv_order_first = itemView.findViewById(R.id.order_first);
+            tv_order_second = itemView.findViewById(R.id.order_second);
             tv_title = itemView.findViewById(R.id.taskName);
             btn_done = itemView.findViewById(R.id.btn_done);
             btn_pass = itemView.findViewById(R.id.btn_pass);

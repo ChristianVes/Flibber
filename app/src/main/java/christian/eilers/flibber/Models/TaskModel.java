@@ -15,12 +15,13 @@ public class TaskModel {
 
     public TaskModel() {}
 
-    public TaskModel(String title, long frequenz, long points, ArrayList<String> involvedIDs, boolean hasOrder) {
+    public TaskModel(String title, long frequenz, long points, ArrayList<String> involvedIDs, boolean hasOrder, Date timestamp) {
         this.title = title;
         this.frequenz = frequenz;
         this.points = points;
         this.involvedIDs = involvedIDs;
         this.hasOrder = hasOrder;
+        this.timestamp = timestamp;
     }
 
     public String getTitle() {
@@ -55,7 +56,6 @@ public class TaskModel {
         this.involvedIDs = involvedIDs;
     }
 
-    @ServerTimestamp
     public Date getTimestamp() {
         return timestamp;
     }

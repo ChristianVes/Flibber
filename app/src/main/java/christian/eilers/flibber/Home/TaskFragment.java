@@ -70,7 +70,7 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
     private void loadTasks() {
         Query query = db.collection(GROUPS).document(groupID)
                 .collection(TASKS)
-                .orderBy(TIMESTAMP, Query.Direction.DESCENDING); // order by date
+                .orderBy(TIMESTAMP, Query.Direction.ASCENDING); // order by date
 
         FirestoreRecyclerOptions<TaskModel> options = new FirestoreRecyclerOptions.Builder<TaskModel>()
                 .setQuery(query, TaskModel.class)
