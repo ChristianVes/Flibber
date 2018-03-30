@@ -16,24 +16,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true">
 
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/note_appbar"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fitsSystemWindows="true">
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:title="Einkaufsliste"
-                app:titleTextColor="@color/colorPrimaryDark"
-                android:background="@drawable/layerlist_bottomedge_bright"
-                android:clickable="true"
-                android:focusable="true"
-                android:focusableInTouchMode="true"/>
-
-        </android.support.design.widget.AppBarLayout>
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@drawable/layerlist_bottomedge"
+            app:title="Einkaufsliste" />
 
     </RelativeLayout>
 
@@ -93,6 +83,7 @@
             android:scaleType="fitCenter"
             android:padding="5dp"
             android:background="?android:selectableItemBackground"
+            android:tint="@color/colorPrimaryBlack"
             app:srcCompat="@drawable/ic_send" />
 
         <ImageButton
@@ -108,6 +99,5 @@
             app:srcCompat="@drawable/ic_group" />
 
     </RelativeLayout>
-
 
 </RelativeLayout>

@@ -22,7 +22,7 @@
                 android:id="@+id/profil_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@drawable/layerlist_bottomedge_bright"
+                android:background="@drawable/layerlist_bottomedge"
                 app:title="Profil"
                 app:titleTextColor="@color/colorPrimaryDark" />
 

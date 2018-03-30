@@ -10,19 +10,18 @@
         android:top="-1dp">
 
         <shape
-            android:shape="rectangle">
+            xmlns:android="http://schemas.android.com/apk/res/android">
 
             <stroke
-                android:width="0.5dp"
-                android:color="@color/colorPrimary">
+                android:width="0.75dp"
+                android:color="@color/colorPrimaryDark">
 
             </stroke>
 
-            <solid
-                android:color="@color/colorPrimaryBright">
-
-            </solid>
-
+            <gradient
+                android:angle="270"
+                android:endColor="@android:color/transparent"
+                android:startColor="#0DFFFFFF"/>
         </shape>
     </item>
 </layer-list>

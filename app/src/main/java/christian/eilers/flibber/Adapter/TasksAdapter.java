@@ -104,7 +104,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         if (!model.isOrdered()) taskHolder.layout_order.setVisibility(View.GONE);
         else taskHolder.layout_order.setVisibility(View.VISIBLE);
         // Pass-Button Visibility
-        if (nextUser.getUserID().equals(userID)) {
+        if (nextUser.getUserID().equals(userID) && model.isOrdered()) {
             taskHolder.btn_pass.setVisibility(View.VISIBLE);
             // PASS-Listener
             taskHolder.btn_pass.setOnClickListener(new View.OnClickListener() {

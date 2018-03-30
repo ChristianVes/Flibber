@@ -19,7 +19,7 @@
             </stroke>
 
             <solid
-                android:color="#fffafafa">
+                android:color="@android:color/transparent">
 
             </solid>
 

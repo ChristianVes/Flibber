@@ -20,7 +20,7 @@
             android:focusableInTouchMode="true"
             app:title="Neue Aufgabe"
             app:titleTextColor="@color/colorPrimaryDark"
-            android:background="@drawable/layerlist_bottomedge_bright"/>
+            android:background="@drawable/layerlist_bottomedge"/>
 
     </android.support.design.widget.AppBarLayout>
 

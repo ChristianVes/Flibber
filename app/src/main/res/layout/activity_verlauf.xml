@@ -19,7 +19,7 @@
             android:layout_height="?attr/actionBarSize"
             app:title="Finanzenverlauf"
             app:titleTextColor="@color/colorPrimaryDark"
-            android:background="@drawable/layerlist_bottomedge_bright"/>
+            android:background="@drawable/layerlist_bottomedge"/>
 
     </android.support.design.widget.AppBarLayout>
 

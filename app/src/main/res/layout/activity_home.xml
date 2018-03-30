@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="christian.eilers.flibber.Home.HomeActivity"
+    android:background="@drawable/wallpaper_home2"
     android:fitsSystemWindows="true"
     android:clickable="true">
 

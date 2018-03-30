@@ -14,6 +14,7 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="5dp"
+        android:buttonTint="@color/colorPrimaryDark"
         android:clickable="false"/>
 
     <LinearLayout
@@ -32,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="10sp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/colorPrimaryDark"
                 android:text="..."/>
 
             <TextView
@@ -40,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="10sp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/colorPrimaryDark"
                 android:layout_alignParentRight="true"/>
 
         </RelativeLayout>
@@ -57,7 +58,7 @@
                 android:layout_alignParentLeft="true"
                 android:textSize="25sp"
                 android:textStyle="bold"
-                android:text="..."/>
+                android:textColor="@color/colorPrimaryDark"/>
 
             <ImageView
                 android:id="@+id/img_group"
@@ -66,7 +67,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 app:srcCompat="@drawable/ic_group"
-                android:tint="@color/colorPrimary"
+                android:tint="@color/colorPrimaryDark"
                 android:visibility="gone"/>
 
         </RelativeLayout>
