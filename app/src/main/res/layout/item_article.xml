@@ -57,8 +57,7 @@
                 android:layout_toLeftOf="@+id/img_group"
                 android:layout_alignParentLeft="true"
                 android:textSize="25sp"
-                android:textStyle="bold"
-                android:textColor="@color/colorPrimaryDark"/>
+                android:textColor="@color/colorPrimaryBlack"/>
 
             <ImageView
                 android:id="@+id/img_group"
