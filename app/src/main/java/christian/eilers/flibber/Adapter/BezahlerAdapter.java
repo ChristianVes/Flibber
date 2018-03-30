@@ -1,7 +1,6 @@
 package christian.eilers.flibber.Adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -84,7 +83,7 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    selectedView.setCardBackgroundColor(context.getResources().getColor(R.color.colorWhite30));
+                    selectedView.setCardBackgroundColor(context.getResources().getColor(R.color.colorWhite50));
                     selectedPosition = getAdapterPosition();
                     selectedView = itemView.findViewById(R.id.card);;
                     selectedView.setCardBackgroundColor(context.getResources().getColor(R.color.colorAccent30));

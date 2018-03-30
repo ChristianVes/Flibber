@@ -9,6 +9,6 @@
     <color name="colorAccent">#bf360c</color>
     <color name="colorAccent30">#B3bf360c</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorWhite30">#B3FFFFFF</color>
+    <color name="colorWhite50">#8CFFFFFF</color>
     <color name="colorBlack">#000000</color>
 </resources>

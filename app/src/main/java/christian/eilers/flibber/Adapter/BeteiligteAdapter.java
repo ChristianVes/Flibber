@@ -14,7 +14,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
@@ -80,7 +79,7 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
                     String userID = users.get(getAdapterPosition()).getUserID();
                     CardView cardView = itemView.findViewById(R.id.card);
                     if (involvedIDs.contains(userID)) {
-                        cardView.setCardBackgroundColor(context.getResources().getColor(R.color.colorWhite30));
+                        cardView.setCardBackgroundColor(context.getResources().getColor(R.color.colorWhite50));
                         involvedIDs.remove(userID);
                     }
                     else {
