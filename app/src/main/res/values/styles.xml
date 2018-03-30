@@ -16,6 +16,12 @@
         <item name="colorControlHighlight">@color/colorPrimary</item>
         <item name="colorControlActivated">@color/colorPrimary</item>
 
+        <!-- Material Dialog Paramters -->
+        <item name="md_background_color">#E0E0E0</item>
+        <item name="md_title_color">@color/colorPrimaryDark</item>
+        <item name="md_link_color">@color/colorPrimary</item>
+        <item name="md_widget_color">@color/colorPrimary</item>
+
     </style>
 
 </resources>
