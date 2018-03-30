@@ -8,6 +8,7 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:clickable="true"
+    android:background="@drawable/wallpaper_home2"
     tools:context="christian.eilers.flibber.Home.TransactionActivity">
 
     <RelativeLayout
@@ -20,6 +21,8 @@
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/layerlist_bottomedge"
+            app:elevation="0dp"
             android:fitsSystemWindows="true">
 
             <android.support.v7.widget.Toolbar
@@ -29,9 +32,7 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:clickable="true"
-                app:title="Finanzeintrag"
-                app:titleTextColor="@color/colorPrimaryDark"
-                android:background="@drawable/layerlist_bottomedge"/>
+                app:title="Finanzeintrag" />
 
         </android.support.design.widget.AppBarLayout>
 
@@ -52,7 +53,7 @@
             android:imeOptions="actionNext"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/colorPrimaryDark"
             />
 
 

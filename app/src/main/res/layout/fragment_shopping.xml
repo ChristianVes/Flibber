@@ -95,8 +95,8 @@
             android:background="?android:selectableItemBackground"
             android:scaleType="fitCenter"
             android:padding="5dp"
-            android:tint="@color/colorPrimaryBright"
-            app:srcCompat="@drawable/ic_group" />
+            android:tint="@color/colorPrimary"
+            app:srcCompat="@drawable/ic_group_trans" />
 
     </RelativeLayout>
 

@@ -14,7 +14,7 @@
 
             <stroke
                 android:width="0.75dp"
-                android:color="@color/colorPrimaryDark">
+                android:color="@color/colorPrimary">
 
             </stroke>
 

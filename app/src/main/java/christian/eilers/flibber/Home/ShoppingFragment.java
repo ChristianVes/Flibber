@@ -276,7 +276,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         else if (id == R.id.btn_group) {
             forAll = !forAll;
             if (forAll) btn_group.setColorFilter(getResources().getColor(R.color.colorAccent));
-            else btn_group.setColorFilter(getResources().getColor(R.color.colorPrimaryBright));
+            else btn_group.setColorFilter(getResources().getColor(R.color.colorPrimary));
         }
     }
 

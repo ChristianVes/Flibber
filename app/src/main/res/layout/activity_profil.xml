@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:background="@drawable/wallpaper_home2"
     tools:context="christian.eilers.flibber.Profil.ProfilActivity">
 
     <RelativeLayout
@@ -16,15 +17,15 @@
             android:id="@+id/profil_appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/layerlist_bottomedge"
+            app:elevation="0dp"
             android:fitsSystemWindows="true">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/profil_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@drawable/layerlist_bottomedge"
-                app:title="Profil"
-                app:titleTextColor="@color/colorPrimaryDark" />
+                app:title="Profil" />
 
         </android.support.design.widget.AppBarLayout>
 

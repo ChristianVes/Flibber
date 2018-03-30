@@ -80,11 +80,11 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
                     String userID = users.get(getAdapterPosition()).getUserID();
                     CardView cardView = itemView.findViewById(R.id.card);
                     if (involvedIDs.contains(userID)) {
-                        cardView.setCardBackgroundColor(context.getResources().getColor(R.color.cardview_light_background));
+                        cardView.setCardBackgroundColor(context.getResources().getColor(R.color.colorWhite30));
                         involvedIDs.remove(userID);
                     }
                     else {
-                        cardView.setCardBackgroundColor(context.getResources().getColor(R.color.colorAccent));
+                        cardView.setCardBackgroundColor(context.getResources().getColor(R.color.colorAccent30));
                         involvedIDs.add(userID);
                     }
                 }

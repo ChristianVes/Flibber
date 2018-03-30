@@ -7,7 +7,7 @@
     android:focusableInTouchMode="true"
     android:focusable="true"
     android:clickable="true"
-    app:cardBackgroundColor="@color/cardview_light_background"
+    app:cardBackgroundColor="@color/colorWhite30"
     app:cardUseCompatPadding="true">
 
     <LinearLayout

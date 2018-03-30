@@ -109,7 +109,7 @@
                 android:paddingLeft="5dp"
                 android:paddingRight="40dp"
                 android:background="?selectableItemBackground"
-                app:srcCompat="@drawable/ic_fast_forward"
+                app:srcCompat="@drawable/ic_skip"
                 android:tint="@color/colorPrimary"
                 android:visibility="gone"
                 />

@@ -84,10 +84,10 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    selectedView.setCardBackgroundColor(context.getResources().getColor(R.color.cardview_light_background));
+                    selectedView.setCardBackgroundColor(context.getResources().getColor(R.color.colorWhite30));
                     selectedPosition = getAdapterPosition();
                     selectedView = itemView.findViewById(R.id.card);;
-                    selectedView.setCardBackgroundColor(context.getResources().getColor(R.color.colorAccent));
+                    selectedView.setCardBackgroundColor(context.getResources().getColor(R.color.colorAccent30));
                 }
             });
         }
