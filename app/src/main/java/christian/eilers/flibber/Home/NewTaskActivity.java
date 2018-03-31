@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -151,7 +152,7 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
 
     private Toolbar toolbar;
     private EditText et_name, et_frequenz, et_points;
-    private Switch switch_order;
+    private SwitchCompat switch_order;
     private RecyclerView recView_beteiligte;
     private BeteiligteAdapter adapter_beteiligte;
     private ProgressBar progressBar;

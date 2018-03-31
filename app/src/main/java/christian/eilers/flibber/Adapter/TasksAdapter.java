@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -176,8 +177,11 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         // Create a TaskEntry
         final TaskEntry entry = new TaskEntry(userID);
 
+        final long partialPoints = Math.round((double) model.getPoints() / model.getInvolvedIDs().size());
+        final long roundedPoints = partialPoints * model.getInvolvedIDs().size();
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        final DocumentReference docUser = db.collection(GROUPS).document(groupID).collection(USERS).document(userID);
+        final CollectionReference colUsers = db.collection(GROUPS).document(groupID).collection(USERS);
         final DocumentReference docTask = db.collection(GROUPS).document(groupID).collection(TASKS).document(taskID);
         final DocumentReference docEntry = db.collection(GROUPS).document(groupID).collection(TASKS)
                 .document(taskID).collection(ENTRIES).document();
@@ -186,10 +190,21 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             @Nullable
             @Override
             public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                // Update the User's points
-                DocumentSnapshot snap_user = transaction.get(docUser);
-                long newPoints = snap_user.getLong(POINTS) + model.getPoints();
-                transaction.update(docUser, POINTS, newPoints);
+                // Update the invovled User's points
+                HashMap<String, Long> map_points = new HashMap<>();
+                for (String id : model.getInvolvedIDs()) {
+                    // Calculate user's new Points depending on whether he is the current user
+                    // (the user who has fulfilled this task)
+                    DocumentSnapshot snap_user = transaction.get(colUsers.document(id));
+                    if (id.equals(userID))
+                        map_points.put(id, snap_user.getLong(POINTS) + roundedPoints - partialPoints);
+                    else
+                        map_points.put(id, snap_user.getLong(POINTS) - partialPoints);
+                }
+
+                for (String id : map_points.keySet()) {
+                    transaction.update(colUsers.document(id), POINTS, map_points.get(id));
+                }
                 // Update the Task-Order & Timestamp
                 transaction.update(docTask, taskMap);
                 // Save TaskEntry (im Verlauf)
