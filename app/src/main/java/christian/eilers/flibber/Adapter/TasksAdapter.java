@@ -1,5 +1,6 @@
 package christian.eilers.flibber.Adapter;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -21,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import christian.eilers.flibber.Home.TaskActivity;
 import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
@@ -36,6 +38,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     private final String GROUPS = "groups";
     private final String USERS = "users";
     private final String TASKS = "tasks";
+    private final String TASKID = "taskID";
 
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
@@ -147,6 +150,15 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
                         Toast.makeText(taskHolder.itemView.getContext(), model.getTitle() +" erledigt!", Toast.LENGTH_SHORT).show();
                     }
                 });
+            }
+        });
+
+        taskHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(taskHolder.itemView.getContext(), TaskActivity.class);
+                i.putExtra(TASKID, getSnapshots().getSnapshot(position).getId());
+                taskHolder.itemView.getContext().startActivity(i);
             }
         });
     }

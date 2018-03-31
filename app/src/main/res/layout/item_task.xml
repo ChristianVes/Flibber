@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:textSize="16sp"
-                android:textColor="@color/colorPrimaryBright"/>
+                android:textColor="@color/colorPrimary50"/>
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -78,7 +78,7 @@
                 android:padding="5dp"
                 android:textSize="16sp"
                 android:text="..."
-                android:textColor="@color/colorPrimaryBright"/>
+                android:textColor="@color/colorPrimary50"/>
 
         </LinearLayout>
 

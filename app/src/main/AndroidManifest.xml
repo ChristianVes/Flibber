@@ -68,7 +68,8 @@
             android:name=".Home.TransactionActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".Home.VerlaufActivity" />
-        <activity android:name=".Home.NewTaskActivity"></activity>
+        <activity android:name=".Home.NewTaskActivity" />
+        <activity android:name=".Home.TaskActivity"></activity>
     </application>
 
 </manifest>

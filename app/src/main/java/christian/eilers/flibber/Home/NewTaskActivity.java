@@ -21,6 +21,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -112,7 +114,7 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
     }
 
     // Erzeugt eine Userliste mithilfe eines Snapshots aus der Datenbank
-    private void retrieveUsers(QuerySnapshot documentSnapshots) {
+    private void retrieveUsers(@NotNull QuerySnapshot documentSnapshots) {
         HashMap<String, User> userHashMap = new HashMap<>();
         for(DocumentSnapshot doc : documentSnapshots) {
             User user = doc.toObject(User.class);
