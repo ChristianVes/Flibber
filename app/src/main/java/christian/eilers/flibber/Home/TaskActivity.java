@@ -66,17 +66,22 @@ public class TaskActivity extends AppCompatActivity {
         rec_involved.setLayoutManager(new LinearLayoutManager(this));
     }
 
+    // Load the task information from the database
     private void loadTask() {
         progressBar.setVisibility(View.VISIBLE);
         db.collection(GROUPS).document(groupID).collection(TASKS).document(taskID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
+                // get the current Task
                 thisTask = documentSnapshot.toObject(TaskModel.class);
+                // Task-Frequenz
                 tv_frequenz.setText(thisTask.getFrequenz() +"");
+                // Task Points (Aufwand)
                 tv_points.setText(thisTask.getPoints() +"");
                 setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
-                getSupportActionBar().setTitle(thisTask.getTitle());
+                getSupportActionBar().setTitle(thisTask.getTitle()); // Titel des Tasks setzen
 
+                // Lade Beteiligte User-Liste (in Reihenfolge)
                 db.collection(GROUPS).document(groupID).collection(USERS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
@@ -91,12 +96,13 @@ public class TaskActivity extends AppCompatActivity {
         });
     }
 
-    // Erzeugt eine Userliste mithilfe eines Snapshots aus der Datenbank
+    // Erzeugt eine Userliste aller Beteiligter mithilfe eines Snapshots aus der Datenbank
     private void retrieveUsers(@NotNull QuerySnapshot documentSnapshots) {
         HashMap<String, User> userHashMap = new HashMap<>();
         for(DocumentSnapshot doc : documentSnapshots) {
             User user = doc.toObject(User.class);
-            userHashMap.put(user.getUserID(), user);
+            if (thisTask.getInvolvedIDs().contains(user.getUserID()))
+                userHashMap.put(user.getUserID(), user);
         }
         users = (HashMap<String, User>) userHashMap.clone();
     }

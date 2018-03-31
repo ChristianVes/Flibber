@@ -8,16 +8,18 @@ public class User implements Serializable {
     private String email;
     private String userID;
     private String picPath;
-    private int money;
+    private long money;
+    private long points;
 
     public User() {}
 
-    public User(String name, String email, String userID, String picPath, int money) {
+    public User(String name, String email, String userID, String picPath, long money, long points) {
         this.name = name;
         this.email = email;
         this.userID = userID;
         this.picPath = picPath;
         this.money = money;
+        this.points = points;
     }
 
     public String getName() {
@@ -44,19 +46,27 @@ public class User implements Serializable {
         this.picPath = picPath;
     }
 
-    public int getMoney() {
-        return money;
-    }
-
-    public void setMoney(int money) {
-        this.money = money;
-    }
-
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public long getMoney() {
+        return money;
+    }
+
+    public void setMoney(long money) {
+        this.money = money;
+    }
+
+    public long getPoints() {
+        return points;
+    }
+
+    public void setPoints(long points) {
+        this.points = points;
     }
 }

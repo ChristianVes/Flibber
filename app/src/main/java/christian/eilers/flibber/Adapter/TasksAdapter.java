@@ -2,6 +2,7 @@ package christian.eilers.flibber.Adapter;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -15,7 +16,14 @@ import android.widget.Toast;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
+import com.google.firebase.firestore.WriteBatch;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,6 +31,7 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import christian.eilers.flibber.Home.TaskActivity;
+import christian.eilers.flibber.Models.TaskEntry;
 import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
@@ -39,6 +48,8 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     private final String USERS = "users";
     private final String TASKS = "tasks";
     private final String TASKID = "taskID";
+    private final String ENTRIES = "entries";
+    private final String POINTS = "points";
 
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
@@ -103,6 +114,16 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             taskHolder.tv_order_second.setText(secUser.getName());
         }
 
+        // Click-Listener für Gesamtlayout zur Navigation in Detailansicht
+        taskHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(taskHolder.itemView.getContext(), TaskActivity.class);
+                i.putExtra(TASKID, getSnapshots().getSnapshot(position).getId());
+                taskHolder.itemView.getContext().startActivity(i);
+            }
+        });
+
         // Hide User-Order when Task is defined as not-ordered
         if (!model.isOrdered()) taskHolder.layout_order.setVisibility(View.GONE);
         else taskHolder.layout_order.setVisibility(View.VISIBLE);
@@ -132,33 +153,48 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         taskHolder.btn_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList<String> newOrder = (ArrayList<String>) model.getInvolvedIDs().clone();
-                newOrder.remove(userID);
-                newOrder.add(userID);
-
-                HashMap<String, Object> taskMap = new HashMap<>();
-                taskMap.put(TIMESTAMP,
-                        new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(model.getFrequenz())));
-                taskMap.put(INVOLVEDIDS, newOrder);
-
-                FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(TASKS)
-                        .document(getSnapshots().getSnapshot(position).getId())
-                        .update(taskMap)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(taskHolder.itemView.getContext(), model.getTitle() +" erledigt!", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                handleTaskDone(taskHolder, position, model);
             }
         });
 
-        taskHolder.itemView.setOnClickListener(new View.OnClickListener() {
+    }
+
+    // Handle actions to be done when User has finished/taken care of a task
+    private void handleTaskDone(final TaskHolder taskHolder, final int position, final TaskModel model) {
+        Toast.makeText(taskHolder.itemView.getContext(), model.getTitle() +" erledigt!", Toast.LENGTH_SHORT).show();
+        // Identify the ID of the current task
+        String taskID = getSnapshots().getSnapshot(position).getId();
+        // Change order of the involved user's
+        ArrayList<String> newOrder = (ArrayList<String>) model.getInvolvedIDs().clone();
+        newOrder.remove(userID);
+        newOrder.add(userID);
+        // Update Involved-User's and Timestamp
+        final HashMap<String, Object> taskMap = new HashMap<>();
+        taskMap.put(TIMESTAMP,
+                new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(model.getFrequenz())));
+        taskMap.put(INVOLVEDIDS, newOrder);
+        // Create a TaskEntry
+        final TaskEntry entry = new TaskEntry(userID);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final DocumentReference docUser = db.collection(GROUPS).document(groupID).collection(USERS).document(userID);
+        final DocumentReference docTask = db.collection(GROUPS).document(groupID).collection(TASKS).document(taskID);
+        final DocumentReference docEntry = db.collection(GROUPS).document(groupID).collection(TASKS)
+                .document(taskID).collection(ENTRIES).document();
+
+        db.runTransaction(new Transaction.Function<Void>() {
+            @Nullable
             @Override
-            public void onClick(View v) {
-                Intent i = new Intent(taskHolder.itemView.getContext(), TaskActivity.class);
-                i.putExtra(TASKID, getSnapshots().getSnapshot(position).getId());
-                taskHolder.itemView.getContext().startActivity(i);
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                // Update the User's points
+                DocumentSnapshot snap_user = transaction.get(docUser);
+                long newPoints = snap_user.getLong(POINTS) + model.getPoints();
+                transaction.update(docUser, POINTS, newPoints);
+                // Update the Task-Order & Timestamp
+                transaction.update(docTask, taskMap);
+                // Save TaskEntry (im Verlauf)
+                transaction.set(docEntry, entry);
+                return null;
             }
         });
     }
