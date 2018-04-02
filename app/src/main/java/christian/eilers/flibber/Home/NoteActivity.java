@@ -142,7 +142,6 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                             .load(storage.child(NOTES).child(groupID).child(thisNote.getImagePath()))
                             .dontAnimate()
                             .into(img_note);
-                else Glide.with(NoteActivity.this).clear(img_note);
 
                 // USER-INFORMATION
                 loadNoteUser(thisNote.getUserID());

@@ -46,7 +46,7 @@
                 android:hint="Titel"
                 android:imeOptions="actionNext"
                 android:inputType="textCapSentences"
-                android:maxLength="30"
+                android:maxLength="20"
                 android:textSize="25sp"
                 android:textStyle="bold" />
 

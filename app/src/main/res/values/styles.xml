@@ -15,13 +15,19 @@
         <item name="colorControlNormal">@color/colorPrimary</item>
         <item name="colorControlHighlight">@color/colorPrimary</item>
         <item name="colorControlActivated">@color/colorPrimary</item>
+        <item name="android:itemBackground">@color/grey300</item>
 
         <!-- Material Dialog Paramters -->
-        <item name="md_background_color">#E0E0E0</item>
+        <item name="md_background_color">@color/grey300</item>
         <item name="md_title_color">@color/colorPrimaryDark</item>
         <item name="md_link_color">@color/colorPrimary</item>
         <item name="md_widget_color">@color/colorPrimary</item>
 
+    </style>
+
+    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">23sp</item>
+        <item name="android:textColor">@color/colorPrimaryBlack</item>
     </style>
 
 </resources>
