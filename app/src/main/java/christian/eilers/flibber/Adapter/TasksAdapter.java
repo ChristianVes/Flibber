@@ -15,7 +15,9 @@ import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -23,12 +25,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import christian.eilers.flibber.Home.TaskActivity;
@@ -39,6 +44,7 @@ import christian.eilers.flibber.R;
 
 public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerView.ViewHolder>{
 
+    private FirebaseFunctions functions;
     private String userID, groupID;
     private HashMap<String, User> users;
     private final int HIDE = 0;
@@ -64,6 +70,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         this.userID = userID;
         this.groupID = groupID;
         this.users = users;
+        functions = FirebaseFunctions.getInstance();
     }
 
     // Create normal/empty Viewholder depending on whether the user is involved in this task
@@ -135,13 +142,14 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             taskHolder.btn_pass.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // Change the current's user position with the user after him
                     ArrayList<String> newOrder = (ArrayList<String>) model.getInvolvedIDs().clone();
                     newOrder.remove(userID);
                     newOrder.add(1, userID);
 
                     HashMap<String, Object> taskMap = new HashMap<>();
                     taskMap.put(INVOLVEDIDS, newOrder);
-
+                    // UPDATE the involved-List in the Database
                     FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(TASKS)
                             .document(getSnapshots().getSnapshot(position).getId())
                             .update(taskMap);
@@ -149,6 +157,19 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             });
         }
         else taskHolder.btn_pass.setVisibility(View.GONE);
+        // NOTIFICATION-Button Visibility
+        if (model.isOrdered()) {
+            taskHolder.btn_remind.setVisibility(View.VISIBLE);
+            // REMIND-Listener
+            taskHolder.btn_remind.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    notifyInvolved(model.getTitle(), model.getInvolvedIDs().get(0));
+                }
+            });
+        }
+        else taskHolder.btn_remind.setVisibility(View.GONE);
+
 
         // DONE-Listener
         taskHolder.btn_done.setOnClickListener(new View.OnClickListener() {
@@ -158,6 +179,14 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             }
         });
 
+    }
+
+    private void notifyInvolved(String taskName, String toUserID) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("taskName", taskName);
+        data.put("userID", toUserID);
+
+        functions.getHttpsCallable("taskNotify").call(data);
     }
 
     // Handle actions to be done when User has finished/taken care of a task
