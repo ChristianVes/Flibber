@@ -21,7 +21,8 @@
             android:layout_height="?attr/actionBarSize"
             android:clickable="true"
             android:focusableInTouchMode="true"
-            app:title="Neue Aufgabe" />
+            app:title="Neue Aufgabe"
+            app:titleTextAppearance="@style/Toolbar.TitleText"/>
 
     </android.support.design.widget.AppBarLayout>
 

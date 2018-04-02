@@ -23,7 +23,8 @@
             android:clickable="true"
             android:focusable="true"
             android:background="@drawable/layerlist_bottomedge"
-            app:title="Einkaufsliste" />
+            app:title="Einkaufsliste"
+            app:titleTextAppearance="@style/Toolbar.TitleText"/>
 
     </RelativeLayout>
 

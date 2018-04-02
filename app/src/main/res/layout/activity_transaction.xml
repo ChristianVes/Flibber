@@ -32,7 +32,8 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:clickable="true"
-                app:title="Finanzeintrag" />
+                app:title="Finanzeintrag"
+                app:titleTextAppearance="@style/Toolbar.TitleText"/>
 
         </android.support.design.widget.AppBarLayout>
 

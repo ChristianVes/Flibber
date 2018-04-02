@@ -31,7 +31,8 @@
                     android:id="@+id/note_toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    app:title="Neue Notiz"/>
+                    app:title="Neue Notiz"
+                    app:titleTextAppearance="@style/Toolbar.TitleText"/>
 
             </android.support.design.widget.AppBarLayout>
 

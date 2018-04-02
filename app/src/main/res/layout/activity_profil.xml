@@ -25,7 +25,8 @@
                 android:id="@+id/profil_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:title="Profil" />
+                app:title="Profil"
+                app:titleTextAppearance="@style/Toolbar.TitleText"/>
 
         </android.support.design.widget.AppBarLayout>
 
