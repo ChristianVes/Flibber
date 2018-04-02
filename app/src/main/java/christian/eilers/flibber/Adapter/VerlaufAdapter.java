@@ -1,5 +1,6 @@
 package christian.eilers.flibber.Adapter;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -17,12 +18,14 @@ import org.fabiomsr.moneytextview.MoneyTextView;
 
 import java.util.HashMap;
 
+import christian.eilers.flibber.Home.TransactionDetailActivity;
 import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 
 public class VerlaufAdapter extends FirestoreRecyclerAdapter<Payment, RecyclerView.ViewHolder>{
 
+    private final String TRANSACTIONID = "transactionID";
     private final int BUFFER = 10000; // Millisekunden // entspricht 10 Sekunden
     private final int HIDE = 0;
     private final int SHOW = 1;
@@ -60,9 +63,10 @@ public class VerlaufAdapter extends FirestoreRecyclerAdapter<Payment, RecyclerVi
     // Determine whether the user is involved in the transaction at the given adapter-position
     @Override
     public int getItemViewType(int position) {
-        boolean isPayer = getSnapshots().get(position).getPayerID().equals(userID);
-        boolean isInvolved = getSnapshots().get(position).getInvolvedIDs().contains(userID);
-        boolean isDeleted = getSnapshots().get(position).isDeleted();
+        final Payment thisPayment = getSnapshots().get(position);
+        boolean isPayer = thisPayment.getPayerID().equals(userID);
+        boolean isInvolved = thisPayment.getInvolvedIDs().contains(userID);
+        boolean isDeleted = thisPayment.isDeleted();
         if ((isPayer || isInvolved) && !isDeleted) return SHOW;
         return HIDE;
     }
@@ -72,7 +76,7 @@ public class VerlaufAdapter extends FirestoreRecyclerAdapter<Payment, RecyclerVi
         if (holder.getItemViewType() == HIDE) return; // show nothing if user is not involved
 
         // specialize the ViewHolder as TransactionHolder to bind the data to the item
-        TransactionHolder transHolder = (TransactionHolder) holder;
+        final TransactionHolder transHolder = (TransactionHolder) holder;
 
         transHolder.tv_title.setText(model.getTitle()); // set the Title (of the transaction)
         transHolder.tv_name.setText(users.get(model.getCreatorID()).getName()); // set Creator-Name
@@ -102,27 +106,9 @@ public class VerlaufAdapter extends FirestoreRecyclerAdapter<Payment, RecyclerVi
         transHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MaterialDialog dialog = new MaterialDialog.Builder(holder.itemView.getContext())
-                        .title(model.getTitle())
-                        .customView(R.layout.dialog_verlauf, true)
-                        .positiveText("Okay")
-                        .show();
-
-                View v = dialog.getCustomView();
-                MoneyTextView tv_price = v.findViewById(R.id.money);
-                TextView tv_description = v.findViewById(R.id.description);
-                TextView tv_payer = v.findViewById(R.id.payer);
-                TextView tv_involved = v.findViewById(R.id.involved);
-                tv_price.setAmount(model.getPrice());
-                tv_description.setText(model.getDescription());
-                tv_payer.setText(users.get(model.getPayerID()).getName());
-
-                StringBuilder stringBuilder = new StringBuilder();
-                for (String involvedID : model.getInvolvedIDs()) {
-                    stringBuilder.append(users.get(involvedID).getName() + ", ");
-                }
-                String involved = stringBuilder.toString().replaceAll(", $", "");
-                tv_involved.setText(involved);
+                Intent i_detailed = new Intent(transHolder.itemView.getContext(), TransactionDetailActivity.class);
+                i_detailed.putExtra(TRANSACTIONID, model.getKey());
+                transHolder.itemView.getContext().startActivity(i_detailed);
             }
         });
     }
