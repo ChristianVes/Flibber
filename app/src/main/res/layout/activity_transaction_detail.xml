@@ -47,6 +47,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:id="@+id/label_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Gesamtpreis:"
@@ -73,6 +74,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/label_payer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Käufer:"
@@ -114,6 +116,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/label_beteiligte"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Beteiligte:"

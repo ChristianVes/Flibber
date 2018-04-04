@@ -55,6 +55,7 @@ public class TransactionDetailActivity extends AppCompatActivity {
             startActivity(main);
             finish();
         }
+
     }
 
     private void initializeViews() {
@@ -65,6 +66,16 @@ public class TransactionDetailActivity extends AppCompatActivity {
         img_profile_payer = findViewById(R.id.payer_profile_image);
         rec_beteiligte = findViewById(R.id.recView_beteiligte);
         progressBar = findViewById(R.id.progressBar);
+        label_price = findViewById(R.id.label_price);
+        label_payer = findViewById(R.id.label_payer);
+        label_involved = findViewById(R.id.label_beteiligte);
+
+        final boolean isUeberweisung = getIntent().getExtras().getBoolean("isUeberweisung", false);
+        if (isUeberweisung) {
+            label_price.setText("Betrag:");
+            label_payer.setText("An:");
+            label_involved.setText("Von:");
+        }
 
         rec_beteiligte.setHasFixedSize(true);
         rec_beteiligte.setLayoutManager(new LinearLayoutManager(this));
@@ -139,6 +150,7 @@ public class TransactionDetailActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private TextView tv_description, tv_payer;
+    private TextView label_price, label_payer, label_involved;
     private MoneyTextView tv_price;
     private CircleImageView img_profile_payer;
     private RecyclerView rec_beteiligte;

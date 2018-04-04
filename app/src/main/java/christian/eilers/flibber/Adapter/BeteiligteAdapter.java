@@ -45,7 +45,9 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         final User user = users.get(position);
+        // USERNAME
         holder.tv_username.setText(user.getName());
+        // User's PROFILE PICTURE
         if (user.getPicPath() != null)
             GlideApp.with(context)
                     .load(storage.child(user.getPicPath()))
@@ -73,6 +75,8 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
             img_profile = itemView.findViewById(R.id.profile_image);
             tv_username = itemView.findViewById(R.id.username);
 
+            // Add/Remove clicked User to the involved ID's
+            // TODO: Change to Checkboxes (like ShoppingList)
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

@@ -45,7 +45,9 @@ public class TaskBeteiligteAdapter extends RecyclerView.Adapter<TaskBeteiligteAd
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         final User user = users.get(position);
+        // USERNAME
         holder.tv_username.setText(user.getName());
+        // User's PROFILE PICTURE
         if (user.getPicPath() != null)
             GlideApp.with(context)
                     .load(storage.child(user.getPicPath()))

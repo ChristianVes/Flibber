@@ -47,7 +47,9 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         final User user = users.get(position);
+        // USERNAME
         holder.tv_username.setText(user.getName());
+        // User's Profile Picture
         if (user.getPicPath() != null)
             GlideApp.with(context)
                     .load(storage.child(user.getPicPath()))
@@ -55,6 +57,7 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
                     .dontAnimate()
                     .into(holder.img_profile);
         else Glide.with(context).clear(holder.img_profile);
+        // Select/Mark the current User as the payer
         if (userID.equals(user.getUserID())) {
             selectedPosition = position;
             selectedView = holder.itemView.findViewById(R.id.card);
@@ -80,6 +83,8 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
             img_profile = itemView.findViewById(R.id.profile_image);
             tv_username = itemView.findViewById(R.id.username);
 
+            // Change selected User (PAYER) on itemClick
+            // TODO: Change to RadioBox
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
