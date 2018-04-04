@@ -12,6 +12,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -93,6 +96,8 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         userID = LocalStorage.getUserID(getContext());
         groupID = LocalStorage.getGroupID(getContext());
         users = ((HomeActivity) getActivity()).getUsers();
+
+        setHasOptionsMenu(true);
     }
 
     // Load user's finance-balance
@@ -255,6 +260,23 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                 getActivity().startActivity(new Intent(getContext(), VerlaufActivity.class));
                 getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 break;
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_finance, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_kassensturz:
+                // TODO: KASSENSTURZ
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

@@ -144,6 +144,7 @@ public class TransactionDetailActivity extends AppCompatActivity {
     }
 
     // Delete the Payment (-> Recalculate Costs)
+    // TODO: Nur löschen in den ersten 24h erlauben
     private void deletePayment() {
         // Nur dem Ersteller das Löschen erlauben
         if (thisPayment == null) return;

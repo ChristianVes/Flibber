@@ -24,11 +24,12 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import java.util.HashMap;
 
 import christian.eilers.flibber.Adapter.HomePagerAdapter;
+import christian.eilers.flibber.BaseActivity;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,7 +157,4 @@ public class HomeActivity extends AppCompatActivity {
     private Query usersQuery;
     private String groupID;
     private HashMap<String, User> users;
-
-    private final String GROUPS = "groups";
-    private final String USERS = "users";
 }
