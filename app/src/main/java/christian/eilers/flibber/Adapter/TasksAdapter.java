@@ -42,6 +42,8 @@ import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 
+import static christian.eilers.flibber.Utils.Strings.*;
+
 public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerView.ViewHolder>{
 
     private FirebaseFunctions functions;
@@ -49,14 +51,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     private HashMap<String, User> users;
     private final int HIDE = 0;
     private final int SHOW = 1;
-    private final String TIMESTAMP = "timestamp";
-    private final String INVOLVEDIDS = "involvedIDs";
-    private final String GROUPS = "groups";
-    private final String USERS = "users";
-    private final String TASKS = "tasks";
-    private final String TASKID = "taskID";
-    private final String ENTRIES = "entries";
-    private final String POINTS = "points";
 
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link

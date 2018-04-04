@@ -23,6 +23,7 @@ import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
+import static christian.eilers.flibber.Utils.Strings.*;
 
 public class VerlaufActivity extends AppCompatActivity {
 
@@ -105,9 +106,4 @@ public class VerlaufActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private RecyclerView recView;
     private ProgressBar progressBar;
-
-    private final String GROUPS = "groups";
-    private final String USERS = "users";
-    private final String FINANCES = "finances";
-    private final String TIMESTAMP = "timestamp";
 }

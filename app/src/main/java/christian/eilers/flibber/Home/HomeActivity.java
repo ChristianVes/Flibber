@@ -24,12 +24,12 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import java.util.HashMap;
 
 import christian.eilers.flibber.Adapter.HomePagerAdapter;
-import christian.eilers.flibber.BaseActivity;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
+import static christian.eilers.flibber.Utils.Strings.*;
 
-public class HomeActivity extends BaseActivity {
+public class HomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

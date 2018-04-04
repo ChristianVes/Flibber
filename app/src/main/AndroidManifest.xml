@@ -70,8 +70,7 @@
         <activity android:name=".Home.VerlaufActivity" />
         <activity android:name=".Home.NewTaskActivity" />
         <activity android:name=".Home.TaskActivity" />
-        <activity android:name=".Home.TransactionDetailActivity"></activity>
-        <activity android:name=".BaseActivity" />
+        <activity android:name=".Home.TransactionDetailActivity"></activity> />
     </application>
 
 </manifest>

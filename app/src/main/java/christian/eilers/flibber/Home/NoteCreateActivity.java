@@ -32,6 +32,7 @@ import com.google.firebase.storage.UploadTask;
 import christian.eilers.flibber.Models.Note;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
+import static christian.eilers.flibber.Utils.Strings.*;
 
 public class NoteCreateActivity extends AppCompatActivity implements TextView.OnEditorActionListener, View.OnClickListener, View.OnFocusChangeListener {
 
@@ -210,9 +211,6 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
     private Uri imageUri;
 
     private final int REQUEST_CODE_GALLERY = 0;
-    private final String NOTEID = "noteID";
-    private final String NOTES = "notes";
-    private final String GROUPS = "groups";
 
 
 }

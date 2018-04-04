@@ -20,9 +20,10 @@ import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static christian.eilers.flibber.Utils.Strings.*;
+
 public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.ViewHolder> {
 
-    private final String PROFILE = "profile";
     private ArrayList<User> users;
     private ArrayList<String> involvedIDs;
     private Context context;

@@ -43,6 +43,7 @@ import christian.eilers.flibber.Models.Article;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
+import static christian.eilers.flibber.Utils.Strings.*;
 
 public class ShoppingFragment extends Fragment implements View.OnClickListener, View.OnFocusChangeListener{
 
@@ -307,11 +308,4 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     private ImageButton btn_save, btn_group;
     private TextView placeholder;
     private Menu menu;
-
-    private final String GROUPS = "groups";
-    private final String USERS = "users";
-    private final String SHOPPING = "shopping";
-    private final String TIMESTAMP = "timestamp";
-    private final int BUFFER = 10000; // Millisekunden // entspricht 10 Sekunden
-
 }

@@ -23,10 +23,10 @@ import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 
+import static christian.eilers.flibber.Utils.Strings.*;
+
 public class VerlaufAdapter extends FirestoreRecyclerAdapter<Payment, RecyclerView.ViewHolder>{
 
-    private final String TRANSACTIONID = "transactionID";
-    private final int BUFFER = 10000; // Millisekunden // entspricht 10 Sekunden
     private final int HIDE = 0;
     private final int SHOW = 1;
     private String userID;

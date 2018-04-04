@@ -34,6 +34,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.Profil.ProfilActivity;
 import christian.eilers.flibber.Utils.LocalStorage;
+import static christian.eilers.flibber.Utils.Strings.*;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener{
 
@@ -232,6 +233,4 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private Button btn_login, btn_newAcc, btn_password;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
-
-    private final String DEVICETOKEN = "deviceToken";
 }

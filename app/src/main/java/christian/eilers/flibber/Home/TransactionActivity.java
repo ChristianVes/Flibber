@@ -39,6 +39,7 @@ import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
+import static christian.eilers.flibber.Utils.Strings.*;
 
 public class TransactionActivity extends AppCompatActivity implements View.OnFocusChangeListener{
 
@@ -230,9 +231,4 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
     private CurrencyEditText et_price;
     private RecyclerView rec_bezahler, rec_beteiligte;
     private ProgressBar progressBar;
-
-    private final String GROUPS = "groups";
-    private final String USERS = "users";
-    private final String FINANCES = "finances";
-    private final String MONEY = "money";
 }

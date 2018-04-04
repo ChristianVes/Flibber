@@ -30,6 +30,7 @@ import java.util.Map;
 
 import christian.eilers.flibber.Profil.ProfilActivity;
 import christian.eilers.flibber.Utils.LocalStorage;
+import static christian.eilers.flibber.Utils.Strings.*;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener {
 
@@ -217,9 +218,4 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private Button btn_signup, btn_toLogin;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
-
-    private final String USERS = "users";
-    private final String NAME = "name";
-    private final String EMAIL = "email";
-    private final String DEVICETOKEN = "deviceToken";
 }

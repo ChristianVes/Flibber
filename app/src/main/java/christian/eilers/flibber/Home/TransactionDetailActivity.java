@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -41,6 +42,7 @@ import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
 import de.hdodenhof.circleimageview.CircleImageView;
+import static christian.eilers.flibber.Utils.Strings.*;
 
 public class TransactionDetailActivity extends AppCompatActivity {
 
@@ -132,12 +134,18 @@ public class TransactionDetailActivity extends AppCompatActivity {
 
             if (thisPayment.getPayerID().equals(user.getUserID())) {
                 tv_payer.setText(user.getName());
-                if (user.getPicPath() != null)
-                    GlideApp.with(TransactionDetailActivity.this)
-                            .load(storage.child(user.getPicPath()))
-                            .placeholder(R.drawable.profile_placeholder)
-                            .dontAnimate()
-                            .into(img_profile_payer);
+                if (user.getPicPath() != null) {
+                    try{
+                        GlideApp.with(TransactionDetailActivity.this)
+                                .load(storage.child(user.getPicPath()))
+                                .placeholder(R.drawable.profile_placeholder)
+                                .dontAnimate()
+                                .into(img_profile_payer);
+                    } catch (IllegalArgumentException e) {
+                        Crashlytics.logException(e);
+                    }
+                }
+
             }
         }
         users = (HashMap<String, User>) userHashMap.clone();
@@ -219,13 +227,6 @@ public class TransactionDetailActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    private final String TRANSACTIONID = "transactionID";
-    private final String USERS = "users";
-    private final String GROUPS = "groups";
-    private final String FINANCES = "finances";
-    private final String PROFILE = "profile";
-    private final String MONEY = "money";
 
     private String userID, groupID, transactionID;
     private FirebaseFirestore db;

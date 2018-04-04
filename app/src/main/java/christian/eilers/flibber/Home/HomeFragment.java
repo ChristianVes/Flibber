@@ -31,6 +31,7 @@ import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
 import de.hdodenhof.circleimageview.CircleImageView;
+import static christian.eilers.flibber.Utils.Strings.*;
 
 public class HomeFragment extends Fragment {
 
@@ -213,12 +214,4 @@ public class HomeFragment extends Fragment {
 
     private String groupID;
     private HashMap<String, User> users;
-
-    private final String GROUPS = "groups";
-    private final String NOTES = "notes";
-    private final String TIMESTAMP = "timestamp";
-    private final String PROFILE = "profile";
-    private final String NOTEID = "noteID";
-    private final String COMMENTS = "comments";
-    private final int BUFFER = 10000; // Millisekunden // entspricht 10 Sekunden
 }

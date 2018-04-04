@@ -20,9 +20,10 @@ import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static christian.eilers.flibber.Utils.Strings.*;
+
 public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHolder> {
 
-    private final String PROFILE = "profile";
     private ArrayList<User> users;
     private int selectedPosition;
     private CardView selectedView;

@@ -42,6 +42,7 @@ import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
+import static christian.eilers.flibber.Utils.Strings.*;
 
 public class TaskActivity extends AppCompatActivity {
 
@@ -234,11 +235,4 @@ public class TaskActivity extends AppCompatActivity {
     private HashMap<String, User> users;
     private TaskBeteiligteAdapter adapter_beteiligte;
     private FirestoreRecyclerAdapter adapter_entries;
-
-    private final String TASKID = "taskID";
-    private final String TASKS = "tasks";
-    private final String USERS = "users";
-    private final String GROUPS = "groups";
-    private final String ENTRIES = "entries";
-    private final String TIMESTAMP = "timestamp";
 }

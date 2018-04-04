@@ -50,6 +50,7 @@ import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
 import de.hdodenhof.circleimageview.CircleImageView;
+import static christian.eilers.flibber.Utils.Strings.*;
 
 /*
 Detail Ansicht einer Notiz und ihrer Kommentare
@@ -417,18 +418,4 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
     private Note thisNote;
 
     private String noteID, userID, groupID;
-
-    private final String NOTEID = "noteID";
-    private final String NOTES = "notes";
-    private final String USERS = "users";
-    private final String GROUPS = "groups";
-    private final String PROFILE = "profile";
-    private final String COMMENTS = "comments";
-    private final String TIMESTAMP = "timestamp";
-    private final String TITLE = "title";
-    private final String DESCRIPTION = "description";
-    private final String COMMENTSCOUNT = "commentsCount";
-    private final int BUFFER = 10000; // Millisekunden // entspricht 10 Sekunden
-
-
 }

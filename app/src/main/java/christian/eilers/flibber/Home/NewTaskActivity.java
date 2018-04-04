@@ -34,6 +34,7 @@ import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
+import static christian.eilers.flibber.Utils.Strings.*;
 
 public class NewTaskActivity extends AppCompatActivity implements View.OnFocusChangeListener {
 
@@ -161,9 +162,5 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
     private String userID, groupID;
     private FirebaseFirestore db;
     private HashMap<String, User> users;
-
-    private final String GROUPS = "groups";
-    private final String USERS = "users";
-    private final String TASKS = "tasks";
 
 }

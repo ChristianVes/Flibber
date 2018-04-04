@@ -25,6 +25,7 @@ import christian.eilers.flibber.Adapter.ProfilPagerAdapter;
 import christian.eilers.flibber.LoginActivity;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
+import static christian.eilers.flibber.Utils.Strings.*;
 
 public class ProfilActivity extends AppCompatActivity {
 
@@ -141,7 +142,4 @@ public class ProfilActivity extends AppCompatActivity {
     private FragmentPagerAdapter adapter;
 
     private FirebaseAuth auth;
-
-    private final String USERS = "users";
-    private final String DEVICETOKEN = "deviceToken";
 }

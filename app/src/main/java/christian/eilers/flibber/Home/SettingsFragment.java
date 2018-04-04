@@ -28,6 +28,7 @@ import christian.eilers.flibber.Models.Group;
 import christian.eilers.flibber.Profil.ProfilActivity;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
+import static christian.eilers.flibber.Utils.Strings.*;
 
 public class SettingsFragment extends Fragment implements View.OnClickListener{
 
@@ -175,12 +176,5 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
     private String groupID;
 
     private MaterialDialog inviteDialog;
-
-    private final String USERS = "users";
-    private final String GROUPS = "groups";
-    private final String INVITATIONS = "invitations";
-    private final String EMAIL = "email";
-    private final String NAME = "name";
-    private final String PICPATH = "picPath";
 
 }

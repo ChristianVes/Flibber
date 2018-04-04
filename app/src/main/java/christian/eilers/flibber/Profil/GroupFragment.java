@@ -35,6 +35,7 @@ import christian.eilers.flibber.Models.Group;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
+import static christian.eilers.flibber.Utils.Strings.*;
 
 public class GroupFragment extends Fragment implements View.OnClickListener{
 
@@ -346,13 +347,4 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
     private FirestoreRecyclerAdapter adapter;
     private FirebaseFirestore db;
     private String userID;
-
-    private final int GROUP_CREATE_REQUESTCODE = 1;
-    private final String USERS = "users";
-    private final String GROUPS = "groups";
-    private final String NAME = "name";
-    private final String EMAIL = "email";
-    private final String PICPATH = "picPath";
-    private final String INVITATIONS = "invitations";
-    private final String TIMESTAMP = "timestamp";
 }

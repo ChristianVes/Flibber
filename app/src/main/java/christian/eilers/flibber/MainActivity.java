@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import christian.eilers.flibber.Home.HomeActivity;
 import christian.eilers.flibber.Profil.ProfilActivity;
 import christian.eilers.flibber.Utils.LocalStorage;
+import static christian.eilers.flibber.Utils.Strings.*;
 
 public class MainActivity extends AppCompatActivity {
 

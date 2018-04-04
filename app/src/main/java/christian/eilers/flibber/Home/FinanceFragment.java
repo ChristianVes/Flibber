@@ -55,6 +55,8 @@ import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static christian.eilers.flibber.Utils.Strings.*;
+
 public class FinanceFragment extends Fragment implements View.OnClickListener{
 
     @Nullable
@@ -307,11 +309,4 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
     private FloatingActionButton fab;
     private RelativeLayout btn_verlauf;
     private ProgressBar progressBar;
-
-    private final String GROUPS = "groups";
-    private final String USERS = "users";
-    private final String FINANCES = "finances";
-    private final String TIMESTAMP = "timestamp";
-    private final String MONEY = "money";
-    private final String PROFILE = "profile";
 }
