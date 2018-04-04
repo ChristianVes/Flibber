@@ -1,20 +1,29 @@
 package christian.eilers.flibber.Home;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -134,12 +143,88 @@ public class TransactionDetailActivity extends AppCompatActivity {
         users = (HashMap<String, User>) userHashMap.clone();
     }
 
+    // Delete the Payment (-> Recalculate Costs)
+    private void deletePayment() {
+        // Nur dem Ersteller das Löschen erlauben
+        if (thisPayment == null) return;
+        if (!thisPayment.getCreatorID().equals(userID)) {
+            Toast.makeText(TransactionDetailActivity.this, "Nicht berechtigt...", Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
+
+        final CollectionReference ref_users = db.collection(GROUPS).document(groupID).collection(USERS);
+        final CollectionReference ref_finances = db.collection(GROUPS).document(groupID).collection(FINANCES);
+
+        db.runTransaction(new Transaction.Function<Void>() {
+            @Nullable
+            @Override
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                final DocumentSnapshot snap_payment = transaction.get(ref_finances.document(transactionID));
+                final Payment payment = snap_payment.toObject(Payment.class);
+                // Return if payment is already deleted
+                if (payment.isDeleted()) return null;
+
+                HashMap<String, Long> map = new HashMap<>();
+                long partialPrice = Math.round((double) payment.getPrice() / payment.getInvolvedIDs().size());
+                long totalPriceRounded = partialPrice * payment.getInvolvedIDs().size();
+
+                // Read-Operations
+                for (String involvedID : payment.getInvolvedIDs()) {
+                    DocumentSnapshot snapshot = transaction.get(ref_users.document(involvedID));
+                    // aktueller Beteiligter ist ebenfalls Bezahler
+                    if (involvedID.equals(payment.getPayerID())) {
+                        map.put(involvedID, snapshot.getLong(MONEY) - totalPriceRounded + partialPrice);
+                    }
+                    // aktueller Beteiligte ist nicht auch Bezahler
+                    else map.put(involvedID, snapshot.getLong(MONEY) + partialPrice);
+                }
+
+                // Bezahler Geld verrechnen, falls er noch nicht in Involviert-Schleife gemacht
+                if (!map.containsKey(payment.getPayerID())) {
+                    DocumentSnapshot snapshot = transaction.get(ref_users.document(payment.getPayerID()));
+                    map.put(payment.getPayerID(), snapshot.getLong(MONEY) - totalPriceRounded);
+                }
+
+                // Write-Operations
+                for (String key : map.keySet()) {
+                    transaction.update(ref_users.document(key), MONEY, map.get(key));
+                }
+
+                // Set Payment as DELETED (-> is not showing anymore)
+                HashMap<String, Object> mapDeleted = new HashMap<>();
+                mapDeleted.put("isDeleted", true);
+                transaction.update(ref_finances.document(transactionID), mapDeleted);
+
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_payment, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                deletePayment();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     private final String TRANSACTIONID = "transactionID";
     private final String USERS = "users";
     private final String GROUPS = "groups";
     private final String FINANCES = "finances";
     private final String PROFILE = "profile";
+    private final String MONEY = "money";
 
     private String userID, groupID, transactionID;
     private FirebaseFirestore db;
