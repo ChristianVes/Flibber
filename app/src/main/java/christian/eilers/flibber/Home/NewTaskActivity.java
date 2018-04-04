@@ -91,12 +91,13 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
         String s_frequenz = et_frequenz.getText().toString().trim();
         String s_points = et_points.getText().toString().trim();
 
-        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(s_frequenz) || TextUtils.isEmpty(s_points)) return;
+        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(s_frequenz)) return;
         if (adapter_beteiligte.getInvolvedIDs().isEmpty()) return;
 
         progressBar.setVisibility(View.VISIBLE);
         long frequenz = Long.valueOf(s_frequenz);
-        long points = Long.valueOf(s_points);
+        long points = 0;
+        if (!TextUtils.isEmpty(s_points)) points = Long.valueOf(s_points);
         boolean hasOrder = switch_order.isChecked();
 
         DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document();
