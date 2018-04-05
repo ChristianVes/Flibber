@@ -80,7 +80,6 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
     }
 
     private void initializeViews() {
-        toolbar = mainView.findViewById(R.id.toolbar);
         recBilanz = mainView.findViewById(R.id.recProfils);
         recVerlauf = mainView.findViewById(R.id.recVerlauf);
         fab = mainView.findViewById(R.id.fab);
@@ -99,7 +98,9 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         groupID = LocalStorage.getGroupID(getContext());
         users = ((HomeActivity) getActivity()).getUsers();
 
-        setHasOptionsMenu(true);
+        // Setup Toolbar as Actionbar
+        /*((HomeActivity)getActivity()).setSupportActionBar(toolbar);
+        setHasOptionsMenu(true);*/
     }
 
     // Load user's finance-balance
@@ -267,8 +268,8 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_finance, menu);
         super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_finance, menu);
     }
 
     @Override
@@ -303,7 +304,6 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
     private HashMap<String, User> users;
 
     private View mainView;
-    private Toolbar toolbar;
     private RecyclerView recBilanz, recVerlauf;
     private FirestoreRecyclerAdapter adapterBilanz, adapterVerlauf;
     private FloatingActionButton fab;

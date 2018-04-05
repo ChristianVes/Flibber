@@ -51,11 +51,11 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
             case 1:
                 return "Einkaufsliste";
             case 2:
-                return "Home";
+                return "Pinnwand";
             case 3:
                 return "Finanzen";
             case 4:
-                return "Settings";
+                return "Optionen";
             default:
                 return null;
         }

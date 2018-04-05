@@ -16,6 +16,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,6 +35,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import christian.eilers.flibber.Adapter.TaskBeteiligteAdapter;
 import christian.eilers.flibber.MainActivity;
@@ -161,9 +164,31 @@ public class TransactionDetailActivity extends AppCompatActivity {
                     .show();
             return;
         }
+        long timeDiff = System.currentTimeMillis() - thisPayment.getTimestamp().getTime();
+        if (timeDiff > TimeUnit.DAYS.toMillis(1)) {
+            Toast.makeText(TransactionDetailActivity.this, "Nur 24h möglich...", Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
 
+        new MaterialDialog.Builder(TransactionDetailActivity.this)
+                .title("Zahlung wirklich löschen?")
+                .positiveText("Löschen")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        deleteTransaction();
+                    }
+                })
+                .negativeText("Abbrechen")
+                .show();
+    }
+
+    private void deleteTransaction() {
         final CollectionReference ref_users = db.collection(GROUPS).document(groupID).collection(USERS);
         final CollectionReference ref_finances = db.collection(GROUPS).document(groupID).collection(FINANCES);
+
+        progressBar.setVisibility(View.VISIBLE);
 
         db.runTransaction(new Transaction.Function<Void>() {
             @Nullable
@@ -202,18 +227,31 @@ public class TransactionDetailActivity extends AppCompatActivity {
 
                 // Set Payment as DELETED (-> is not showing anymore)
                 HashMap<String, Object> mapDeleted = new HashMap<>();
-                mapDeleted.put("isDeleted", true);
+                mapDeleted.put("deleted", true);
                 transaction.update(ref_finances.document(transactionID), mapDeleted);
 
                 return null;
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(TransactionDetailActivity.this, "Löschen erfolgreich...", Toast.LENGTH_SHORT)
+                        .show();
+                finish();
             }
         });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_payment, menu);
+        // Show Delete Button if User is Creator
+        if (thisPayment != null && userID != null)
+            if (thisPayment.getCreatorID().equals(userID))
+                menu.findItem(R.id.action_delete).setVisible(true);
         return true;
     }
 
@@ -234,6 +272,7 @@ public class TransactionDetailActivity extends AppCompatActivity {
     private Payment thisPayment;
     private HashMap<String, User> users;
     private TaskBeteiligteAdapter adapter_beteiligte;
+    private Menu menu;
 
     private Toolbar toolbar;
     private TextView tv_description, tv_payer;

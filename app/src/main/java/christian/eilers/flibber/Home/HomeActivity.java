@@ -8,6 +8,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -39,6 +40,7 @@ public class HomeActivity extends AppCompatActivity {
 
         mView = findViewById(R.id.container);
         bottomNavigationView = findViewById(R.id.bnve);
+        toolbar = findViewById(R.id.toolbar);
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
 
@@ -71,24 +73,31 @@ public class HomeActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.ic_putzplan:
                         mView.setCurrentItem(0);
+                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(0));
                         break;
                     case R.id.ic_einkaufsliste:
                         mView.setCurrentItem(1);
+                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(1));
                         break;
                     case R.id.ic_home:
                         mView.setCurrentItem(2);
+                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(2));
                         break;
                     case R.id.ic_finanzen:
                         mView.setCurrentItem(3);
+                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(3));
                         break;
                     case R.id.ic_settings:
                         mView.setCurrentItem(4);
+                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(4));
                         break;
                 }
 
                 return false;
             }
         });
+
+        setSupportActionBar(toolbar);
 
         /*
         Lade Liste aller User dieser Gruppe einmalig und initalisiere anschließend die Fragmente
@@ -151,6 +160,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
     private BottomNavigationViewEx bottomNavigationView;
+    private Toolbar toolbar;
     private FragmentPagerAdapter adapterViewPager;
     private ViewPager mView;
     private ProgressBar progressBar;

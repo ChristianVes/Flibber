@@ -56,7 +56,6 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
         recView = mainView.findViewById(R.id.recView);
         fab = mainView.findViewById(R.id.fab);
         progressBar = mainView.findViewById(R.id.progressBar);
-        toolbar = mainView.findViewById(R.id.toolbar);
         placeholder = mainView.findViewById(R.id.placeholder);
 
         fab.setOnClickListener(this);
@@ -119,7 +118,6 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
     private TasksAdapter adapter;
     private FloatingActionButton fab;
     private ProgressBar progressBar;
-    private Toolbar toolbar;
     private TextView placeholder;
 
     private FirebaseFirestore db;

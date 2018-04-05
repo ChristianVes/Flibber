@@ -11,28 +11,9 @@
     tools:context="christian.eilers.flibber.Home.FinanceFragment">
 
     <RelativeLayout
-        android:id="@+id/layout_top"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="@drawable/layerlist_bottomedge"
-            app:title="Einkaufsliste"
-            app:titleTextAppearance="@style/Toolbar.TitleText"/>
-
-    </RelativeLayout>
-
-    <RelativeLayout
         android:id="@+id/middleLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/layout_top"
+        android:layout_height="match_parent"
         android:layout_above="@+id/bottomLayout">
 
         <TextView

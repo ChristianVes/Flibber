@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -72,7 +73,6 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
 
     // Initialize Layout
     private void initializeViews() {
-        toolbar = mainView.findViewById(R.id.toolbar);
         recView = mainView.findViewById(R.id.shoppingList);
         et_article = mainView.findViewById(R.id.input_shopping);
         btn_save = mainView.findViewById(R.id.btn_save);
@@ -92,7 +92,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         btn_group.setOnClickListener(this);
 
         // Setup Toolbar as Actionbar
-        ((HomeActivity)getActivity()).setSupportActionBar(toolbar);
+        /*((HomeActivity)getActivity()).setSupportActionBar(toolbar);*/
         setHasOptionsMenu(true);
     }
 
@@ -252,10 +252,10 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     // Initalize Toolbar and their Buttons
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        this.menu = menu;
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
         inflater.inflate(R.menu.menu_shopping, menu);
         menu.findItem(R.id.action_finish).getActionView().setOnClickListener(this);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     // Hide Keyboard on click outside
@@ -302,10 +302,8 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     private boolean forAll = false;
 
     private View mainView;
-    private Toolbar toolbar;
     private RecyclerView recView;
     private EditText et_article;
     private ImageButton btn_save, btn_group;
     private TextView placeholder;
-    private Menu menu;
 }
