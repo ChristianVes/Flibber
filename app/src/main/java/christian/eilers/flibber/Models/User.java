@@ -8,16 +8,18 @@ public class User implements Serializable {
     private String email;
     private String userID;
     private String picPath;
+    private String deviceToken;
     private long money;
     private long points;
 
     public User() {}
 
-    public User(String name, String email, String userID, String picPath, long money, long points) {
+    public User(String name, String email, String userID, String picPath, String deviceToken, long money, long points) {
         this.name = name;
         this.email = email;
         this.userID = userID;
         this.picPath = picPath;
+        this.deviceToken = deviceToken;
         this.money = money;
         this.points = points;
     }
@@ -68,5 +70,13 @@ public class User implements Serializable {
 
     public void setPoints(long points) {
         this.points = points;
+    }
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
     }
 }

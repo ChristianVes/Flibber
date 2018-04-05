@@ -103,6 +103,7 @@ public class ProfilActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_logout:
+                // TODO: Delete devicetoken in every group
                 // Delete the DeviceToken from the current User
                 Map<String,Object> devicetoken = new HashMap<>();
                 devicetoken.put(DEVICETOKEN, FieldValue.delete());

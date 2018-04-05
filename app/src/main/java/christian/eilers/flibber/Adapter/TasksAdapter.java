@@ -105,6 +105,10 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
                 System.currentTimeMillis(),
                 DateUtils.DAY_IN_MILLIS,
                 DateUtils.FORMAT_ABBREV_RELATIVE));
+        // Accent Color falls Aufgabe fällig ist
+        if (System.currentTimeMillis() > model.getTimestamp().getTime())
+            taskHolder.tv_datum.setTextColor(
+                    taskHolder.itemView.getContext().getResources().getColor(R.color.colorAccent));
 
         // USER-ORDER
         // Next User: first from Involved-ArrayList

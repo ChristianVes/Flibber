@@ -29,12 +29,17 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.iid.FirebaseInstanceId;
+
+import java.util.HashMap;
 
 import christian.eilers.flibber.Home.HomeActivity;
 import christian.eilers.flibber.Models.Group;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
+import christian.eilers.flibber.Utils.Strings;
+
 import static christian.eilers.flibber.Utils.Strings.*;
 
 public class GroupFragment extends Fragment implements View.OnClickListener{
@@ -177,7 +182,8 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
                 final String username = task.getResult().getString(NAME);
                 final String email = task.getResult().getString(EMAIL);
                 final String picPath = task.getResult().getString(PICPATH);
-                final User user = new User(username, email, userID, picPath, 0, 0);
+                final String deviceToken = task.getResult().getString(DEVICETOKEN);
+                final User user = new User(username, email, userID, picPath, deviceToken, 0, 0);
                 db.collection(GROUPS).document(group.getKey()).collection(USERS).document(userID).set(user);
             }
         });
@@ -258,7 +264,11 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
         // Wechsel zur HomeActivity
         @Override
         public void onClick(View view) {
+            HashMap<String, Object> map_devicetoken = new HashMap<>();
+            map_devicetoken.put(DEVICETOKEN, FirebaseInstanceId.getInstance().getToken());
             LocalStorage.setGroupID(getContext(), group.getKey());
+            db.collection(GROUPS).document(group.getKey()).collection(USERS).document(userID)
+                    .update(map_devicetoken);
             Intent homeIntent = new Intent(getContext(), HomeActivity.class);
             startActivity(homeIntent);
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -322,7 +332,8 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
                 final String username = task.getResult().getString(NAME);
                 final String email = task.getResult().getString(EMAIL);
                 final String picPath = task.getResult().getString(PICPATH);
-                final User user = new User(username, email, userID, picPath, 0, 0);
+                final String deviceToken = task.getResult().getString(DEVICETOKEN);
+                final User user = new User(username, email, userID, picPath, deviceToken, 0, 0);
                 db.collection(GROUPS).document(groupID).collection(USERS).document(userID).set(user);
                 deleteInvitation(groupID);
             }

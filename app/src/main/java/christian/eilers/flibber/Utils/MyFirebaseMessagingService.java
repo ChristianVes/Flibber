@@ -1,5 +1,6 @@
 package christian.eilers.flibber.Utils;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -41,6 +42,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             case TASKS:
                 String taskName = remoteMessage.getData().get(NAME);
                 taskNotification(taskName);
+                break;
+            case NOTES:
+                String username = remoteMessage.getData().get(USER);
+                String title = remoteMessage.getData().get(TITLE);
+                String description = remoteMessage.getData().get(DESCRIPTION);
+                notesNotification(username, title, description);
                 break;
         }
     }
@@ -124,5 +131,43 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         notificationManager.notify(CHANNEL_SHOPPING, builder.build());
+    }
+
+    private void notesNotification(String username, String title, String description) {
+        // Intent for onClick-Event
+        Intent clickIntent = new Intent(this, HomeActivity.class);
+        clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent clickPendingIntent = PendingIntent.getActivity(this, 0 , clickIntent, PendingIntent.FLAG_ONE_SHOT);
+
+        // Default Notification Sound
+        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        // Big Notification - Style
+        NotificationCompat.BigTextStyle style = new NotificationCompat.BigTextStyle();
+        style.setBigContentTitle(title);
+        style.setSummaryText(username);
+        style.bigText(description);
+
+        // Build the Notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID_NOTES)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(username)
+                .setContentText(title)
+                .setStyle(style)
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setContentIntent(clickPendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID_NOTES, "Pinnwand",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        notificationManager.notify((int) System.currentTimeMillis(), builder.build());
     }
 }

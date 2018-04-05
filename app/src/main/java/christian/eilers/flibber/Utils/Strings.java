@@ -32,9 +32,12 @@ public class Strings {
     public static final String USERID = "USERID";
     public static final String GROUPID = "GROUPID";
     public static final String USERNAME = "USERNAME";
+    public static final String USER = "user";
     public static final String NOTIFICATIONS = "NOTIFICATIONS";
     public static final String TYPE = "type";
 
+
     public static final String CHANNEL_ID_TASKS = "TASK";
     public static final String CHANNEL_ID_SHOPPING = "SHOPPING";
+    public static final String CHANNEL_ID_NOTES = "NOTES";
 }
