@@ -92,8 +92,8 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
 
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
         recView.setAdapter(adapter);
-        OverScrollDecoratorHelper.setUpOverScroll(recView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
-    }
+        recView.setNestedScrollingEnabled(false);
+        }
 
     @Override
     public void onClick(View view) {

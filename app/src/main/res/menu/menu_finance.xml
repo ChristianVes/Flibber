@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/action_kassensturz"
-        android:title="Kassensturz"
+        android:title="Finanzausgleich"
         app:showAsAction="never" />
 
 </menu>

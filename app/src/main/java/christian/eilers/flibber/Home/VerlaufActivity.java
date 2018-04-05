@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -85,8 +86,7 @@ public class VerlaufActivity extends AppCompatActivity {
 
         recView.setLayoutManager(new LinearLayoutManager(this));
         recView.setAdapter(adapter);
-        OverScrollDecoratorHelper.setUpOverScroll(recView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
-
+        recView.setNestedScrollingEnabled(false);
         adapter.startListening();
     }
 
