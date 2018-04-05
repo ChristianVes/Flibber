@@ -29,6 +29,8 @@ import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
+
 import static christian.eilers.flibber.Utils.Strings.*;
 
 public class TaskFragment extends Fragment implements View.OnClickListener{
@@ -90,6 +92,7 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
 
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
         recView.setAdapter(adapter);
+        OverScrollDecoratorHelper.setUpOverScroll(recView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
     }
 
     @Override

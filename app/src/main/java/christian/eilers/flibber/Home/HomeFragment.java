@@ -31,6 +31,8 @@ import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
 import de.hdodenhof.circleimageview.CircleImageView;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
+
 import static christian.eilers.flibber.Utils.Strings.*;
 
 public class HomeFragment extends Fragment {
@@ -170,6 +172,7 @@ public class HomeFragment extends Fragment {
 
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
         recView.setAdapter(adapter);
+        OverScrollDecoratorHelper.setUpOverScroll(recView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
     }
 
     @Override

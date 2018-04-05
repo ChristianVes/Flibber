@@ -23,6 +23,8 @@ import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
+
 import static christian.eilers.flibber.Utils.Strings.*;
 
 public class VerlaufActivity extends AppCompatActivity {
@@ -83,6 +85,8 @@ public class VerlaufActivity extends AppCompatActivity {
 
         recView.setLayoutManager(new LinearLayoutManager(this));
         recView.setAdapter(adapter);
+        OverScrollDecoratorHelper.setUpOverScroll(recView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
+
         adapter.startListening();
     }
 
