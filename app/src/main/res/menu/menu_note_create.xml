@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/action_send"
-        android:title="Senden"
+        android:title="Speichern"
         app:showAsAction="always" />
 
 </menu>

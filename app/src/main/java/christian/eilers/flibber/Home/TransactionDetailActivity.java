@@ -155,7 +155,6 @@ public class TransactionDetailActivity extends AppCompatActivity {
     }
 
     // Delete the Payment (-> Recalculate Costs)
-    // TODO: Nur löschen in den ersten 24h erlauben
     private void deletePayment() {
         // Nur dem Ersteller das Löschen erlauben
         if (thisPayment == null) return;
@@ -245,13 +244,17 @@ public class TransactionDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_payment, menu);
-        // Show Delete Button if User is Creator
+        // Show Delete Button if User is Creator &&
+        // if Payment is less than 24h old
         if (thisPayment != null && userID != null)
-            if (thisPayment.getCreatorID().equals(userID))
-                menu.findItem(R.id.action_delete).setVisible(true);
+            if (thisPayment.getCreatorID().equals(userID)) {
+                long timeDiff = System.currentTimeMillis() - thisPayment.getTimestamp().getTime();
+                if (timeDiff < TimeUnit.DAYS.toMillis(1))
+                    menu.findItem(R.id.action_delete).setVisible(true);
+            }
+
         return true;
     }
 
@@ -272,7 +275,6 @@ public class TransactionDetailActivity extends AppCompatActivity {
     private Payment thisPayment;
     private HashMap<String, User> users;
     private TaskBeteiligteAdapter adapter_beteiligte;
-    private Menu menu;
 
     private Toolbar toolbar;
     private TextView tv_description, tv_payer;

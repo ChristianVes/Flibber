@@ -137,11 +137,12 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                     @Override
                     public void onClick(View view) {
                         if (userID.equals(model.getUserID())) return; // don't allow transaction with oneself
-                        MaterialDialog dialog = new MaterialDialog.Builder(getContext())
+                        final MaterialDialog dialog = new MaterialDialog.Builder(getContext())
                                 .title("Überweisung an " + model.getName())
                                 .customView(R.layout.dialog_uberweisung, true)
                                 .positiveText("Speichern")
-                                .neutralText("Abbrechen")
+                                .negativeText("Abbrechen")
+                                .autoDismiss(false)
                                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                                     // Read out the input value & description and save the transaction
                                     @Override
@@ -153,9 +154,13 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                                         final long value = et_value.getRawValue();
                                         final String description = et_description.getText().toString().trim();
                                         if (value <= 0) return;
-                                        if (TextUtils.isEmpty(description)) return;
+                                        if (TextUtils.isEmpty(description)) {
+                                            Toast.makeText(getContext(), "Beschreibung notwendig!", Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
 
                                         saveTransaction(value, description);
+                                        dialog.dismiss();
                                     }
 
                                     // Save the Payment to the database and offset the costs/money
@@ -197,9 +202,15 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                                             @Override
                                             public void onSuccess(Void aVoid) {
                                                 progressBar.setVisibility(View.GONE);
-                                                Toast.makeText(getContext(), "Erfolgreich überwiesen!", Toast.LENGTH_SHORT).show();
+                                                //Toast.makeText(getContext(), "Erfolgreich überwiesen!", Toast.LENGTH_SHORT).show();
                                             }
                                         });
+                                    }
+                                })
+                                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                        dialog.dismiss();
                                     }
                                 })
                                 .show();
