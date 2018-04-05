@@ -13,14 +13,28 @@
         android:layout_gravity="center_horizontal"
         android:visibility="gone" />
 
-    <TextView
+    <LinearLayout
         android:id="@+id/placeholder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="15dp"
-        android:text="Keine Notizen vorhanden..."
-        android:textStyle="italic"
-        android:visibility="gone" />
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/hq_logo" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:gravity="center_horizontal"
+            android:text="Keine Notizen vorhanden..."
+            android:textStyle="italic" />
+
+    </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recView"
