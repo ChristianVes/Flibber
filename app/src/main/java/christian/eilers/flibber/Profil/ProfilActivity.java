@@ -70,15 +70,15 @@ public class ProfilActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.ic_locked:
                         viewPager.setCurrentItem(0);
-                        getSupportActionBar().setTitle("???");
+                        getSupportActionBar().setTitle(adapter.getPageTitle(0));
                         break;
                     case R.id.ic_home:
                         viewPager.setCurrentItem(1);
-                        getSupportActionBar().setTitle("Gruppen");
+                        getSupportActionBar().setTitle(adapter.getPageTitle(1));
                         break;
                     case R.id.ic_profil:
                         viewPager.setCurrentItem(2);
-                        getSupportActionBar().setTitle("Profil");
+                        getSupportActionBar().setTitle(adapter.getPageTitle(2));
                         break;
                 }
 

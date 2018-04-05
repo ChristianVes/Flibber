@@ -98,9 +98,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         groupID = LocalStorage.getGroupID(getContext());
         users = ((HomeActivity) getActivity()).getUsers();
 
-        // Setup Toolbar as Actionbar
-        /*((HomeActivity)getActivity()).setSupportActionBar(toolbar);
-        setHasOptionsMenu(true);*/
+        setHasOptionsMenu(true);
     }
 
     // Load user's finance-balance

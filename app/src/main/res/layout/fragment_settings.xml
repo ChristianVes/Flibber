@@ -5,12 +5,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ImageView
+    <!--<ImageView
         android:id="@+id/image_wg"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_marginTop="10dp"
-        android:src="@drawable/hq_logo" />
+        android:src="@drawable/hq_logo" />-->
 
     <Button
         android:id="@+id/btn_profil"
@@ -61,10 +61,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Benachrichtigungen"
-        android:textSize="20sp"
-        android:textColor="@color/colorPrimaryDark"
-        android:textStyle="bold"
-        android:padding="10dp"
+        android:textAppearance="@style/Toolbar.TitleText"
+        android:padding="15dp"
         android:background="@drawable/layerlist_bottomedge_white"
         />
 

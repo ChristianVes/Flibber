@@ -16,7 +16,7 @@
         android:id="@+id/placeholder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="5dp"
+        android:padding="15dp"
         android:text="Keine Notizen vorhanden..."
         android:textStyle="italic"
         android:visibility="gone" />
