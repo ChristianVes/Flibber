@@ -38,7 +38,6 @@ import christian.eilers.flibber.Models.Group;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
-import christian.eilers.flibber.Utils.Strings;
 
 import static christian.eilers.flibber.Utils.Strings.*;
 

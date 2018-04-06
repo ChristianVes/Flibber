@@ -16,7 +16,6 @@
         android:padding="5dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/image_wg"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/placeholder_group"

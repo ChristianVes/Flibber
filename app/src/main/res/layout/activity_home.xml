@@ -8,7 +8,8 @@
     tools:context="christian.eilers.flibber.Home.HomeActivity"
     android:background="@drawable/wallpaper_home2"
     android:fitsSystemWindows="true"
-    android:clickable="true">
+    android:clickable="true"
+    android:focusable="true">
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appbar"

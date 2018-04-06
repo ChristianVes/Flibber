@@ -55,7 +55,8 @@
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_keyboard_arrow_right"
                 android:layout_gravity="center_vertical"
-                android:tint="@color/colorPrimaryBright"/>
+                android:tint="@color/colorPrimaryBright"
+                android:contentDescription="TODO" />
 
             <TextView
                 android:id="@+id/order_second"
@@ -70,7 +71,8 @@
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_keyboard_arrow_right"
                 android:layout_gravity="center_vertical"
-                android:tint="@color/colorPrimaryBright"/>
+                android:tint="@color/colorPrimaryBright"
+                android:contentDescription="TODO" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -100,7 +102,7 @@
                 android:background="?selectableItemBackground"
                 android:tint="@color/colorPrimary"
                 app:srcCompat="@drawable/ic_done"
-                />
+                android:contentDescription="TODO" />
 
             <ImageButton
                 android:id="@+id/btn_pass"
@@ -113,7 +115,7 @@
                 app:srcCompat="@drawable/ic_skip"
                 android:tint="@color/colorPrimary"
                 android:visibility="gone"
-                />
+                android:contentDescription="TODO" />
 
             <ImageButton
                 android:id="@+id/btn_remind"
@@ -125,7 +127,7 @@
                 android:background="?selectableItemBackground"
                 app:srcCompat="@drawable/ic_notifications_active"
                 android:tint="@color/colorPrimary"
-                />
+                android:contentDescription="TODO" />
 
 
         </RelativeLayout>

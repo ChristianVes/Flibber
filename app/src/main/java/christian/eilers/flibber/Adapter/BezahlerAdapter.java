@@ -46,7 +46,7 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final User user = users.get(position);
         // USERNAME
         holder.tv_username.setText(user.getName());
@@ -91,7 +91,7 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
                 public void onClick(View view) {
                     selectedView.setCardBackgroundColor(context.getResources().getColor(R.color.colorWhite50));
                     selectedPosition = getAdapterPosition();
-                    selectedView = itemView.findViewById(R.id.card);;
+                    selectedView = itemView.findViewById(R.id.card);
                     selectedView.setCardBackgroundColor(context.getResources().getColor(R.color.colorAccent30));
                 }
             });

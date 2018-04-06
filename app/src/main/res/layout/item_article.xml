@@ -2,6 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="5dp"
@@ -15,10 +16,10 @@
         android:layout_centerVertical="true"
         android:layout_marginRight="5dp"
         android:buttonTint="@color/colorPrimaryDark"
-        android:clickable="false"/>
+        android:clickable="false"
+        tools:targetApi="lollipop" />
 
     <LinearLayout
-        android:id="@+id/mainLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/checkbox"
@@ -32,7 +33,7 @@
                 android:id="@+id/username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="12sp"
                 android:textColor="@color/colorPrimaryDark"
                 android:text="..."/>
 
@@ -40,7 +41,7 @@
                 android:id="@+id/datum"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="12sp"
                 android:textColor="@color/colorPrimaryDark"
                 android:layout_alignParentRight="true"/>
 
@@ -67,7 +68,8 @@
                 android:layout_centerVertical="true"
                 app:srcCompat="@drawable/ic_group"
                 android:tint="@color/colorPrimaryDark"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                android:contentDescription="TODO" />
 
         </RelativeLayout>
 

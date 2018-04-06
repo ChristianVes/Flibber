@@ -58,7 +58,8 @@
             android:layout_alignParentRight="true"
             android:background="?android:selectableItemBackground"
             android:visibility="gone"
-            app:srcCompat="@drawable/ic_more" />
+            app:srcCompat="@drawable/ic_more"
+            android:contentDescription="TODO" />
 
         <Button
             android:id="@+id/btn_save"
@@ -73,7 +74,6 @@
 
 
     <RelativeLayout
-        android:id="@+id/middleLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/bottomLayout"
@@ -97,7 +97,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:adjustViewBounds="true"
-                    android:scaleType="fitXY" />
+                    android:scaleType="fitXY"
+                    android:contentDescription="TODO" />
 
                 <TextView
                     android:id="@+id/title"
@@ -193,7 +194,8 @@
             android:layout_alignBottom="@+id/input_comment"
             android:layout_alignParentRight="true"
             android:background="?android:selectableItemBackground"
-            app:srcCompat="@drawable/ic_send" />
+            app:srcCompat="@drawable/ic_send"
+            android:contentDescription="TODO" />
 
     </RelativeLayout>
 

@@ -20,7 +20,6 @@
             android:layout_alignParentTop="true">
 
             <android.support.design.widget.AppBarLayout
-                android:id="@+id/note_appbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/layerlist_bottomedge"
@@ -43,7 +42,8 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/layout_top"
             android:clickable="true"
-            android:focusableInTouchMode="true">
+            android:focusableInTouchMode="true"
+            android:focusable="true">
 
             <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
@@ -56,7 +56,6 @@
                     android:orientation="vertical">
 
                     <android.support.design.widget.CoordinatorLayout
-                        android:id="@+id/imageLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -65,7 +64,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:adjustViewBounds="true"
-                            android:scaleType="fitXY" />
+                            android:scaleType="fitXY"
+                            android:contentDescription="TODO" />
 
                         <android.support.design.widget.FloatingActionButton
                             android:id="@+id/fab_delete"

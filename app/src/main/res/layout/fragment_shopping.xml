@@ -8,10 +8,10 @@
     android:fitsSystemWindows="true"
     android:clickable="true"
     android:focusableInTouchMode="true"
-    tools:context="christian.eilers.flibber.Home.FinanceFragment">
+    tools:context="christian.eilers.flibber.Home.FinanceFragment"
+    android:focusable="true">
 
     <RelativeLayout
-        android:id="@+id/middleLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottomLayout">
@@ -66,7 +66,8 @@
             android:padding="5dp"
             android:background="?android:selectableItemBackground"
             android:tint="@color/colorPrimaryBlack"
-            app:srcCompat="@drawable/ic_send" />
+            app:srcCompat="@drawable/ic_send"
+            android:contentDescription="TODO" />
 
         <ImageButton
             android:id="@+id/btn_group"
@@ -78,7 +79,8 @@
             android:scaleType="fitCenter"
             android:padding="5dp"
             android:tint="@color/colorPrimary"
-            app:srcCompat="@drawable/ic_group_trans" />
+            app:srcCompat="@drawable/ic_group_trans"
+            android:contentDescription="TODO" />
 
     </RelativeLayout>
 

@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     tools:context="christian.eilers.flibber.LoginActivity"
     android:focusableInTouchMode="true"
-    android:clickable="true">
+    android:clickable="true"
+    android:focusable="true">
     <!-- focusable/clickable for hiding the keyboard with method hideKeyboard in the activity-->
 
     <LinearLayout
@@ -22,7 +23,8 @@
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:cropToPadding="false"
-            app:srcCompat="@drawable/hq_logo" />
+            app:srcCompat="@drawable/hq_logo"
+            android:contentDescription="TODO" />
 
         <EditText
             android:id="@+id/editText_email"

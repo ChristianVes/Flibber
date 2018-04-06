@@ -5,4 +5,5 @@
     android:padding="10dp"
     android:src="@drawable/ic_shopping_done"
     android:tint="@color/colorPrimaryBlack"
-    style="?android:borderlessButtonStyle"/>
+    style="?android:borderlessButtonStyle"
+    android:contentDescription="TODO" />
