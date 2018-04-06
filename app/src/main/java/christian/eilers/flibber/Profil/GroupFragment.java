@@ -183,7 +183,7 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
                 final String email = task.getResult().getString(EMAIL);
                 final String picPath = task.getResult().getString(PICPATH);
                 final String deviceToken = task.getResult().getString(DEVICETOKEN);
-                final User user = new User(username, email, userID, picPath, deviceToken, 0, 0);
+                final User user = new User(username, email, userID, picPath, deviceToken);
                 db.collection(GROUPS).document(group.getKey()).collection(USERS).document(userID).set(user);
             }
         });
@@ -333,7 +333,7 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
                 final String email = task.getResult().getString(EMAIL);
                 final String picPath = task.getResult().getString(PICPATH);
                 final String deviceToken = task.getResult().getString(DEVICETOKEN);
-                final User user = new User(username, email, userID, picPath, deviceToken, 0, 0);
+                final User user = new User(username, email, userID, picPath, deviceToken);
                 db.collection(GROUPS).document(groupID).collection(USERS).document(userID).set(user);
                 deleteInvitation(groupID);
             }

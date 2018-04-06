@@ -32,18 +32,24 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
         if (remoteMessage.getData().size() == 0) return;
 
+        // Shared Preferences -> check user's notification settings in switch-case
+        SharedPreferences sharedPreferences = getSharedPreferences(NOTIFICATION_SETTINGS, Context.MODE_PRIVATE);
+
         // Get the type of Notification
         String type = remoteMessage.getData().get(TYPE);
         switch (type) {
             case SHOPPING:
+                if(!sharedPreferences.getBoolean(SHOPPING, true)) break;
                 String articleName = remoteMessage.getData().get(NAME);
                 shoppingNotification(articleName);
                 break;
             case TASKS:
+                if(!sharedPreferences.getBoolean(TASKS, true)) break;
                 String taskName = remoteMessage.getData().get(NAME);
                 taskNotification(taskName);
                 break;
             case NOTES:
+                if(!sharedPreferences.getBoolean(NOTES, true)) break;
                 String username = remoteMessage.getData().get(USER);
                 String title = remoteMessage.getData().get(TITLE);
                 String description = remoteMessage.getData().get(DESCRIPTION);

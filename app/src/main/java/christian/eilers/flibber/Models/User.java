@@ -9,19 +9,17 @@ public class User implements Serializable {
     private String userID;
     private String picPath;
     private String deviceToken;
-    private long money;
-    private long points;
+    private long money = 0;
+    private long points = 0;
 
     public User() {}
 
-    public User(String name, String email, String userID, String picPath, String deviceToken, long money, long points) {
+    public User(String name, String email, String userID, String picPath, String deviceToken) {
         this.name = name;
         this.email = email;
         this.userID = userID;
         this.picPath = picPath;
         this.deviceToken = deviceToken;
-        this.money = money;
-        this.points = points;
     }
 
     public String getName() {

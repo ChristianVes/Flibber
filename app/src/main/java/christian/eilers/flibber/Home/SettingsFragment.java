@@ -1,17 +1,21 @@
 package christian.eilers.flibber.Home;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SwitchCompat;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -30,7 +34,7 @@ import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 import static christian.eilers.flibber.Utils.Strings.*;
 
-public class SettingsFragment extends Fragment implements View.OnClickListener{
+public class SettingsFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener{
 
     @Nullable
     @Override
@@ -46,8 +50,17 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
     private void initializeViews() {
         btn_invite = mainView.findViewById(R.id.btn_invite);
         btn_profil = mainView.findViewById(R.id.btn_profil);
+        switch_notes = mainView.findViewById(R.id.switch_notes);
+        switch_shopping = mainView.findViewById(R.id.switch_shopping);
+        switch_tasks = mainView.findViewById(R.id.switch_tasks);
         btn_profil.setOnClickListener(this);
         btn_invite.setOnClickListener(this);
+
+        // Switch-States from SharedPreferences
+        sharedPreferences = getContext().getSharedPreferences(NOTIFICATION_SETTINGS, Context.MODE_PRIVATE);
+        switch_notes.setChecked(sharedPreferences.getBoolean(NOTES, true));
+        switch_shopping.setChecked(sharedPreferences.getBoolean(SHOPPING, true));
+        switch_tasks.setChecked(sharedPreferences.getBoolean(TASKS, true));
     }
 
     // Send an Invitation to the user matching the given E-Mail Adress to join the WG
@@ -169,12 +182,29 @@ public class SettingsFragment extends Fragment implements View.OnClickListener{
         }
     }
 
+    // Save new Notification Settings in the SharedPreferences
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        switch (buttonView.getId()) {
+            case R.id.switch_notes :
+                sharedPreferences.edit().putBoolean(NOTES, isChecked).apply();
+                break;
+            case R.id.switch_shopping :
+                sharedPreferences.edit().putBoolean(SHOPPING, isChecked).apply();
+                break;
+            case R.id.switch_tasks :
+                sharedPreferences.edit().putBoolean(TASKS, isChecked).apply();
+                break;
+        }
+    }
+
     // Class Variables
     private View mainView;
     private Button btn_invite, btn_profil;
-    private FirebaseFirestore db;
-    private String groupID;
-
+    private SwitchCompat switch_notes, switch_shopping, switch_tasks;
     private MaterialDialog inviteDialog;
 
+    private FirebaseFirestore db;
+    private SharedPreferences sharedPreferences;
+    private String groupID;
 }
