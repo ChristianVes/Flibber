@@ -265,11 +265,11 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         switch (view.getId()) {
             case R.id.fab:
                 getActivity().startActivity(new Intent(getContext(), TransactionActivity.class));
-                getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 break;
             case R.id.zumVerlauf:
                 getActivity().startActivity(new Intent(getContext(), VerlaufActivity.class));
-                getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 break;
         }
     }
@@ -285,6 +285,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         switch (item.getItemId()) {
             case R.id.action_kassensturz:
                 // TODO: KASSENSTURZ
+                Toast.makeText(getContext(), "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

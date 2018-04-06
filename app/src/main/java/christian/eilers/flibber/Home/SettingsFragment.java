@@ -181,7 +181,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             LocalStorage.setGroupID(getContext(), null);
             Intent profilIntent = new Intent(getContext(), ProfilActivity.class);
             startActivity(profilIntent);
-            getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             getActivity().finish();
         }
     }

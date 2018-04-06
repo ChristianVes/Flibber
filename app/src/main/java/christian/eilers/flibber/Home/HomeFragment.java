@@ -65,7 +65,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent_newNote = new Intent(getContext(), NoteCreateActivity.class);
                 getActivity().startActivity(intent_newNote);
-                getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
     }

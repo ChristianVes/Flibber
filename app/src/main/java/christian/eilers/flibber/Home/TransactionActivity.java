@@ -196,7 +196,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
     // Verberge Tastatur, wenn gegebene Views ihren Fokus verlieren
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
-        if (et_article.hasFocus() || et_price.hasFocus() || et_description.hasFocus()) return;
+        if (et_article.hasFocus() || et_price.hasFocus()) return;
         if (!hasFocus) {
             InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);

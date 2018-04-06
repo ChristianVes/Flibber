@@ -27,14 +27,6 @@
             android:src="@drawable/hq_logo"
             android:contentDescription="TODO" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="15dp"
-            android:gravity="center_horizontal"
-            android:text="Keine Notizen vorhanden..."
-            android:textStyle="italic" />
-
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

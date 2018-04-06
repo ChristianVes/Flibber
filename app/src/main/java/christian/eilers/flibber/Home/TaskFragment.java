@@ -97,7 +97,7 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
         if (view.getId() == R.id.fab) {
             Intent newTask = new Intent(getContext(), NewTaskActivity.class);
             getActivity().startActivity(newTask);
-            getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }
     }
 
