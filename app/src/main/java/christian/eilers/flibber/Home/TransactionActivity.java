@@ -1,6 +1,7 @@
 package christian.eilers.flibber.Home;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -84,7 +85,14 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         groupID = LocalStorage.getGroupID(this);
         db = FirebaseFirestore.getInstance();
 
-        progressBar.setVisibility(View.VISIBLE);
+        users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
+        ArrayList<User> userList = new ArrayList<>(users.values());
+        adapter_bezahler = new BezahlerAdapter(userList, userID);
+        adapter_beteiligte = new BeteiligteAdapter(userList);
+        rec_bezahler.setAdapter(adapter_bezahler);
+        rec_beteiligte.setAdapter(adapter_beteiligte);
+
+        /*progressBar.setVisibility(View.VISIBLE);
 
         db.collection(GROUPS).document(groupID).collection(USERS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -97,7 +105,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
                 rec_beteiligte.setAdapter(adapter_beteiligte);
                 progressBar.setVisibility(View.GONE);
             }
-        });
+        });*/
     }
 
     // Erzeugt eine Userliste mithilfe eines Snapshots aus der Datenbank
