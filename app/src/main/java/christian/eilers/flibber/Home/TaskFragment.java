@@ -76,6 +76,7 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
                 .setQuery(query, TaskModel.class)
                 .build();
 
+        users = ((HomeActivity) getActivity()).getUsers();
         adapter = new TasksAdapter(options, userID, groupID, users) {
             @Override
             public void onDataChanged() {

@@ -103,6 +103,7 @@ public class HomeFragment extends Fragment {
             // Bind data from the database to the UI-Object
             @Override
             public void onBindViewHolder(final HomeFragment.NotesHolder holder, int position, final Note model) {
+                users = ((HomeActivity) getActivity()).getUsers();
                 User user = users.get(model.getUserID());
                 // USERNAME
                 holder.tv_username.setText(user.getName());

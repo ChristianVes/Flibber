@@ -22,6 +22,9 @@
         <item name="md_title_color">@color/colorPrimaryDark</item>
         <item name="md_link_color">@color/colorPrimary</item>
         <item name="md_widget_color">@color/colorPrimary</item>
+        <item name="md_positive_color">@color/colorPrimary</item>
+        <item name="md_neutral_color">@color/colorPrimary</item>
+        <item name="md_negative_color">@color/colorPrimary</item>
 
     </style>
 

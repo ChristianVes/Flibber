@@ -61,7 +61,6 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         mainView= inflater.inflate(R.layout.fragment_finanzen, container, false);
         initializeViews();
         initializeVariables();
@@ -254,6 +253,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                 .setQuery(query, Payment.class)
                 .build();
 
+        users = ((HomeActivity) getActivity()).getUsers();
         adapterVerlauf = new VerlaufAdapter(options, userID, users);
 
         recVerlauf.setLayoutManager(new LinearLayoutManager(getContext()));

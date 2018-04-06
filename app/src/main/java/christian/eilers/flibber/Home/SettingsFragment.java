@@ -61,6 +61,10 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         switch_notes.setChecked(sharedPreferences.getBoolean(NOTES, true));
         switch_shopping.setChecked(sharedPreferences.getBoolean(SHOPPING, true));
         switch_tasks.setChecked(sharedPreferences.getBoolean(TASKS, true));
+
+        switch_notes.setOnCheckedChangeListener(this);
+        switch_shopping.setOnCheckedChangeListener(this);
+        switch_tasks.setOnCheckedChangeListener(this);
     }
 
     // Send an Invitation to the user matching the given E-Mail Adress to join the WG

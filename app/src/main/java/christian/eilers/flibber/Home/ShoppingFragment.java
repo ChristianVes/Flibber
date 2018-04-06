@@ -110,6 +110,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         else {
             CollectionReference ref_users = db.collection(GROUPS).document(groupID).collection(USERS);
             WriteBatch batch = db.batch();
+            users = ((HomeActivity) getActivity()).getUsers();
             // Save article in each users collection
             for (User u : users.values()) {
                 DocumentReference ref = ref_users.document(u.getUserID()).collection(SHOPPING).document(article.getKey());
@@ -132,6 +133,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         else {
             CollectionReference ref_users = db.collection(GROUPS).document(groupID).collection(USERS);
             WriteBatch batch = db.batch();
+            users = ((HomeActivity) getActivity()).getUsers();
             // Save article in each users collection
             for (User u : users.values()) {
                 DocumentReference ref = ref_users.document(u.getUserID()).collection(SHOPPING).document(article.getKey());
@@ -192,6 +194,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                 // Artikelname
                 holder.tv_article.setText(model.getName());
                 // Username
+                users = ((HomeActivity) getActivity()).getUsers();
                 final User articleUser = users.get(model.getUserID());
                 holder.tv_username.setText(articleUser.getName());
                 // Timestamp
