@@ -5,9 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/wallpaper_home2"
-    android:clickable="true"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
     tools:context="christian.eilers.flibber.Home.TransactionActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -44,62 +41,71 @@
             android:orientation="vertical"
             android:layout_marginTop="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp">
+            android:layout_marginLeft="10dp"
+            android:animateLayoutChanges="true">
 
-            <RelativeLayout
+            <LinearLayout
+                android:id="@+id/layout_top"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_toLeftOf="@+id/input_price"
+                        android:layout_centerVertical="true"
+                        android:text="Kosten:"
+                        android:textSize="26sp"/>
+
+                    <com.blackcat.currencyedittext.CurrencyEditText
+                        android:id="@+id/input_price"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/shape_rounded"
+                        android:imeOptions="actionNext"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="26sp"
+                        android:gravity="right" />
+
+                </RelativeLayout>
+
+                <EditText
+                    android:id="@+id/input_article"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/shape_rounded"
+                    android:hint="Titel"
+                    android:imeOptions="actionNext"
+                    android:inputType="textCapSentences"
+                    android:maxLength="20"
+                    android:lines="1"
+                    android:textSize="25sp" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_toLeftOf="@+id/input_price"
-                    android:layout_centerVertical="true"
-                    android:text="Kosten:"
-                    android:textSize="26sp"/>
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="Beteiligt sind:"
+                    android:textSize="22sp" />
 
-                <com.blackcat.currencyedittext.CurrencyEditText
-                    android:id="@+id/input_price"
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:background="@drawable/shape_rounded"
-                    android:imeOptions="actionNext"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="26sp"
-                    android:gravity="right" />
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recView_beteiligte"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-            </RelativeLayout>
+                </android.support.v7.widget.RecyclerView>
 
-            <EditText
-                android:id="@+id/input_article"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/shape_rounded"
-                android:hint="Titel"
-                android:imeOptions="actionNext"
-                android:inputType="textCapSentences"
-                android:maxLength="20"
-                android:lines="1"
-                android:textSize="25sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:text="Beteiligt sind:"
-                android:textSize="22sp" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recView_beteiligte"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            </android.support.v7.widget.RecyclerView>
+            </LinearLayout>
 
             <RelativeLayout
                 android:id="@+id/layout_expand"

@@ -8,7 +8,6 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -32,7 +31,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 
 import java.util.ArrayList;
@@ -46,6 +44,7 @@ import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
+
 import static christian.eilers.flibber.Utils.Strings.*;
 
 public class TransactionActivity extends AppCompatActivity implements View.OnFocusChangeListener{
@@ -119,8 +118,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         if (userList.size() == 5 || userList.size() == 6) spanCount = 3;
 
         layoutManagerBeteiligte = new GridLayoutManager(this, spanCount);
-
-        layoutManagerBezahler = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        layoutManagerBezahler = new GridLayoutManager(this, spanCount);
 
         rec_bezahler.setHasFixedSize(true);
         rec_bezahler.setLayoutManager(layoutManagerBezahler);
@@ -249,8 +247,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
     private HashMap<String, User> users;
     private BezahlerAdapter adapter_bezahler;
     private BeteiligteAdapter adapter_beteiligte;
-    private GridLayoutManager layoutManagerBeteiligte;
-    private LinearLayoutManager layoutManagerBezahler;
+    private GridLayoutManager layoutManagerBeteiligte, layoutManagerBezahler;
 
     private Toolbar toolbar;
     private EditText et_article, et_description;
