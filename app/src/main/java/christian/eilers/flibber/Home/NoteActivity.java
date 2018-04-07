@@ -103,7 +103,8 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
         noteID = getIntent().getExtras().getString(NOTEID);
-        if(noteID == null) {
+        users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
+        if(noteID == null || users == null) {
             Intent main = new Intent(this, MainActivity.class);
             startActivity(main);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -113,6 +114,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
 
     // Lade den Inhalt der Notiz aus DB und zeige sie an
     private void loadNote() {
+        progressBar.setVisibility(View.VISIBLE);
         db.collection(GROUPS).document(groupID).collection(NOTES).document(noteID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -145,7 +147,17 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                             .into(img_note);
 
                 // USER-INFORMATION
-                loadNoteUser(thisNote.getUserID());
+                final User user = users.get(thisNote.getUserID());
+                // USERNAME
+                tv_username.setText(user.getName());
+                // PROFILE PICTURE
+                if (user.getPicPath() != null)
+                    GlideApp.with(NoteActivity.this)
+                            .load(storage.child(PROFILE).child(user.getPicPath()))
+                            .dontAnimate()
+                            .into(img_profile);
+
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -201,6 +213,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
     // load and display the Comments
     /*
     TODO: Beim Erstellen eines Kommentars wird onBindViewHolder 2mal aufgerufen:
+          LÖSUNG: Timestamp direkt mitgeben über FieldValue.
           Einmal bevor es zur Datenbank geschickt wird und einmal wenn es online geupdatet wurde
     */
     private void loadData() {
@@ -223,44 +236,30 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             protected void onBindViewHolder(@NonNull final CommentsHolder holder, int position, @NonNull final Comment model) {
-                holder.itemView.setVisibility(View.GONE);
-                db.collection(USERS).document(model.getUserID()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        final User user = documentSnapshot.toObject(User.class);
-                        // USERNAME
-                        holder.comment_username.setText(user.getName());
+                final User user = users.get(model.getUserID());
+                // USERNAME
+                holder.comment_username.setText(user.getName());
 
-                        // PROFILE-PICTURE
-                        if(user.getPicPath() != null)
-                            GlideApp.with(holder.itemView.getContext())
-                                    .load(storage.child(PROFILE).child(user.getPicPath()))
-                                    .dontAnimate()
-                                    .into(holder.comment_img);
-                        else Glide.with(holder.itemView.getContext()).clear(holder.comment_img);
+                // PROFILE-PICTURE
+                if(user.getPicPath() != null)
+                    GlideApp.with(holder.itemView.getContext())
+                            .load(storage.child(PROFILE).child(user.getPicPath()))
+                            .dontAnimate()
+                            .into(holder.comment_img);
+                else Glide.with(holder.itemView.getContext()).clear(holder.comment_img);
 
-                        // TEXT
-                        holder.comment_text.setText(model.getDescription());
+                // TEXT
+                holder.comment_text.setText(model.getDescription());
 
-                        // TIMESTAMP
-                        if(model.getTimestamp() != null)
-                            holder.comment_datum.setText(
-                                    DateUtils.getRelativeTimeSpanString(
-                                            model.getTimestamp().getTime(),
-                                            System.currentTimeMillis() + BUFFER,
-                                            DateUtils.MINUTE_IN_MILLIS,
-                                            DateUtils.FORMAT_ABBREV_RELATIVE)
-                            );
-
-                        holder.itemView.setVisibility(View.VISIBLE);
-
-                        // Überprüft ob es sich um einen noch nicht an die Database gesendeten Comment handelt
-                        /*boolean offline = getSnapshots().getSnapshot(holder.getAdapterPosition()).getMetadata().hasPendingWrites();
-                        if(!offline) holder.itemView.setVisibility(View.VISIBLE);*/
-                    }
-                });
-
-
+                // TIMESTAMP
+                if(model.getTimestamp() != null)
+                    holder.comment_datum.setText(
+                            DateUtils.getRelativeTimeSpanString(
+                                    model.getTimestamp().getTime(),
+                                    System.currentTimeMillis() + BUFFER,
+                                    DateUtils.MINUTE_IN_MILLIS,
+                                    DateUtils.FORMAT_ABBREV_RELATIVE)
+                    );
             }
         };
 
@@ -416,6 +415,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
     private StorageReference storage;
     private FirestoreRecyclerAdapter adapter_comments;
     private Note thisNote;
+    private HashMap<String, User> users;
 
     private String noteID, userID, groupID;
 }

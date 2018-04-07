@@ -1,6 +1,7 @@
 package christian.eilers.flibber.Home;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import christian.eilers.flibber.Adapter.BeteiligteAdapter;
+import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
@@ -71,8 +73,18 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
         userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
         db = FirebaseFirestore.getInstance();
+        users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
+        if(users == null) {
+            Intent main = new Intent(this, MainActivity.class);
+            startActivity(main);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            finish();
+        }
+        ArrayList<User> userList = new ArrayList<>(users.values());
+        adapter_beteiligte = new BeteiligteAdapter(userList);
+        recView_beteiligte.setAdapter(adapter_beteiligte);
 
-        progressBar.setVisibility(View.VISIBLE);
+        /*progressBar.setVisibility(View.VISIBLE);
 
         db.collection(GROUPS).document(groupID).collection(USERS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -83,7 +95,7 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
                 recView_beteiligte.setAdapter(adapter_beteiligte);
                 progressBar.setVisibility(View.GONE);
             }
-        });
+        });*/
     }
 
     private void saveTask() {

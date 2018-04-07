@@ -264,13 +264,15 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.fab:
-                Intent intent = new Intent(getContext(), TransactionActivity.class);
-                intent.putExtra(USERS, users);
-                getActivity().startActivity(intent);
+                Intent intentTransaction = new Intent(getContext(), TransactionActivity.class);
+                intentTransaction.putExtra(USERS, users);
+                getActivity().startActivity(intentTransaction);
                 //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 break;
             case R.id.zumVerlauf:
-                getActivity().startActivity(new Intent(getContext(), VerlaufActivity.class));
+                Intent intentVerlauf = new Intent(getContext(), VerlaufActivity.class);
+                intentVerlauf.putExtra(USERS, users);
+                getActivity().startActivity(intentVerlauf);
                 //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 break;
         }

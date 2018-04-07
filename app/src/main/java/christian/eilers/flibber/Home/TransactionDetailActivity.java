@@ -63,12 +63,13 @@ public class TransactionDetailActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
         transactionID = getIntent().getExtras().getString(TRANSACTIONID);
-        if(transactionID == null) {
+        users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
+        if(transactionID == null || users == null) {
             Intent main = new Intent(this, MainActivity.class);
             startActivity(main);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
         }
-
     }
 
     private void initializeViews() {

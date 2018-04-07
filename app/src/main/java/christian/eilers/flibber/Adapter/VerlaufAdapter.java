@@ -110,6 +110,7 @@ public class VerlaufAdapter extends FirestoreRecyclerAdapter<Payment, RecyclerVi
                 Intent i_detailed = new Intent(transHolder.itemView.getContext(), TransactionDetailActivity.class);
                 i_detailed.putExtra(TRANSACTIONID, model.getKey());
                 i_detailed.putExtra("isUeberweisung", isUeberweisung);
+                i_detailed.putExtra(USERS, users);
                 transHolder.itemView.getContext().startActivity(i_detailed);
             }
         });

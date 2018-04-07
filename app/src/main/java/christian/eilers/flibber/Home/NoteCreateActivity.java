@@ -24,12 +24,17 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.HashMap;
+
 import christian.eilers.flibber.Models.Note;
+import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 import static christian.eilers.flibber.Utils.Strings.*;
@@ -184,18 +189,30 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
                 noteRef.getId()
         );
         noteRef.set(note);
-        progressBar.setVisibility(View.GONE);
         toNoteActivity(noteRef.getId());
-
     }
 
     // Wechsel zur Home Activity
-    private void toNoteActivity(String key) {
-        Intent showNote = new Intent(NoteCreateActivity.this, NoteActivity.class);
-        showNote.putExtra(NOTEID, key);
-        startActivity(showNote);
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        finish();
+    private void toNoteActivity(final String key) {
+        // Lade zuerst aktuelle Userliste (für Intent-Extra)
+        db.collection(GROUPS).document(groupID).collection(USERS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                HashMap<String, User> users = new HashMap<>();
+                for(DocumentSnapshot doc : queryDocumentSnapshots) {
+                    User user = doc.toObject(User.class);
+                    users.put(user.getUserID(), user);
+                }
+                progressBar.setVisibility(View.GONE);
+                Intent showNote = new Intent(NoteCreateActivity.this, NoteActivity.class);
+                showNote.putExtra(NOTEID, key);
+                showNote.putExtra(USERS, users);
+                startActivity(showNote);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                finish();
+            }
+        });
+
     }
 
 

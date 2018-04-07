@@ -156,8 +156,9 @@ public class HomeFragment extends Fragment {
                     public void onClick(View view) {
                         Intent i = new Intent(getContext(), NoteActivity.class);
                         i.putExtra(NOTEID, model.getKey());
+                        i.putExtra(USERS, users);
                         startActivity(i);
-                        getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                        //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                     }
                 });
 

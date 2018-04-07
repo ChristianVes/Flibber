@@ -59,14 +59,15 @@ public class TaskActivity extends AppCompatActivity {
         userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
         db = FirebaseFirestore.getInstance();
-        storage = FirebaseStorage.getInstance().getReference();
         taskID = getIntent().getExtras().getString(TASKID);
-        if(taskID == null) {
+        allUsers = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
+        if(taskID == null || allUsers == null) {
             Intent main = new Intent(this, MainActivity.class);
             startActivity(main);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
         }
+
     }
 
     private void initializeViews() {
@@ -97,8 +98,18 @@ public class TaskActivity extends AppCompatActivity {
                 setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
                 getSupportActionBar().setTitle(thisTask.getTitle()); // Titel des Tasks setzen
 
+                users = new HashMap<>();
+                for (String key : allUsers.keySet()) {
+                    if (thisTask.getInvolvedIDs().contains(key))
+                        users.put(key, allUsers.get(key));
+                }
+                ArrayList<User> userList = new ArrayList<>(users.values());
+                adapter_beteiligte = new TaskBeteiligteAdapter(userList);
+                rec_involved.setAdapter(adapter_beteiligte);
+                loadEntries();
+
                 // Lade Beteiligte User-Liste (in Reihenfolge)
-                db.collection(GROUPS).document(groupID).collection(USERS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                /*db.collection(GROUPS).document(groupID).collection(USERS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
                         retrieveUsers(documentSnapshots);
@@ -108,7 +119,7 @@ public class TaskActivity extends AppCompatActivity {
                         loadEntries();
                         progressBar.setVisibility(View.GONE);
                     }
-                });
+                });*/
             }
         });
     }
@@ -230,9 +241,9 @@ public class TaskActivity extends AppCompatActivity {
 
     private String userID, groupID, taskID;
     private FirebaseFirestore db;
-    private StorageReference storage;
     private TaskModel thisTask;
     private HashMap<String, User> users;
+    private HashMap<String, User> allUsers;
     private TaskBeteiligteAdapter adapter_beteiligte;
     private FirestoreRecyclerAdapter adapter_entries;
 }

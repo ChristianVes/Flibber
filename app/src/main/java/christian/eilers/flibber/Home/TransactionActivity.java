@@ -36,6 +36,7 @@ import java.util.Locale;
 
 import christian.eilers.flibber.Adapter.BeteiligteAdapter;
 import christian.eilers.flibber.Adapter.BezahlerAdapter;
+import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
@@ -86,6 +87,12 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         db = FirebaseFirestore.getInstance();
 
         users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
+        if(users == null) {
+            Intent main = new Intent(this, MainActivity.class);
+            startActivity(main);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            finish();
+        }
         ArrayList<User> userList = new ArrayList<>(users.values());
         adapter_bezahler = new BezahlerAdapter(userList, userID);
         adapter_beteiligte = new BeteiligteAdapter(userList);

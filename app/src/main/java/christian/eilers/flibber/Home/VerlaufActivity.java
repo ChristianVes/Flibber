@@ -1,5 +1,6 @@
 package christian.eilers.flibber.Home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +20,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.HashMap;
 
 import christian.eilers.flibber.Adapter.VerlaufAdapter;
+import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
@@ -48,27 +50,14 @@ public class VerlaufActivity extends AppCompatActivity {
         userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
 
-        progressBar.setVisibility(View.VISIBLE);
-        Query usersQuery = db.collection(GROUPS).document(groupID).collection(USERS);
-        usersQuery.addSnapshotListener(VerlaufActivity.this, new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                // Toast.makeText(VerlaufActivity.this, "Update", Toast.LENGTH_SHORT).show();
-                retrieveUsers(documentSnapshots);
-                progressBar.setVisibility(View.GONE);
-                if (adapter == null) loadVerlauf();
-            }
-        });
-    }
-
-    // Erzeugt eine Userliste mithilfe eines Snapshots aus der Datenbank
-    private void retrieveUsers(QuerySnapshot documentSnapshots) {
-        HashMap<String, User> userHashMap = new HashMap<>();
-        for(DocumentSnapshot doc : documentSnapshots) {
-            User user = doc.toObject(User.class);
-            userHashMap.put(user.getUserID(), user);
+        users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
+        if(users == null) {
+            Intent main = new Intent(this, MainActivity.class);
+            startActivity(main);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            finish();
         }
-        users = (HashMap<String, User>) userHashMap.clone();
+        loadVerlauf();
     }
 
     // Load all transactions/payments

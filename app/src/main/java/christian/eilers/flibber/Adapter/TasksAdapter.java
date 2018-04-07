@@ -123,6 +123,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             public void onClick(View v) {
                 Intent i = new Intent(taskHolder.itemView.getContext(), TaskActivity.class);
                 i.putExtra(TASKID, getSnapshots().getSnapshot(position).getId());
+                i.putExtra(USERS, users);
                 taskHolder.itemView.getContext().startActivity(i);
             }
         });
