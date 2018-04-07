@@ -34,30 +34,32 @@
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:scrollbars="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp">
 
             <com.blackcat.currencyedittext.CurrencyEditText
                 android:id="@+id/input_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:background="@drawable/shape_rounded"
                 android:imeOptions="actionNext"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-
             <EditText
                 android:id="@+id/input_article"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/shape_rounded"
                 android:hint="Gekaufter Artikel"
                 android:imeOptions="actionNext"
@@ -70,71 +72,41 @@
                 android:id="@+id/input_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/shape_rounded"
                 android:gravity="start"
                 android:hint="Optionale Beschreibung...\n\n"
                 android:inputType="textMultiLine|textCapSentences"
                 android:textSize="16sp" />
 
-            <LinearLayout
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:orientation="horizontal"
-                android:weightSum="2">
+                android:text="Beteiligte"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:padding="10dp">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/listBeteiligte"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"/>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Bezahler"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Bezahler"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/listBezahler"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:choiceMode="singleChoice"
-                        android:nestedScrollingEnabled="false">
-
-                    </android.support.v7.widget.RecyclerView>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Beteiligte"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/listBeteiligte"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:choiceMode="multipleChoice"
-                        android:nestedScrollingEnabled="false">
-
-                    </android.support.v7.widget.RecyclerView>
-
-                </LinearLayout>
-
-            </LinearLayout>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/listBezahler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:layout_marginBottom="20dp" />
 
         </LinearLayout>
 

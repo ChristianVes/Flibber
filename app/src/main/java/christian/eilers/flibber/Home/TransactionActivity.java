@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -71,11 +72,6 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         et_article.setOnFocusChangeListener(this);
         et_price.setOnFocusChangeListener(this);
 
-        rec_bezahler.setHasFixedSize(true);
-        rec_bezahler.setLayoutManager(new LinearLayoutManager(this));
-        rec_beteiligte.setHasFixedSize(true);
-        rec_beteiligte.setLayoutManager(new LinearLayoutManager(this));
-
         setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
         getSupportActionBar().setDisplayShowTitleEnabled(false); // Titel der Actionbar ausblenden
     }
@@ -93,7 +89,21 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
         }
+
+        layoutManagerBeteiligte = new GridLayoutManager(this, 2);
+        layoutManagerBezahler = new GridLayoutManager(this, 2);
+
         ArrayList<User> userList = new ArrayList<>(users.values());
+        if (userList.size() <= 3) {
+            layoutManagerBeteiligte.setSpanCount(1);
+            layoutManagerBezahler.setSpanCount(1);
+        }
+
+        rec_bezahler.setHasFixedSize(true);
+        rec_bezahler.setLayoutManager(layoutManagerBezahler);
+        rec_beteiligte.setHasFixedSize(true);
+        rec_beteiligte.setLayoutManager(layoutManagerBeteiligte);
+
         adapter_bezahler = new BezahlerAdapter(userList, userID);
         adapter_beteiligte = new BeteiligteAdapter(userList);
         rec_bezahler.setAdapter(adapter_bezahler);
@@ -215,6 +225,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
     private HashMap<String, User> users;
     private BezahlerAdapter adapter_bezahler;
     private BeteiligteAdapter adapter_beteiligte;
+    private GridLayoutManager layoutManagerBezahler, layoutManagerBeteiligte;
 
     private Toolbar toolbar;
     private EditText et_article, et_description;

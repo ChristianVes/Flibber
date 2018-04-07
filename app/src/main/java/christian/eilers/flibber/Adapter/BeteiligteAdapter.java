@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -38,7 +39,7 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_user, parent, false);
+                .inflate(R.layout.item_user_checkbox2, parent, false);
         context = parent.getContext();
         return new ViewHolder(view);
     }
@@ -70,25 +71,25 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
     public class ViewHolder extends RecyclerView.ViewHolder {
         CircleImageView img_profile;
         TextView tv_username;
+        CheckBox checkBox;
 
         public ViewHolder(final View itemView) {
             super(itemView);
             img_profile = itemView.findViewById(R.id.profile_image);
             tv_username = itemView.findViewById(R.id.username);
+            checkBox = itemView.findViewById(R.id.checkbox);
 
             // Add/Remove clicked User to the involved ID's
-            // TODO: Change to Checkboxes (like ShoppingList)
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     String userID = users.get(getAdapterPosition()).getUserID();
-                    CardView cardView = itemView.findViewById(R.id.card);
                     if (involvedIDs.contains(userID)) {
-                        cardView.setCardBackgroundColor(context.getResources().getColor(R.color.colorWhite50));
+                        checkBox.setChecked(false);
                         involvedIDs.remove(userID);
                     }
                     else {
-                        cardView.setCardBackgroundColor(context.getResources().getColor(R.color.colorAccent30));
+                        checkBox.setChecked(true);
                         involvedIDs.add(userID);
                     }
                 }
