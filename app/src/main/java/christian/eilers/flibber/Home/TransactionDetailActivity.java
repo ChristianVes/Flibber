@@ -63,8 +63,8 @@ public class TransactionDetailActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
         transactionID = getIntent().getExtras().getString(TRANSACTIONID);
-        users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
-        if(transactionID == null || users == null) {
+        allUsers = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
+        if(transactionID == null || allUsers == null) {
             Intent main = new Intent(this, MainActivity.class);
             startActivity(main);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -111,47 +111,29 @@ public class TransactionDetailActivity extends AppCompatActivity {
                 // TITLE
                 setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
                 getSupportActionBar().setTitle(thisPayment.getTitle()); // Titel des Tasks setzen
+                // PAYER
+                User payer = allUsers.get(thisPayment.getPayerID());
+                tv_payer.setText(payer.getName());
+                if (payer.getPicPath() != null) {
+                    GlideApp.with(TransactionDetailActivity.this)
+                            .load(storage.child(payer.getPicPath()))
+                            .placeholder(R.drawable.profile_placeholder)
+                            .dontAnimate()
+                            .into(img_profile_payer);
+                }
+                // INVOLVED
+                final HashMap<String, User> involvedUsers = new HashMap<>();
+                for (String key : allUsers.keySet()) {
+                    if (thisPayment.getInvolvedIDs().contains(key))
+                        involvedUsers.put(key, allUsers.get(key));
+                }
+                ArrayList<User> involvedUserList = new ArrayList<>(involvedUsers.values());
+                adapter_beteiligte = new TaskBeteiligteAdapter(involvedUserList);
+                rec_beteiligte.setAdapter(adapter_beteiligte);
 
-                // Lade Beteiligte User-Liste (in Reihenfolge)
-                db.collection(GROUPS).document(groupID).collection(USERS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot documentSnapshots) {
-                        retrieveUsers(documentSnapshots);
-                        ArrayList<User> userList = new ArrayList<>(users.values());
-                        adapter_beteiligte = new TaskBeteiligteAdapter(userList);
-                        rec_beteiligte.setAdapter(adapter_beteiligte);
-                        progressBar.setVisibility(View.GONE);
-                    }
-                });
+                progressBar.setVisibility(View.GONE);
             }
         });
-    }
-
-    // Erzeugt eine Userliste aller Beteiligter mithilfe eines Snapshots aus der Datenbank
-    private void retrieveUsers(@NotNull QuerySnapshot documentSnapshots) {
-        HashMap<String, User> userHashMap = new HashMap<>();
-        for(DocumentSnapshot doc : documentSnapshots) {
-            final User user = doc.toObject(User.class);
-            if (thisPayment.getInvolvedIDs().contains(user.getUserID()))
-                userHashMap.put(user.getUserID(), user);
-
-            if (thisPayment.getPayerID().equals(user.getUserID())) {
-                tv_payer.setText(user.getName());
-                if (user.getPicPath() != null) {
-                    try{
-                        GlideApp.with(TransactionDetailActivity.this)
-                                .load(storage.child(user.getPicPath()))
-                                .placeholder(R.drawable.profile_placeholder)
-                                .dontAnimate()
-                                .into(img_profile_payer);
-                    } catch (IllegalArgumentException e) {
-                        Crashlytics.logException(e);
-                    }
-                }
-
-            }
-        }
-        users = (HashMap<String, User>) userHashMap.clone();
     }
 
     // Delete the Payment (-> Recalculate Costs)
@@ -273,7 +255,7 @@ public class TransactionDetailActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private StorageReference storage;
     private Payment thisPayment;
-    private HashMap<String, User> users;
+    private HashMap<String, User> allUsers;
     private TaskBeteiligteAdapter adapter_beteiligte;
 
     private Toolbar toolbar;

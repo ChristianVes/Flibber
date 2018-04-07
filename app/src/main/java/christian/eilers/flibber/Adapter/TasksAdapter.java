@@ -10,11 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -195,7 +197,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
 
     // Handle actions to be done when User has finished/taken care of a task
     private void handleTaskDone(final TaskHolder taskHolder, final int position, final TaskModel model) {
-        Toast.makeText(taskHolder.itemView.getContext(), model.getTitle() +" erledigt!", Toast.LENGTH_SHORT).show();
+        taskHolder.progressBar.setVisibility(View.VISIBLE);
         // Identify the ID of the current task
         String taskID = getSnapshots().getSnapshot(position).getId();
         // Change order of the involved user's
@@ -223,7 +225,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             @Nullable
             @Override
             public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                // Update the invovled User's points
+                // Update the involved User's points
                 HashMap<String, Long> map_points = new HashMap<>();
                 for (String id : model.getInvolvedIDs()) {
                     // Calculate user's new Points depending on whether he is the current user
@@ -244,6 +246,12 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
                 transaction.set(docEntry, entry);
                 return null;
             }
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(taskHolder.itemView.getContext(), model.getTitle() +" erledigt!", Toast.LENGTH_SHORT).show();
+                taskHolder.progressBar.setVisibility(View.GONE);
+            }
         });
     }
 
@@ -252,6 +260,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         TextView tv_title, tv_datum, tv_order_first, tv_order_second;
         ImageButton btn_done, btn_pass, btn_remind;
         LinearLayout layout_order;
+        ProgressBar progressBar;
 
         public TaskHolder(View itemView) {
             super(itemView);
@@ -263,6 +272,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             btn_pass = itemView.findViewById(R.id.btn_pass);
             btn_remind = itemView.findViewById(R.id.btn_remind);
             layout_order = itemView.findViewById(R.id.layout_order);
+            progressBar = itemView.findViewById(R.id.progressBar);
         }
     }
 

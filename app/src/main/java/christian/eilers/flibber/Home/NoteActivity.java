@@ -162,27 +162,6 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    // Lade User-Informationen des Notes-Erstellers aus DB
-    private void loadNoteUser(String noteUserID) {
-        db.collection(USERS).document(noteUserID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                final User user = documentSnapshot.toObject(User.class); // retrieve User-Object
-                // USERNAME
-                tv_username.setText(user.getName());
-                // PROFILE PICTURE
-                if (user.getPicPath() != null)
-                    GlideApp.with(NoteActivity.this)
-                    .load(storage.child(PROFILE).child(user.getPicPath()))
-                    .dontAnimate()
-                    .into(img_profile);
-                else Glide.with(NoteActivity.this).clear(img_profile);
-
-                progressBar.setVisibility(View.GONE);
-            }
-        });
-    }
-
     // Save the comment specified to the note in the database
     private void saveComment() {
         final String commentText = input.getText().toString().trim();
@@ -343,6 +322,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onSuccess(Void aVoid) {
                         updateLayout(title, description);
+                        progressBar.setVisibility(View.GONE);
                     }
                 });
     }
@@ -358,8 +338,6 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         btn_more.setVisibility(View.VISIBLE);
         tv_title.setVisibility(View.VISIBLE);
         tv_description.setVisibility(View.VISIBLE);
-
-        progressBar.setVisibility(View.GONE);
     }
 
     // Lösche Notiz und lösche Kommentare via CloudFunction

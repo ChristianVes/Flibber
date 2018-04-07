@@ -180,16 +180,20 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
 
     // Erstelle Datenbank-Eintrag für die Notiz
     private void createDbEntry(String notePicPath) {
-        DocumentReference noteRef = db.collection(GROUPS).document(groupID).collection(NOTES).document();
-        Note note = new Note(
+        final DocumentReference noteRef = db.collection(GROUPS).document(groupID).collection(NOTES).document();
+        final Note note = new Note(
                 et_title.getText().toString().trim(),
                 et_description.getText().toString().trim(),
                 userID,
                 notePicPath,
                 noteRef.getId()
         );
-        noteRef.set(note);
-        toNoteActivity(noteRef.getId());
+        noteRef.set(note).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                toNoteActivity(noteRef.getId());
+            }
+        });
     }
 
     // Wechsel zur Home Activity

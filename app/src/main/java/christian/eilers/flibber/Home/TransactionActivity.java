@@ -98,31 +98,6 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         adapter_beteiligte = new BeteiligteAdapter(userList);
         rec_bezahler.setAdapter(adapter_bezahler);
         rec_beteiligte.setAdapter(adapter_beteiligte);
-
-        /*progressBar.setVisibility(View.VISIBLE);
-
-        db.collection(GROUPS).document(groupID).collection(USERS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                retrieveUsers(documentSnapshots);
-                ArrayList<User> userList = new ArrayList<>(users.values());
-                adapter_bezahler = new BezahlerAdapter(userList, userID);
-                adapter_beteiligte = new BeteiligteAdapter(userList);
-                rec_bezahler.setAdapter(adapter_bezahler);
-                rec_beteiligte.setAdapter(adapter_beteiligte);
-                progressBar.setVisibility(View.GONE);
-            }
-        });*/
-    }
-
-    // Erzeugt eine Userliste mithilfe eines Snapshots aus der Datenbank
-    private void retrieveUsers(QuerySnapshot documentSnapshots) {
-        HashMap<String, User> userHashMap = new HashMap<>();
-        for(DocumentSnapshot doc : documentSnapshots) {
-            User user = doc.toObject(User.class);
-            userHashMap.put(user.getUserID(), user);
-        }
-        users = (HashMap<String, User>) userHashMap.clone();
     }
 
     // Save the Payment in the database

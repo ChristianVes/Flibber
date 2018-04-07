@@ -55,7 +55,6 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
         switch_order = findViewById(R.id.switch_order);
         recView_beteiligte = findViewById(R.id.recView_beteiligte);
         progressBar = findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.VISIBLE);
 
         et_name.setOnFocusChangeListener(this);
         et_points.setOnFocusChangeListener(this);
@@ -83,19 +82,6 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
         ArrayList<User> userList = new ArrayList<>(users.values());
         adapter_beteiligte = new BeteiligteAdapter(userList);
         recView_beteiligte.setAdapter(adapter_beteiligte);
-
-        /*progressBar.setVisibility(View.VISIBLE);
-
-        db.collection(GROUPS).document(groupID).collection(USERS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                retrieveUsers(documentSnapshots);
-                ArrayList<User> userList = new ArrayList<>(users.values());
-                adapter_beteiligte = new BeteiligteAdapter(userList);
-                recView_beteiligte.setAdapter(adapter_beteiligte);
-                progressBar.setVisibility(View.GONE);
-            }
-        });*/
     }
 
     private void saveTask() {
@@ -106,7 +92,6 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
         if (TextUtils.isEmpty(title) || TextUtils.isEmpty(s_frequenz)) return;
         if (adapter_beteiligte.getInvolvedIDs().isEmpty()) return;
 
-        progressBar.setVisibility(View.VISIBLE);
         long frequenz = Long.valueOf(s_frequenz);
         long points = 0;
         if (!TextUtils.isEmpty(s_points)) points = Long.valueOf(s_points);
@@ -118,6 +103,7 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
                 hasOrder,
                 new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(frequenz)));
 
+        progressBar.setVisibility(View.VISIBLE);
         doc.set(task).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -125,16 +111,6 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
                 finish();
             }
         });
-    }
-
-    // Erzeugt eine Userliste mithilfe eines Snapshots aus der Datenbank
-    private void retrieveUsers(@NotNull QuerySnapshot documentSnapshots) {
-        HashMap<String, User> userHashMap = new HashMap<>();
-        for(DocumentSnapshot doc : documentSnapshots) {
-            User user = doc.toObject(User.class);
-            userHashMap.put(user.getUserID(), user);
-        }
-        users = (HashMap<String, User>) userHashMap.clone();
     }
 
     @Override

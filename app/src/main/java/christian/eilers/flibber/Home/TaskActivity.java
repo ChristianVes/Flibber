@@ -106,20 +106,8 @@ public class TaskActivity extends AppCompatActivity {
                 ArrayList<User> userList = new ArrayList<>(users.values());
                 adapter_beteiligte = new TaskBeteiligteAdapter(userList);
                 rec_involved.setAdapter(adapter_beteiligte);
-                loadEntries();
 
-                // Lade Beteiligte User-Liste (in Reihenfolge)
-                /*db.collection(GROUPS).document(groupID).collection(USERS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot documentSnapshots) {
-                        retrieveUsers(documentSnapshots);
-                        ArrayList<User> userList = new ArrayList<>(users.values());
-                        adapter_beteiligte = new TaskBeteiligteAdapter(userList);
-                        rec_involved.setAdapter(adapter_beteiligte);
-                        loadEntries();
-                        progressBar.setVisibility(View.GONE);
-                    }
-                });*/
+                loadEntries();
             }
         });
     }
@@ -161,6 +149,8 @@ public class TaskActivity extends AppCompatActivity {
 
         rec_verlauf.setAdapter(adapter_entries);
         adapter_entries.startListening();
+
+        progressBar.setVisibility(View.GONE);
     }
 
     // Custom Viewholder for the Comments of that Note
@@ -173,17 +163,6 @@ public class TaskActivity extends AppCompatActivity {
             datum = itemView.findViewById(R.id.datum);
             username = itemView.findViewById(R.id.username);
         }
-    }
-
-    // Erzeugt eine Userliste aller Beteiligter mithilfe eines Snapshots aus der Datenbank
-    private void retrieveUsers(@NotNull QuerySnapshot documentSnapshots) {
-        HashMap<String, User> userHashMap = new HashMap<>();
-        for(DocumentSnapshot doc : documentSnapshots) {
-            User user = doc.toObject(User.class);
-            if (thisTask.getInvolvedIDs().contains(user.getUserID()))
-                userHashMap.put(user.getUserID(), user);
-        }
-        users = (HashMap<String, User>) userHashMap.clone();
     }
 
     private void deleteTask() {
