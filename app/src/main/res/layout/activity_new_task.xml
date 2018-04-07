@@ -134,12 +134,21 @@
 
             </RelativeLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Beteiligte"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:textAppearance="@style/Toolbar.TitleText"/>
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recView_beteiligte"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:choiceMode="multipleChoice">
+                android:layout_marginTop="10dp"
+                android:choiceMode="multipleChoice"
+                android:background="@drawable/layerlist_topedge">
 
             </android.support.v7.widget.RecyclerView>
 

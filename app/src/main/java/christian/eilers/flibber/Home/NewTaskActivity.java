@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import christian.eilers.flibber.Adapter.Beteiligte2Adapter;
 import christian.eilers.flibber.Adapter.BeteiligteAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.TaskModel;
@@ -80,7 +81,7 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
             finish();
         }
         ArrayList<User> userList = new ArrayList<>(users.values());
-        adapter_beteiligte = new BeteiligteAdapter(userList);
+        adapter_beteiligte = new Beteiligte2Adapter(userList);
         recView_beteiligte.setAdapter(adapter_beteiligte);
     }
 
@@ -143,7 +144,7 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
     private EditText et_name, et_frequenz, et_points;
     private SwitchCompat switch_order;
     private RecyclerView recView_beteiligte;
-    private BeteiligteAdapter adapter_beteiligte;
+    private Beteiligte2Adapter adapter_beteiligte;
     private ProgressBar progressBar;
 
     private String userID, groupID;

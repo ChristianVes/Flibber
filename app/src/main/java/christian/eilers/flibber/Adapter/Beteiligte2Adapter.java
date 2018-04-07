@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -20,37 +21,35 @@ import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static christian.eilers.flibber.Utils.Strings.*;
+import static christian.eilers.flibber.Utils.Strings.PROFILE;
 
-public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHolder> {
+public class Beteiligte2Adapter extends RecyclerView.Adapter<Beteiligte2Adapter.ViewHolder> {
 
     private ArrayList<User> users;
-    private int selectedPosition;
-    private CardView selectedView;
-    private String userID;
+    private ArrayList<String> involvedIDs;
     private Context context;
     private StorageReference storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
 
-    public BezahlerAdapter(ArrayList<User> users, String userID) {
+    public Beteiligte2Adapter(ArrayList<User> users) {
         this.users = users;
-        this.userID = userID;
+        involvedIDs = new ArrayList<>();
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_user, parent, false);
+                .inflate(R.layout.item_user_checkbox, parent, false);
         context = parent.getContext();
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         final User user = users.get(position);
         // USERNAME
         holder.tv_username.setText(user.getName());
-        // User's Profile Picture
+        // User's PROFILE PICTURE
         if (user.getPicPath() != null)
             GlideApp.with(context)
                     .load(storage.child(user.getPicPath()))
@@ -58,12 +57,6 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
                     .dontAnimate()
                     .into(holder.img_profile);
         else Glide.with(context).clear(holder.img_profile);
-        // Select/Mark the current User as the payer
-        if (userID.equals(user.getUserID())) {
-            selectedPosition = position;
-            selectedView = holder.itemView.findViewById(R.id.card);
-            selectedView.setCardBackgroundColor(context.getResources().getColor(R.color.colorAccent30));
-        }
     }
 
     @Override
@@ -71,28 +64,34 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
         return users.size();
     }
 
-    public String getBezahlerID() {
-        return users.get(selectedPosition).getUserID();
+    public ArrayList<String> getInvolvedIDs() {
+        return involvedIDs;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         CircleImageView img_profile;
         TextView tv_username;
+        CheckBox checkBox;
 
         public ViewHolder(final View itemView) {
             super(itemView);
             img_profile = itemView.findViewById(R.id.profile_image);
             tv_username = itemView.findViewById(R.id.username);
+            checkBox = itemView.findViewById(R.id.checkbox);
 
-            // Change selected User (PAYER) on itemClick
-            // TODO: Change to RadioBox
+            // Add/Remove clicked User to the involved ID's
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    selectedView.setCardBackgroundColor(context.getResources().getColor(R.color.colorWhite50));
-                    selectedPosition = getAdapterPosition();
-                    selectedView = itemView.findViewById(R.id.card);
-                    selectedView.setCardBackgroundColor(context.getResources().getColor(R.color.colorAccent30));
+                    String userID = users.get(getAdapterPosition()).getUserID();
+                    if (involvedIDs.contains(userID)) {
+                        checkBox.setChecked(false);
+                        involvedIDs.remove(userID);
+                    }
+                    else {
+                        checkBox.setChecked(true);
+                        involvedIDs.add(userID);
+                    }
                 }
             });
         }

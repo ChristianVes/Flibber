@@ -129,8 +129,8 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        SharedPreferences.Editor editor = getSharedPreferences("NOTIFICATIONS", Context.MODE_PRIVATE).edit();
-        editor.putStringSet("SHOPPING", null);
+        SharedPreferences.Editor editor = getSharedPreferences(NOTIFICATIONS, Context.MODE_PRIVATE).edit();
+        editor.putStringSet(SHOPPING, null);
         editor.apply();
     }
 
