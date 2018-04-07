@@ -78,7 +78,7 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
             tv_username = itemView.findViewById(R.id.username);
 
             // Add/Remove clicked User to the involved ID's
-            img_profile.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     String userID = users.get(getAdapterPosition()).getUserID();

@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/card"
-    android:layout_width="70dp"
+    android:layout_width="80dp"
     android:layout_height="wrap_content"
+    android:layout_margin="5dp"
     android:background="@android:color/transparent"
     android:orientation="vertical">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_margin="5dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_gravity="center"
         android:src="@drawable/profile_placeholder"
-        app:civ_border_color="@color/colorPrimaryDark"
+        app:civ_border_color="@color/colorAccent"
         app:civ_border_overlay="true" />
 
     <TextView
@@ -24,6 +23,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
         android:text="Username"
         android:textSize="12sp"
         android:maxLines="1"

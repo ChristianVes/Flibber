@@ -146,9 +146,7 @@
                 android:id="@+id/recView_beteiligte"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:choiceMode="multipleChoice"
-                android:background="@drawable/layerlist_topedge">
+                android:layout_margin="10dp" >
 
             </android.support.v7.widget.RecyclerView>
 

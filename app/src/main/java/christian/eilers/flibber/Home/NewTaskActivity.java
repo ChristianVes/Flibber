@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
@@ -61,9 +62,6 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
         et_points.setOnFocusChangeListener(this);
         et_frequenz.setOnFocusChangeListener(this);
 
-        recView_beteiligte.setHasFixedSize(true);
-        recView_beteiligte.setLayoutManager(new LinearLayoutManager(this));
-
         setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
         getSupportActionBar().setDisplayShowTitleEnabled(false); // Titel der Actionbar ausblenden
     }
@@ -80,8 +78,18 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
         }
+
+        int spanCount = 4;
         ArrayList<User> userList = new ArrayList<>(users.values());
-        adapter_beteiligte = new Beteiligte2Adapter(userList);
+        if (userList.size() <= 3) {
+            spanCount = userList.size();
+        }
+        if (userList.size() == 5 || userList.size() == 6) spanCount = 3;
+
+        recView_beteiligte.setHasFixedSize(true);
+        recView_beteiligte.setLayoutManager(new GridLayoutManager(this, spanCount));
+
+        adapter_beteiligte = new BeteiligteAdapter(userList);
         recView_beteiligte.setAdapter(adapter_beteiligte);
     }
 
@@ -144,7 +152,7 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
     private EditText et_name, et_frequenz, et_points;
     private SwitchCompat switch_order;
     private RecyclerView recView_beteiligte;
-    private Beteiligte2Adapter adapter_beteiligte;
+    private BeteiligteAdapter adapter_beteiligte;
     private ProgressBar progressBar;
 
     private String userID, groupID;
