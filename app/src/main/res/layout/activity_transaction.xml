@@ -32,6 +32,7 @@
 
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -45,15 +46,32 @@
             android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp">
 
-            <com.blackcat.currencyedittext.CurrencyEditText
-                android:id="@+id/input_price"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/shape_rounded"
-                android:imeOptions="actionNext"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@+id/input_price"
+                    android:layout_centerVertical="true"
+                    android:text="Kosten:"
+                    android:textSize="26sp"/>
+
+                <com.blackcat.currencyedittext.CurrencyEditText
+                    android:id="@+id/input_price"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/shape_rounded"
+                    android:imeOptions="actionNext"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="26sp"
+                    android:gravity="right" />
+
+            </RelativeLayout>
 
             <EditText
                 android:id="@+id/input_article"
@@ -61,52 +79,93 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/shape_rounded"
-                android:hint="Gekaufter Artikel"
+                android:hint="Titel"
                 android:imeOptions="actionNext"
                 android:inputType="textCapSentences"
                 android:maxLength="20"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/input_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/shape_rounded"
-                android:gravity="start"
-                android:hint="Optionale Beschreibung...\n\n"
-                android:inputType="textMultiLine|textCapSentences"
-                android:textSize="16sp" />
+                android:lines="1"
+                android:textSize="25sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Beteiligte"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:layout_marginBottom="10dp"
+                android:text="Beteiligt sind:"
+                android:textSize="22sp" />
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/listBeteiligte"
+                android:id="@+id/recView_beteiligte"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"/>
+                android:layout_height="wrap_content">
 
-            <TextView
+            </android.support.v7.widget.RecyclerView>
+
+            <RelativeLayout
+                android:id="@+id/layout_expand"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Bezahler"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:background="?android:selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/listBezahler"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Weitere Optionen"
+                    android:layout_centerVertical="true"
+                    android:textSize="20sp"/>
+
+                <ImageButton
+                    android:id="@+id/btn_expand"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="5dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitEnd"
+                    android:clickable="false"
+                    android:tint="@color/colorPrimaryDark"
+                    app:srcCompat="@drawable/ic_keyboard_arrow_up"
+                    android:contentDescription="TODO" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_detailed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:layout_marginBottom="20dp" />
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <EditText
+                    android:id="@+id/input_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/shape_rounded"
+                    android:gravity="start"
+                    android:hint="Beschreibung [optional] \n\n"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Bezahler:"
+                    android:textSize="25sp" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recView_bezahler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

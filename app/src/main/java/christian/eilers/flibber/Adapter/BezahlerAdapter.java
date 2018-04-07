@@ -27,7 +27,7 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
 
     private ArrayList<User> users;
     private int selectedPosition;
-    private CheckBox selectedCheckbox;
+    private CircleImageView selectedImage;
     private String userID;
     private Context context;
     private StorageReference storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
@@ -41,7 +41,7 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_user_checkbox2, parent, false);
+                .inflate(R.layout.item_transaction_user, parent, false);
         context = parent.getContext();
         return new ViewHolder(view);
     }
@@ -62,8 +62,8 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
         // Select/Mark the current User as the payer
         if (userID.equals(user.getUserID())) {
             selectedPosition = position;
-            selectedCheckbox = holder.itemView.findViewById(R.id.checkbox);
-            selectedCheckbox.setChecked(true);
+            selectedImage = holder.itemView.findViewById(R.id.profile_image);
+            selectedImage.setBorderWidth(10);
         }
     }
 
@@ -79,23 +79,20 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
     public class ViewHolder extends RecyclerView.ViewHolder {
         CircleImageView img_profile;
         TextView tv_username;
-        CheckBox checkBox;
 
         public ViewHolder(final View itemView) {
             super(itemView);
             img_profile = itemView.findViewById(R.id.profile_image);
             tv_username = itemView.findViewById(R.id.username);
-            checkBox = itemView.findViewById(R.id.checkbox);
 
             // Change selected User (PAYER) on itemClick
-            // TODO: Change to RadioBox
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    selectedCheckbox.setChecked(false);
+                    selectedImage.setBorderWidth(0);
                     selectedPosition = getAdapterPosition();
-                    selectedCheckbox = itemView.findViewById(R.id.checkbox);
-                    selectedCheckbox.setChecked(true);
+                    selectedImage = img_profile;
+                    selectedImage.setBorderWidth(10);
                 }
             });
         }

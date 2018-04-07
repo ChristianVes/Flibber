@@ -39,7 +39,7 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_user_checkbox2, parent, false);
+                .inflate(R.layout.item_transaction_user, parent, false);
         context = parent.getContext();
         return new ViewHolder(view);
     }
@@ -71,25 +71,23 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
     public class ViewHolder extends RecyclerView.ViewHolder {
         CircleImageView img_profile;
         TextView tv_username;
-        CheckBox checkBox;
 
         public ViewHolder(final View itemView) {
             super(itemView);
             img_profile = itemView.findViewById(R.id.profile_image);
             tv_username = itemView.findViewById(R.id.username);
-            checkBox = itemView.findViewById(R.id.checkbox);
 
             // Add/Remove clicked User to the involved ID's
-            itemView.setOnClickListener(new View.OnClickListener() {
+            img_profile.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     String userID = users.get(getAdapterPosition()).getUserID();
                     if (involvedIDs.contains(userID)) {
-                        checkBox.setChecked(false);
+                        img_profile.setBorderWidth(0);
                         involvedIDs.remove(userID);
                     }
                     else {
-                        checkBox.setChecked(true);
+                        img_profile.setBorderWidth(10);
                         involvedIDs.add(userID);
                     }
                 }

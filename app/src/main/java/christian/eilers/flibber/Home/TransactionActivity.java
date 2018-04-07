@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,7 +17,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
@@ -59,10 +63,13 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         et_article = findViewById(R.id.input_article);
         et_description = findViewById(R.id.input_description);
         et_price = findViewById(R.id.input_price);
-        rec_beteiligte = findViewById(R.id.listBeteiligte);
-        rec_bezahler = findViewById(R.id.listBezahler);
-        rec_beteiligte = findViewById(R.id.listBeteiligte);
+        rec_beteiligte = findViewById(R.id.recView_beteiligte);
+        rec_bezahler = findViewById(R.id.recView_bezahler);
         progressBar = findViewById(R.id.progressBar);
+        scrollView = findViewById(R.id.scrollView);
+        layout_expand = findViewById(R.id.layout_expand);
+        layout_detailed = findViewById(R.id.layout_detailed);
+        btn_expand = findViewById(R.id.btn_expand);
 
         et_price.requestFocus();
         et_price.setLocale(Locale.GERMANY);
@@ -71,6 +78,20 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         et_description.setOnFocusChangeListener(this);
         et_article.setOnFocusChangeListener(this);
         et_price.setOnFocusChangeListener(this);
+
+        layout_expand.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (layout_detailed.getVisibility() == View.GONE) {
+                    layout_detailed.setVisibility(View.VISIBLE);
+                    btn_expand.setImageResource(R.drawable.ic_keyboard_arrow_down);
+                }
+                else {
+                    layout_detailed.setVisibility(View.GONE);
+                    btn_expand.setImageResource(R.drawable.ic_keyboard_arrow_up);
+                }
+            }
+        });
 
         setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
         getSupportActionBar().setDisplayShowTitleEnabled(false); // Titel der Actionbar ausblenden
@@ -90,17 +111,20 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
             finish();
         }
 
-        layoutManagerBeteiligte = new GridLayoutManager(this, 2);
-        layoutManagerBezahler = new GridLayoutManager(this, 2);
-
+        int spanCount = 4;
         ArrayList<User> userList = new ArrayList<>(users.values());
         if (userList.size() <= 3) {
-            layoutManagerBeteiligte.setSpanCount(1);
-            layoutManagerBezahler.setSpanCount(1);
+            spanCount = userList.size();
         }
+        if (userList.size() == 5 || userList.size() == 6) spanCount = 3;
+
+        layoutManagerBeteiligte = new GridLayoutManager(this, spanCount);
+
+        layoutManagerBezahler = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
 
         rec_bezahler.setHasFixedSize(true);
         rec_bezahler.setLayoutManager(layoutManagerBezahler);
+
         rec_beteiligte.setHasFixedSize(true);
         rec_beteiligte.setLayoutManager(layoutManagerBeteiligte);
 
@@ -225,11 +249,17 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
     private HashMap<String, User> users;
     private BezahlerAdapter adapter_bezahler;
     private BeteiligteAdapter adapter_beteiligte;
-    private GridLayoutManager layoutManagerBezahler, layoutManagerBeteiligte;
+    private GridLayoutManager layoutManagerBeteiligte;
+    private LinearLayoutManager layoutManagerBezahler;
 
     private Toolbar toolbar;
     private EditText et_article, et_description;
     private CurrencyEditText et_price;
     private RecyclerView rec_bezahler, rec_beteiligte;
+    private NestedScrollView scrollView;
     private ProgressBar progressBar;
+    private RelativeLayout layout_expand;
+    private LinearLayout layout_detailed;
+    private ImageButton btn_expand;
+
 }
