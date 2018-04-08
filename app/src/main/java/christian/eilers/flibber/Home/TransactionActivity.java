@@ -241,6 +241,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_finanzen_eintrag, menu);
+        menu.findItem(R.id.action_save).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         return true;
     }
 
