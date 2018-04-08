@@ -99,18 +99,14 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_note_create, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_send:
+        MenuItem item_save = menu.findItem(R.id.action_save);
+        item_save.getActionView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 saveNote();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+            }
+        });
+        return true;
     }
 
     // Gewähltes Bild aus der Gallerie in ImageView laden

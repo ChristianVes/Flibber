@@ -134,18 +134,14 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_new_task, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save:
+        MenuItem item_save = menu.findItem(R.id.action_save);
+        item_save.getActionView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 saveTask();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+            }
+        });
+        return true;
     }
 
     private Toolbar toolbar;
