@@ -39,8 +39,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textStyle="italic"
-                android:textSize="20sp"
-                android:layout_marginBottom="10dp"/>
+                android:textSize="23sp"
+                android:layout_marginBottom="15dp"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -51,7 +51,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Gesamtpreis:"
-                    android:textSize="20sp" />
+                    android:textSize="25sp" />
 
                 <org.fabiomsr.moneytextview.MoneyTextView
                     android:id="@+id/price"
@@ -63,7 +63,7 @@
                     app:symbolGravity="end"
                     app:format="###0,00"
                     app:baseTextColor="@color/colorPrimaryDark"
-                    app:baseTextSize="20sp"
+                    app:baseTextSize="25sp"
                     />
 
             </RelativeLayout>
@@ -71,7 +71,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="15dp">
 
                 <TextView
                     android:id="@+id/label_payer"
@@ -113,7 +113,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="15dp">
 
                 <TextView
                     android:id="@+id/label_beteiligte"

@@ -58,6 +58,8 @@ public class VerlaufAllAdapter extends FirestoreRecyclerAdapter<Payment, Verlauf
         holder.tv_title.setText(model.getTitle());
         if (model.isDeleted())
             holder.tv_title.setPaintFlags(holder.tv_title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        else
+            holder.tv_title.setPaintFlags(holder.tv_title.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
 
         // CREATOR_NAME
         holder.tv_name.setText(users.get(model.getCreatorID()).getName());
@@ -77,7 +79,6 @@ public class VerlaufAllAdapter extends FirestoreRecyclerAdapter<Payment, Verlauf
                 holder.tv_value.setAmount(0);
             }
         }
-        if (model.isDeleted()) holder.tv_value.setBaseColor(R.color.colorPrimary50);
 
         // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
         if (model.getTimestamp() != null)

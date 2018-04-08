@@ -150,9 +150,18 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         long price = et_price.getRawValue();
         String title = et_article.getText().toString().trim();
         String description = et_description.getText().toString().trim();
-        if (price <= 0) return;
-        if (TextUtils.isEmpty(title)) return;
-        if (adapter_beteiligte.getInvolvedIDs().isEmpty()) return;
+        if (price <= 0) {
+            Toast.makeText(TransactionActivity.this, "Keinen Preis eingegeben...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(title)) {
+            Toast.makeText(TransactionActivity.this, "Keinen Titel eingegeben...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (adapter_beteiligte.getInvolvedIDs().isEmpty()) {
+            Toast.makeText(TransactionActivity.this, "Keinen Beteiligten eingegeben...", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         progressBar.setVisibility(View.VISIBLE);
 

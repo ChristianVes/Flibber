@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
-        android:text="Zum Profil"
+        android:text="Mein Profil"
         android:textAlignment="gravity"
         android:gravity="left|center_vertical"
         android:textColor="@color/colorPrimaryDark"
