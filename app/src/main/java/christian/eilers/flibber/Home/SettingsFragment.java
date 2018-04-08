@@ -50,11 +50,13 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     private void initializeViews() {
         btn_invite = mainView.findViewById(R.id.btn_invite);
         btn_profil = mainView.findViewById(R.id.btn_profil);
+        btn_leave = mainView.findViewById(R.id.btn_leave);
         switch_notes = mainView.findViewById(R.id.switch_notes);
         switch_shopping = mainView.findViewById(R.id.switch_shopping);
         switch_tasks = mainView.findViewById(R.id.switch_tasks);
         btn_profil.setOnClickListener(this);
         btn_invite.setOnClickListener(this);
+        btn_leave.setOnClickListener(this);
 
         // Switch-States from SharedPreferences
         sharedPreferences = getContext().getSharedPreferences(NOTIFICATION_SETTINGS, Context.MODE_PRIVATE);
@@ -184,6 +186,9 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             getActivity().finish();
         }
+        else if (id == R.id.btn_leave) {
+            Toast.makeText(getContext(), "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // Save new Notification Settings in the SharedPreferences
@@ -204,7 +209,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
     // Class Variables
     private View mainView;
-    private Button btn_invite, btn_profil;
+    private Button btn_invite, btn_profil, btn_leave;
     private SwitchCompat switch_notes, switch_shopping, switch_tasks;
     private MaterialDialog inviteDialog;
 

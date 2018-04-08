@@ -104,18 +104,13 @@ public class ProfilActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_profil, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_logout:
+        menu.findItem(R.id.action_logout).getActionView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 logout();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+            }
+        });
+        return true;
     }
 
     // Log the current user out && Delete DeviceTokens in database

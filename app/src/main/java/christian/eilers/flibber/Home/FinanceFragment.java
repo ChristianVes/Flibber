@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -260,6 +261,18 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         recVerlauf.setAdapter(adapterVerlauf);
     }
 
+    private void balancingDialog() {
+        Toast.makeText(getContext(), "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
+
+        /*MaterialDialog dialog = new MaterialDialog.Builder(getContext())
+                .title("Finanzenausgleich")
+                .content("Achtung: Nachdem alle Mitglieder der Gruppe dem Finanzausgleich zugestimmt " +
+                        "haben, wird die Bilanz jedes Mitglieds auf 0,00 \u20ac zurückgesetzt!")
+                .positiveText("Zustimmen")
+                .negativeText("Ablehnen")
+                .show();*/
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -288,8 +301,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_kassensturz:
-                // TODO: KASSENSTURZ
-                Toast.makeText(getContext(), "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
+                balancingDialog();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

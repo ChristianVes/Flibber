@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -51,6 +52,7 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
     // Initialize views from layout file
     private void initializeViews() {
         v_name = mainView.findViewById(R.id.name);
+        v_email = mainView.findViewById(R.id.email);
         profileImage = mainView.findViewById(R.id.profile_image);
         progressBar = mainView.findViewById(R.id.progressBar);
         profileImage.setOnClickListener(this);
@@ -68,6 +70,7 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
     // Lade Usernamen und Profilbild aus dem Firebase Storage
     private void loadData() {
         v_name.setText(userName);
+        v_email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
         if (picPath != null)
             GlideApp.with(getContext())
                     .load(storage.child(picPath))
@@ -168,7 +171,7 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
     }
 
     private View mainView;
-    private TextView v_name;
+    private TextView v_name, v_email;
     private CircleImageView profileImage;
     private ProgressBar progressBar;
 
