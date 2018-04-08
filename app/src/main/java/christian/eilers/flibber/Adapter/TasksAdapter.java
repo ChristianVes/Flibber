@@ -117,7 +117,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         // case: multiple User involved -> also display the after-next User
         else {
             User secUser = users.get(model.getInvolvedIDs().get(1));
-            String[] names_secUser = nextUser.getName().split(" ", 2);
+            String[] names_secUser = secUser.getName().split(" ", 2);
             taskHolder.tv_order_second.setText(names_secUser[0]);
         }
 
