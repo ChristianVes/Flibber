@@ -65,10 +65,9 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         rec_beteiligte = findViewById(R.id.recView_beteiligte);
         rec_bezahler = findViewById(R.id.recView_bezahler);
         progressBar = findViewById(R.id.progressBar);
-        scrollView = findViewById(R.id.scrollView);
         layout_expand = findViewById(R.id.layout_expand);
-        layout_detailed = findViewById(R.id.layout_detailed);
-        btn_expand = findViewById(R.id.btn_expand);
+        btn_bezahler = findViewById(R.id.btn_bezahler);
+        btn_description = findViewById(R.id.btn_description);
 
         et_price.requestFocus();
         et_price.setLocale(Locale.GERMANY);
@@ -81,13 +80,27 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         layout_expand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (layout_detailed.getVisibility() == View.GONE) {
-                    layout_detailed.setVisibility(View.VISIBLE);
-                    btn_expand.setImageResource(R.drawable.ic_keyboard_arrow_down);
+                if (rec_bezahler.getVisibility() == View.GONE) {
+                    rec_bezahler.setVisibility(View.VISIBLE);
+                    btn_bezahler.setImageResource(R.drawable.ic_keyboard_arrow_up);
                 }
                 else {
-                    layout_detailed.setVisibility(View.GONE);
-                    btn_expand.setImageResource(R.drawable.ic_keyboard_arrow_up);
+                    rec_bezahler.setVisibility(View.GONE);
+                    btn_bezahler.setImageResource(R.drawable.ic_keyboard_arrow_down);
+                }
+            }
+        });
+
+        btn_description.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (et_description.getVisibility() == View.GONE) {
+                    et_description.setVisibility(View.VISIBLE);
+                    btn_description.setImageResource(R.drawable.ic_keyboard_arrow_up);
+                }
+                else {
+                    et_description.setVisibility(View.GONE);
+                    btn_description.setImageResource(R.drawable.ic_keyboard_arrow_down);
                 }
             }
         });
@@ -253,10 +266,8 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
     private EditText et_article, et_description;
     private CurrencyEditText et_price;
     private RecyclerView rec_bezahler, rec_beteiligte;
-    private NestedScrollView scrollView;
     private ProgressBar progressBar;
     private RelativeLayout layout_expand;
-    private LinearLayout layout_detailed;
-    private ImageButton btn_expand;
+    private ImageButton btn_bezahler, btn_description;
 
 }
