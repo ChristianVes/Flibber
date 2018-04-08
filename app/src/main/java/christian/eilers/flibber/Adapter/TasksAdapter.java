@@ -108,15 +108,17 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         // USER-ORDER
         // Next User: first from Involved-ArrayList
         User nextUser = users.get(model.getInvolvedIDs().get(0));
-        taskHolder.tv_order_first.setText(nextUser.getName());
+        String[] names_nextUser = nextUser.getName().split(" ", 2);
+        taskHolder.tv_order_first.setText(names_nextUser[0]);
         // case: only one User involved
         if (model.getInvolvedIDs().size() == 1) {
-            taskHolder.tv_order_second.setText(nextUser.getName());
+            taskHolder.tv_order_second.setText(names_nextUser[0]);
         }
         // case: multiple User involved -> also display the after-next User
         else {
             User secUser = users.get(model.getInvolvedIDs().get(1));
-            taskHolder.tv_order_second.setText(secUser.getName());
+            String[] names_secUser = nextUser.getName().split(" ", 2);
+            taskHolder.tv_order_second.setText(names_secUser[0]);
         }
 
         // Click-Listener für Gesamtlayout zur Navigation in Detailansicht

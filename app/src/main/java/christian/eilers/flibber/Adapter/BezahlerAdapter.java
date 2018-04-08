@@ -50,7 +50,8 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final User user = users.get(position);
         // USERNAME
-        holder.tv_username.setText(user.getName());
+        String[] names = user.getName().split(" ", 2);
+        holder.tv_username.setText(names[0]);
         // User's Profile Picture
         if (user.getPicPath() != null)
             GlideApp.with(context)
