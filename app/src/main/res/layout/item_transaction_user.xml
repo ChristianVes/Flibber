@@ -7,14 +7,21 @@
     android:background="@android:color/transparent"
     android:orientation="vertical">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_image"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_gravity="center"
-        android:src="@drawable/profile_placeholder"
-        app:civ_border_color="@color/colorAccent"
-        app:civ_border_overlay="true" />
+    <FrameLayout
+        android:id="@+id/frame_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="6dp"
+        android:background="@android:color/transparent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="66dp"
+            android:layout_height="66dp"
+            android:layout_gravity="center"
+            android:src="@drawable/profile_placeholder"/>
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/username"
@@ -24,6 +31,7 @@
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginTop="5dp"
+        android:layout_marginBottom="15dp"
         android:text="Username"
         android:textSize="12sp"
         android:maxLines="1"

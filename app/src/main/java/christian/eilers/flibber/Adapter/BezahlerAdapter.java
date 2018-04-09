@@ -1,6 +1,7 @@
 package christian.eilers.flibber.Adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -27,7 +29,7 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
 
     private ArrayList<User> users;
     private int selectedPosition;
-    private CircleImageView selectedImage;
+    private FrameLayout selectedLayout;
     private String userID;
     private Context context;
     private StorageReference storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
@@ -63,9 +65,10 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
         // Select/Mark the current User as the payer
         if (userID.equals(user.getUserID())) {
             selectedPosition = position;
-            selectedImage = holder.itemView.findViewById(R.id.profile_image);
-            selectedImage.setBorderWidth(10);
+            selectedLayout = holder.frameLayout;
+            selectedLayout.setBackgroundResource(R.drawable.layerlist_circle);
         }
+        else holder.frameLayout.setBackgroundColor(Color.TRANSPARENT);
     }
 
     @Override
@@ -80,20 +83,22 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
     public class ViewHolder extends RecyclerView.ViewHolder {
         CircleImageView img_profile;
         TextView tv_username;
+        FrameLayout frameLayout;
 
         public ViewHolder(final View itemView) {
             super(itemView);
             img_profile = itemView.findViewById(R.id.profile_image);
             tv_username = itemView.findViewById(R.id.username);
+            frameLayout = itemView.findViewById(R.id.frame_layout);
 
             // Change selected User (PAYER) on itemClick
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    selectedImage.setBorderWidth(0);
+                    selectedLayout.setBackgroundColor(Color.TRANSPARENT);
                     selectedPosition = getAdapterPosition();
-                    selectedImage = img_profile;
-                    selectedImage.setBorderWidth(10);
+                    selectedLayout = frameLayout;
+                    selectedLayout.setBackgroundResource(R.drawable.layerlist_circle);
                 }
             });
         }

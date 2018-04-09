@@ -1,6 +1,7 @@
 package christian.eilers.flibber.Adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -8,9 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -72,11 +75,13 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
     public class ViewHolder extends RecyclerView.ViewHolder {
         CircleImageView img_profile;
         TextView tv_username;
+        FrameLayout frameLayout;
 
         public ViewHolder(final View itemView) {
             super(itemView);
             img_profile = itemView.findViewById(R.id.profile_image);
             tv_username = itemView.findViewById(R.id.username);
+            frameLayout = itemView.findViewById(R.id.frame_layout);
 
             // Add/Remove clicked User to the involved ID's
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -84,11 +89,11 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
                 public void onClick(View view) {
                     String userID = users.get(getAdapterPosition()).getUserID();
                     if (involvedIDs.contains(userID)) {
-                        img_profile.setBorderWidth(0);
+                        frameLayout.setBackgroundColor(Color.TRANSPARENT);
                         involvedIDs.remove(userID);
                     }
                     else {
-                        img_profile.setBorderWidth(10);
+                        frameLayout.setBackgroundResource(R.drawable.layerlist_circle);
                         involvedIDs.add(userID);
                     }
                 }
