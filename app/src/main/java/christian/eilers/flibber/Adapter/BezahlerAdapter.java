@@ -25,6 +25,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static christian.eilers.flibber.Utils.Strings.*;
 
+/*
+PADDING FIX zum Nachschlagen:
+https://stackoverflow.com/questions/5890379/setbackgroundresource-discards-my-xml-layout-attributes?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+ */
+
 public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHolder> {
 
     private ArrayList<User> users;
@@ -66,9 +71,15 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
         if (userID.equals(user.getUserID())) {
             selectedPosition = position;
             selectedLayout = holder.frameLayout;
+            int padding = selectedLayout.getPaddingTop(); // Benutzte ein beliebiges
             selectedLayout.setBackgroundResource(R.drawable.layerlist_circle);
+            selectedLayout.setPadding(padding,padding,padding,padding);
         }
-        else holder.frameLayout.setBackgroundColor(Color.TRANSPARENT);
+        else {
+            int padding = holder.frameLayout.getPaddingTop(); // Benutzte ein beliebiges
+            holder.frameLayout.setBackgroundColor(Color.TRANSPARENT);
+            holder.frameLayout.setPadding(padding,padding,padding,padding);
+        }
     }
 
     @Override
@@ -95,10 +106,13 @@ public class BezahlerAdapter extends RecyclerView.Adapter<BezahlerAdapter.ViewHo
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    int padding = selectedLayout.getPaddingTop(); // Benutzte ein beliebiges
                     selectedLayout.setBackgroundColor(Color.TRANSPARENT);
+                    selectedLayout.setPadding(padding,padding,padding,padding);
                     selectedPosition = getAdapterPosition();
                     selectedLayout = frameLayout;
                     selectedLayout.setBackgroundResource(R.drawable.layerlist_circle);
+                    selectedLayout.setPadding(padding,padding,padding,padding);
                 }
             });
         }

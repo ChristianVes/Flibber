@@ -89,11 +89,15 @@ public class BeteiligteAdapter extends RecyclerView.Adapter<BeteiligteAdapter.Vi
                 public void onClick(View view) {
                     String userID = users.get(getAdapterPosition()).getUserID();
                     if (involvedIDs.contains(userID)) {
+                        int padding = frameLayout.getPaddingTop(); // Benutzte ein beliebiges
                         frameLayout.setBackgroundColor(Color.TRANSPARENT);
+                        frameLayout.setPadding(padding,padding,padding,padding);
                         involvedIDs.remove(userID);
                     }
                     else {
+                        int padding = frameLayout.getPaddingTop(); // Benutzte ein beliebiges
                         frameLayout.setBackgroundResource(R.drawable.layerlist_circle);
+                        frameLayout.setPadding(padding,padding,padding,padding);
                         involvedIDs.add(userID);
                     }
                 }
