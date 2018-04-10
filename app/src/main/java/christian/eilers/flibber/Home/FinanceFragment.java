@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.blackcat.currencyedittext.CurrencyEditText;
+import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -130,6 +131,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                             .dontAnimate()
                             .placeholder(R.drawable.profile_placeholder)
                             .into(holder.img_profile);
+                else Glide.with(getContext()).clear(holder.img_profile);
 
                 // Open Dialog for "Quick-Transaction" with the clicked-User
                 holder.itemView.setOnClickListener(new View.OnClickListener() {

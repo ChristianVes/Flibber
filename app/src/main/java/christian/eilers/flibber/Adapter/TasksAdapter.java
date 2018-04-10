@@ -137,12 +137,13 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         else taskHolder.layout_order.setVisibility(View.VISIBLE);
 
         // Pass-Button Visibility -> Current User && Ordered Task
-        if (nextUser.getUserID().equals(userID) && model.isOrdered()) {
+        if (nextUser.getUserID().equals(userID) && model.isOrdered() && model.getInvolvedIDs().size() > 1) {
             taskHolder.btn_pass.setVisibility(View.VISIBLE);
             // PASS-Listener
             taskHolder.btn_pass.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    notifySkipped(model.getTitle(), model.getInvolvedIDs().get(1));
                     skipUser(model, position);
                 }
             });
@@ -180,6 +181,16 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
 
         // Calls the Http Function which makes the Notification
         functions.getHttpsCallable("taskNotify").call(data);
+    }
+
+    // Notifiy the first User in the Involved User's List of the current Task
+    private void notifySkipped(String taskName, String toUserID) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("taskName", taskName);
+        data.put("userID", toUserID);
+
+        // Calls the Http Function which makes the Notification
+        functions.getHttpsCallable("taskSkipped").call(data);
     }
 
     // Skip the current User and put him on the second Position in the involved User's List

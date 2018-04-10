@@ -47,6 +47,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 String taskName = remoteMessage.getData().get(NAME);
                 taskNotification(taskName);
                 break;
+            case TASK_SKIPPED:
+                if(!sharedPreferences.getBoolean(TASKS, true)) break;
+                String taskName_skipped = remoteMessage.getData().get(NAME);
+                String fromUser = remoteMessage.getData().get(FROMUSER);
+                taskSkippedNotification(taskName_skipped, fromUser);
+                break;
             case NOTES:
                 if(!sharedPreferences.getBoolean(NOTES, true)) break;
                 String username = remoteMessage.getData().get(USER);
@@ -71,6 +77,37 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle("Aufgaben-Erinnerung:")
                 .setContentText(taskName)
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setContentIntent(clickPendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID_TASKS, "Aufgaben",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        notificationManager.notify((int) System.currentTimeMillis(), builder.build());
+    }
+
+    private void taskSkippedNotification(String taskName, String fromUser) {
+        // Intent for onClick-Event
+        Intent clickIntent = new Intent(this, HomeActivity.class);
+        clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent clickPendingIntent = PendingIntent.getActivity(this, 0 , clickIntent, PendingIntent.FLAG_ONE_SHOT);
+
+        // Default Notification Sound
+        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        // Build the Notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID_TASKS)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle("Aufgabe: " + taskName)
+                .setContentText("hat " + fromUser + " an dich weitergegeben.")
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(clickPendingIntent);
