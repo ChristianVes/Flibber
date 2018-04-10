@@ -10,6 +10,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -186,11 +187,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Big Notification - Style
         NotificationCompat.BigTextStyle style = new NotificationCompat.BigTextStyle();
-        style.setBigContentTitle(title);
+        if (!TextUtils.isEmpty(title)) style.setBigContentTitle(title);
+        if (!TextUtils.isEmpty(description)) style.bigText(description);
         style.setSummaryText(username);
-        style.bigText(description);
 
         // Build the Notification
+        if (TextUtils.isEmpty(title)) title = description;
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID_NOTES)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(username)

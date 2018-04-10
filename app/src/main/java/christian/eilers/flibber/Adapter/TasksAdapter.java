@@ -149,10 +149,9 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             });
         }
         else taskHolder.btn_pass.setVisibility(View.GONE);
-        // NOTIFICATION-Button Visibility
+
+        // Notification_Listener
         if (model.isOrdered()) {
-            taskHolder.btn_remind.setVisibility(View.VISIBLE);
-            // REMIND-Listener
             taskHolder.btn_remind.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -160,7 +159,14 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
                 }
             });
         }
-        else taskHolder.btn_remind.setVisibility(View.GONE);
+        else {
+            taskHolder.btn_remind.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    notifyAllInvolved(model.getTitle(), model.getInvolvedIDs());
+                }
+            });
+        }
 
 
         // DONE-Listener
@@ -181,6 +187,17 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
 
         // Calls the Http Function which makes the Notification
         functions.getHttpsCallable("taskNotify").call(data);
+    }
+
+    // Notifiy the Involved Users of the current Task
+    private void notifyAllInvolved(String taskName, ArrayList<String> involved) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("taskName", taskName);
+        data.put("groupID", groupID);
+        data.put("involvedIDs", involved);
+
+        // Calls the Http Function which makes the Notification
+        functions.getHttpsCallable("taskNotifyAll").call(data);
     }
 
     // Notifiy the first User in the Involved User's List of the current Task
