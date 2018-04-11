@@ -14,12 +14,12 @@
 
             <stroke
                 android:width="2dp"
-                android:color="@color/colorPrimaryBlack">
+                android:color="@color/colorAccent">
 
             </stroke>
 
             <solid
-                android:color="@android:color/transparent">
+                android:color="@color/colorWhite50">
 
             </solid>
 
