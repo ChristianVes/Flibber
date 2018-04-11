@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -56,7 +57,7 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
         et_description = findViewById(R.id.input_description);
         et_title = findViewById(R.id.input_title);
         fab = findViewById(R.id.fab);
-        fab_delete = findViewById(R.id.fab_delete);
+        btn_delete = findViewById(R.id.btn_delete);
         progressBar = findViewById(R.id.progressBar);
 
         et_description.setOnEditorActionListener(this);
@@ -66,7 +67,7 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
         et_title.setOnFocusChangeListener(this);
 
         fab.setOnClickListener(this);
-        fab_delete.setOnClickListener(this);
+        btn_delete.setOnClickListener(this);
 
         setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
         getSupportActionBar().setDisplayShowTitleEnabled(false); // Titel der Actionbar ausblenden
@@ -88,11 +89,11 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
             Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(galleryIntent, REQUEST_CODE_GALLERY);
         }
-        else if (id == R.id.fab_delete) {
+        else if (id == R.id.btn_delete) {
             // Notiz-Image entfernen
             img_notiz.setImageDrawable(null);
             imageUri = null;
-            fab_delete.setVisibility(View.GONE);
+            btn_delete.setVisibility(View.GONE);
         }
     }
 
@@ -115,7 +116,7 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_GALLERY) {
             imageUri = data.getData();
             Glide.with(this).load(imageUri).into(img_notiz);
-            fab_delete.setVisibility(View.VISIBLE);
+            btn_delete.setVisibility(View.VISIBLE);
         }
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -144,6 +145,7 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
     // Verberge Tastatur, wenn gegebene Views ihren Fokus verlieren
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
+        if (et_description.hasFocus() || et_title.hasFocus()) return;
         if (!hasFocus) {
             InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -219,7 +221,8 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
     private Toolbar toolbar;
     private ImageView img_notiz;
     private EditText et_title, et_description;
-    private FloatingActionButton fab, fab_delete;
+    private FloatingActionButton fab;
+    private ImageButton btn_delete;
     private ProgressBar progressBar;
 
     private StorageReference storage;
