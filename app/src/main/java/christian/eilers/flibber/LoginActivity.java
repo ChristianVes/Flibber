@@ -18,6 +18,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,14 +38,13 @@ import christian.eilers.flibber.Profil.ProfilActivity;
 import christian.eilers.flibber.Utils.LocalStorage;
 import static christian.eilers.flibber.Utils.Strings.*;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener{
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener, View.OnFocusChangeListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initializeViews();
-        hideKeyboard_onClickOutside();
         auth = FirebaseAuth.getInstance();
     }
 
@@ -51,29 +52,39 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void toRegisterActivity() {
         Intent i_registerActivity = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(i_registerActivity);
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        //overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     // Send Email to Reset Password
     private void resetPasswordEmail() {
-        String email = eT_email.getText().toString();
+        final String email = eT_email.getText().toString().trim();
         if(TextUtils.isEmpty(email)){
-            Toast.makeText(LoginActivity.this, "E-Mail required.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LoginActivity.this, "Type in your E-Mail Address", Toast.LENGTH_SHORT).show();
             return;
         }
-        // TODO: Dialog zum Bestätigen anzeigen
-        progressBar.setVisibility(View.VISIBLE);
-        auth.sendPasswordResetEmail(email)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
+        new MaterialDialog.Builder(LoginActivity.this)
+                .title("Passwort wirklich zurücksetzen?")
+                .content("Du erhälst in Kürze eine E-Mail, um dein Passwort zu zurückzusetzen...")
+                .positiveText("Bestätigen")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "E-Mail to reset password sent.", Toast.LENGTH_SHORT).show();
-                        } else
-                            Toast.makeText(LoginActivity.this, "Failed to send E-Mail.", Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.GONE);
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        progressBar.setVisibility(View.VISIBLE);
+                        auth.sendPasswordResetEmail(email)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful())
+                                            Toast.makeText(LoginActivity.this, "E-Mail sent.", Toast.LENGTH_SHORT).show();
+                                        else
+                                            Toast.makeText(LoginActivity.this, "Failed to send E-Mail.", Toast.LENGTH_SHORT).show();
+                                        progressBar.setVisibility(View.GONE);
+                                    }
+                                });
                     }
-                });
+                })
+                .negativeText("Abbrechen")
+                .show();
     }
 
     // Login the user with e-mail and password
@@ -149,28 +160,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         eT_email.setOnEditorActionListener(this);
         eT_password.setOnEditorActionListener(this);
+
+        eT_password.setOnFocusChangeListener(this);
+        eT_email.setOnFocusChangeListener(this);
     }
 
     // Check which Button has been clicked
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.button_ok) {
-            login();
-        } else if (id == R.id.button_forget) {
-            resetPasswordEmail();
-        } else if (id == R.id.button_newAccount) {
-            toRegisterActivity();
-        }
+        if (id == R.id.button_ok) login();
+        else if (id == R.id.button_forget) resetPasswordEmail();
+        else if (id == R.id.button_newAccount) toRegisterActivity();
     }
 
     // Apply Action on Keyboard Action
     @Override
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-        if (i == EditorInfo.IME_ACTION_NEXT) {
-            showSoftKeyboard(eT_password);
-            return true;
-        } else if (i == EditorInfo.IME_ACTION_GO) {
+        if (i == EditorInfo.IME_ACTION_GO) {
             login();
             return true;
         }
@@ -201,31 +208,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    // Attach Listener to EditTexts, on Click outside hide the Keyboard
-    private void hideKeyboard_onClickOutside() {
-        eT_email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-
-        eT_password.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-    }
-
-    // Hide Keyboard
-    public void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (eT_email.hasFocus() || eT_password.hasFocus()) return;
+        if (!hasFocus) {
+            InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
     }
 
     // Variablen

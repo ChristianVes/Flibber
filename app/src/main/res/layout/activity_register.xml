@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/wallpaper_home2"
     tools:context="christian.eilers.flibber.RegisterActivity"
     android:focusableInTouchMode="true"
     android:clickable="true"
@@ -74,28 +75,26 @@
             android:text="Create Account"
             android:textSize="20sp"
             android:textAllCaps="false"
-            android:textColor="@color/colorWhite"/>
+            android:textColor="@color/grey300"/>
 
         <Button
             android:id="@+id/button_toLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:background="?selectableItemBackground"
             android:layout_gravity="center"
-            android:background="@android:color/transparent"
             android:text="Already a member? Login"
             android:textAllCaps="false"
-            android:textColor="@drawable/selector_textcolor" />
+            android:textColor="@color/colorPrimaryBlack" />
 
     </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@android:color/transparent"
-        android:visibility="gone"
-        style="?android:attr/progressBarStyle"/>
+        android:visibility="gone" />
 
 </RelativeLayout>

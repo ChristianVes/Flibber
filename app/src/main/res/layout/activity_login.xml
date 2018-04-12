@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/wallpaper_home2"
     tools:context="christian.eilers.flibber.LoginActivity"
     android:focusableInTouchMode="true"
     android:clickable="true"
@@ -16,7 +17,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerInParent="true"
-        android:layout_margin="30dp">
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:paddingBottom="10dp">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -61,7 +64,7 @@
             android:text="Login"
             android:textSize="20sp"
             android:textAllCaps="false"
-            android:textColor="@color/colorWhite"/>
+            android:textColor="@color/grey300"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -75,10 +78,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:background="@android:color/transparent"
+                android:background="?selectableItemBackground"
                 android:layout_marginRight="20dp"
-                android:text="Forget \nPassword"
-                android:textColor="@drawable/selector_textcolor"/>
+                android:text="Forget \nPassword?"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimaryBlack" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -90,10 +94,11 @@
                 android:id="@+id/button_newAccount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
+                android:background="?selectableItemBackground"
                 android:layout_marginLeft="20dp"
                 android:text="Register"
-                android:textColor="@drawable/selector_textcolor"/>
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimaryBlack"/>
 
         </LinearLayout>
 

@@ -2,7 +2,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Background color -->
-    <solid android:color="@color/colorPrimaryBright"/>
+    <solid android:color="@color/colorAccent30"/>
 
     <!-- Padding to inside text -->
     <padding
