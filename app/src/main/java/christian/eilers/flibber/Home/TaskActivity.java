@@ -1,12 +1,16 @@
 package christian.eilers.flibber.Home;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,6 +18,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +31,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -33,8 +42,11 @@ import com.google.firebase.storage.StorageReference;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
+import christian.eilers.flibber.Adapter.BeteiligteAdapter;
 import christian.eilers.flibber.Adapter.TaskBeteiligteAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.TaskEntry;
@@ -73,9 +85,9 @@ public class TaskActivity extends AppCompatActivity {
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
         tv_frequenz = findViewById(R.id.frequenz);
-        tv_points = findViewById(R.id.points);
         rec_involved = findViewById(R.id.recView_beteiligte);
         rec_verlauf = findViewById(R.id.recVerlauf);
+        et_frequenz = findViewById(R.id.input_frequenz);
         progressBar = findViewById(R.id.progressBar);
 
         rec_involved.setHasFixedSize(true);
@@ -94,7 +106,6 @@ public class TaskActivity extends AppCompatActivity {
                 // Task-Frequenz
                 tv_frequenz.setText(thisTask.getFrequenz() +"");
                 // Task Points (Aufwand)
-                tv_points.setText(thisTask.getPoints() +"");
                 setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
                 getSupportActionBar().setTitle(thisTask.getTitle()); // Titel des Tasks setzen
 
@@ -180,8 +191,48 @@ public class TaskActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void changeLayout() {
+        tv_frequenz.setVisibility(View.GONE);
+        et_frequenz.setVisibility(View.VISIBLE);
+        et_frequenz.setText(thisTask.getFrequenz() +"");
+        et_frequenz.requestFocus();
+
+        menu.clear();
+        getMenuInflater().inflate(R.menu.menu_new_task, menu);
+        MenuItem item_save = menu.findItem(R.id.action_save);
+        item_save.getActionView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveChanging();
+            }
+        });
+    }
+
+    private void saveChanging() {
+        String s_frequenz = et_frequenz.getText().toString().trim();
+        if (TextUtils.isEmpty(s_frequenz)) {
+            Toast.makeText(this, "Frequenz eingeben...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        long frequenz = Long.valueOf(s_frequenz);
+
+        HashMap<String, Object> changings = new HashMap<>();
+        changings.put("frequenz", frequenz);
+
+        progressBar.setVisibility(View.VISIBLE);
+        DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document(taskID);
+        doc.update(changings).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                progressBar.setVisibility(View.GONE);
+                finish();
+            }
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_task, menu);
         return true;
@@ -191,7 +242,7 @@ public class TaskActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_change:
-                Toast.makeText(this, "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
+                changeLayout();
                 return true;
             case R.id.action_delete:
                 deleteTask();
@@ -214,8 +265,9 @@ public class TaskActivity extends AppCompatActivity {
     }
 
     private Toolbar toolbar;
-    private TextView tv_frequenz, tv_points;
+    private TextView tv_frequenz;
     private RecyclerView rec_involved, rec_verlauf;
+    private EditText et_frequenz;
     private ProgressBar progressBar;
 
     private String userID, groupID, taskID;
@@ -225,4 +277,5 @@ public class TaskActivity extends AppCompatActivity {
     private HashMap<String, User> allUsers;
     private TaskBeteiligteAdapter adapter_beteiligte;
     private FirestoreRecyclerAdapter adapter_entries;
+    private Menu menu;
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -19,7 +18,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:titleTextAppearance="@style/Toolbar.TitleText"/>
+            app:titleTextAppearance="@style/Toolbar.TitleText" />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -39,8 +38,10 @@
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:id="@+id/label_frequenz"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:text="Frequenz:"
                     android:textSize="20sp" />
 
@@ -48,51 +49,34 @@
                     android:id="@+id/frequenz"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:text="..."
                     android:layout_toLeftOf="@+id/Tage"
-                    />
+                    android:text="..."
+                    android:textSize="20sp"
+                    android:visibility="visible"/>
+
+                <EditText
+                    android:id="@+id/input_frequenz"
+                    android:layout_width="wrap_content"
+                    android:minWidth="35dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_toLeftOf="@+id/Tage"
+                    android:gravity="right"
+                    android:imeOptions="actionDone"
+                    android:inputType="number"
+                    android:textSize="20sp"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/Tage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="5dp"
                     android:text="Tage"
-                    android:textSize="20sp"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginLeft="5dp"/>
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Aufwand:"
                     android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/points"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:text="..."
-                    android:layout_toLeftOf="@+id/Minuten"
-                    />
-
-                <TextView
-                    android:id="@+id/Minuten"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Minuten"
-                    android:textSize="20sp"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginLeft="5dp"/>
 
             </RelativeLayout>
 
@@ -117,14 +101,15 @@
 
             </RelativeLayout>
 
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 android:text="Verlauf"
-                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
                 android:textSize="22sp"
-                android:textColor="@color/colorPrimaryDark"/>
+                android:textStyle="bold" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recVerlauf"
@@ -142,6 +127,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </android.support.design.widget.CoordinatorLayout>

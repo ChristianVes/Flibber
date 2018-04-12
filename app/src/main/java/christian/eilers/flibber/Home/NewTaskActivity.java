@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
@@ -92,8 +93,14 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
         String s_frequenz = et_frequenz.getText().toString().trim();
         String s_points = et_points.getText().toString().trim();
 
-        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(s_frequenz)) return;
-        if (adapter_beteiligte.getInvolvedIDs().isEmpty()) return;
+        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(s_frequenz)) {
+            Toast.makeText(this, "Eingaben unvollstädnig...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (adapter_beteiligte.getInvolvedIDs().isEmpty()) {
+            Toast.makeText(this, "Beteiligte auswählen...", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         long frequenz = Long.valueOf(s_frequenz);
         long points = 0;

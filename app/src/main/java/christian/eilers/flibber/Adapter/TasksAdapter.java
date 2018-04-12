@@ -89,9 +89,9 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     @Override
     protected void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position, @NonNull final TaskModel model) {
         if (holder.getItemViewType() == HIDE) return; // show nothing if user is not involved
-
         // specialize the ViewHolder as TransactionHolder to bind the data to the item
         final TaskHolder taskHolder = (TaskHolder) holder;
+
         // TITLE
         taskHolder.tv_title.setText(model.getTitle());
 
@@ -100,7 +100,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
                 System.currentTimeMillis(),
                 DateUtils.DAY_IN_MILLIS,
                 DateUtils.FORMAT_ABBREV_RELATIVE));
-        // Accent Color falls Aufgabe fällig ist
+        // Accent Color falls Aufgabe "fällig ist"
         if (System.currentTimeMillis() > model.getTimestamp().getTime())
             taskHolder.tv_datum.setTextColor(
                     taskHolder.itemView.getContext().getResources().getColor(R.color.colorAccent));
@@ -108,17 +108,18 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         // USER-ORDER
         // Next User: first from Involved-ArrayList
         User nextUser = users.get(model.getInvolvedIDs().get(0));
-        String[] names_nextUser = nextUser.getName().split(" ", 2);
-        taskHolder.tv_order_first.setText(names_nextUser[0]);
+        // retrieve just the first Name of the User
+        String[] nextUser_names = nextUser.getName().split(" ", 2);
+        taskHolder.tv_order_first.setText(nextUser_names[0]);
         // case: only one User involved
         if (model.getInvolvedIDs().size() == 1) {
-            taskHolder.tv_order_second.setText(names_nextUser[0]);
+            taskHolder.tv_order_second.setText(nextUser_names[0]);
         }
-        // case: multiple User involved -> also display the after-next User
+        // case: multiple User involved
         else {
             User secUser = users.get(model.getInvolvedIDs().get(1));
-            String[] names_secUser = secUser.getName().split(" ", 2);
-            taskHolder.tv_order_second.setText(names_secUser[0]);
+            String[] secUser_names = secUser.getName().split(" ", 2);
+            taskHolder.tv_order_second.setText(secUser_names[0]);
         }
 
         // Click-Listener für Gesamtlayout zur Navigation in Detailansicht
@@ -132,30 +133,31 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             }
         });
 
-        // Hide User-Order-Layout-Part when Task is defined as not-ordered
+        // User-Order Layout
         if (!model.isOrdered()) taskHolder.layout_order.setVisibility(View.GONE);
         else taskHolder.layout_order.setVisibility(View.VISIBLE);
 
-        // Pass-Button Visibility -> Current User && Ordered Task
+        // PASS-Button -> Current User's turn && Ordered Task
         if (nextUser.getUserID().equals(userID) && model.isOrdered() && model.getInvolvedIDs().size() > 1) {
             taskHolder.btn_pass.setVisibility(View.VISIBLE);
-            // PASS-Listener
             taskHolder.btn_pass.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    notifySkipped(model.getTitle(), model.getInvolvedIDs().get(1));
+                    Toast.makeText(taskHolder.itemView.getContext(), "Benachrichtigung gesendet!", Toast.LENGTH_SHORT)
+                            .show();
+                    skippedNotification(model.getTitle(), model.getInvolvedIDs().get(1));
                     skipUser(model, position);
                 }
             });
         }
         else taskHolder.btn_pass.setVisibility(View.GONE);
 
-        // Notification_Listener
+        // NOTIFICATION-Button Listener
         if (model.isOrdered()) {
             taskHolder.btn_remind.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    notifyInvolved(model.getTitle(), model.getInvolvedIDs().get(0));
+                    remindNotification(model.getTitle(), model.getInvolvedIDs().get(0));
                 }
             });
         }
@@ -163,11 +165,10 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             taskHolder.btn_remind.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    notifyAllInvolved(model.getTitle(), model.getInvolvedIDs());
+                    remindAllNotification(model.getTitle(), model.getInvolvedIDs());
                 }
             });
         }
-
 
         // DONE-Listener
         taskHolder.btn_done.setOnClickListener(new View.OnClickListener() {
@@ -180,7 +181,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     }
 
     // Notifiy the first User in the Involved User's List of the current Task
-    private void notifyInvolved(String taskName, String toUserID) {
+    private void remindNotification(String taskName, String toUserID) {
         Map<String, Object> data = new HashMap<>();
         data.put("taskName", taskName);
         data.put("userID", toUserID);
@@ -190,7 +191,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     }
 
     // Notifiy the Involved Users of the current Task
-    private void notifyAllInvolved(String taskName, ArrayList<String> involved) {
+    private void remindAllNotification(String taskName, ArrayList<String> involved) {
         Map<String, Object> data = new HashMap<>();
         data.put("taskName", taskName);
         data.put("groupID", groupID);
@@ -201,7 +202,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     }
 
     // Notifiy the first User in the Involved User's List of the current Task
-    private void notifySkipped(String taskName, String toUserID) {
+    private void skippedNotification(String taskName, String toUserID) {
         Map<String, Object> data = new HashMap<>();
         data.put("taskName", taskName);
         data.put("userID", toUserID);
@@ -225,6 +226,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
                 .update(taskMap);
     }
 
+    // TODO: Punktesystem wieder entfernen
     // Handle actions to be done when User has finished/taken care of a task
     private void handleTaskDone(final TaskHolder taskHolder, final int position, final TaskModel model) {
         taskHolder.progressBar.setVisibility(View.VISIBLE);
