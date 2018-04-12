@@ -15,7 +15,6 @@ public class Strings {
     public static final String DEVICETOKEN = "deviceToken";
     public static final String PROFILE = "profile";
     public static final String INVOLVEDIDS = "involvedIDs";
-    public static final String POINTS = "points";
     public static final String TRANSACTIONID = "transactionID";
     public static final String FINANCES = "finances";
     public static final String MONEY = "money";

@@ -10,7 +10,6 @@ public class User implements Serializable {
     private String picPath;
     private String deviceToken;
     private long money = 0;
-    private long points = 0;
     private boolean acceptedBalancing = false;
 
     public User() {}
@@ -61,14 +60,6 @@ public class User implements Serializable {
 
     public void setMoney(long money) {
         this.money = money;
-    }
-
-    public long getPoints() {
-        return points;
-    }
-
-    public void setPoints(long points) {
-        this.points = points;
     }
 
     public String getDeviceToken() {
