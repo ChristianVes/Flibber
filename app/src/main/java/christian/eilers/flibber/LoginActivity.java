@@ -199,15 +199,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         return true;
     }
 
-    // Show Keyboard an focus View v
-    public void showSoftKeyboard(View view) {
-        if (view.requestFocus()) {
-            InputMethodManager imm = (InputMethodManager)
-                    getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
-        }
-    }
-
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (eT_email.hasFocus() || eT_password.hasFocus()) return;

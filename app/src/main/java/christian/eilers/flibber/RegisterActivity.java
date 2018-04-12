@@ -32,14 +32,13 @@ import christian.eilers.flibber.Profil.ProfilActivity;
 import christian.eilers.flibber.Utils.LocalStorage;
 import static christian.eilers.flibber.Utils.Strings.*;
 
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener {
+public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener, View.OnFocusChangeListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         initializeViews();
-        hideKeyboard_onClickOutside();
         auth = FirebaseAuth.getInstance();
     }
 
@@ -58,6 +57,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         eT_name.setOnEditorActionListener(this);
         eT_email.setOnEditorActionListener(this);
         eT_password.setOnEditorActionListener(this);
+
+        eT_name.setOnFocusChangeListener(this);
+        eT_email.setOnFocusChangeListener(this);
+        eT_password.setOnFocusChangeListener(this);
     }
 
     // Check which Button has been clicked
@@ -74,11 +77,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     // Apply Actions for custom Keyboard Keys
     @Override
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-        if (i == EditorInfo.IME_ACTION_NEXT) {
-            if(eT_name.hasFocus()) showSoftKeyboard(eT_email);
-            else if(eT_email.hasFocus()) showSoftKeyboard(eT_password);
-            return true;
-        } else if (i == EditorInfo.IME_ACTION_GO) {
+        if (i == EditorInfo.IME_ACTION_GO) {
             signUp();
             return true;
         }
@@ -127,7 +126,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private void toLogin() {
         Intent i_loginActivity = new Intent(RegisterActivity.this, LoginActivity.class);
         startActivity(i_loginActivity);
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        //overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         finish();
     }
 
@@ -168,49 +167,13 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         return true;
     }
 
-    // Show Keyboard an focus View v
-    public void showSoftKeyboard(View view) {
-        if (view.requestFocus()) {
-            InputMethodManager imm = (InputMethodManager)
-                    getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (eT_name.hasFocus() || eT_email.hasFocus() || eT_password.hasFocus()) return;
+        if (!hasFocus) {
+            InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
-    }
-
-    // Attach Listener to EditTexts, on Click outside hide the Keyboard
-    private void hideKeyboard_onClickOutside() {
-        eT_name.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-
-        eT_email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-
-        eT_password.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
-            }
-        });
-    }
-
-    // Hide Keyboard
-    public void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     // Variablen
