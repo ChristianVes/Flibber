@@ -270,7 +270,8 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
                     .update(map_devicetoken);
             Intent homeIntent = new Intent(getContext(), HomeActivity.class);
             startActivity(homeIntent);
-            getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            getActivity().finish();
+            //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }
     }
 
