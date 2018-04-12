@@ -2,11 +2,9 @@ package christian.eilers.flibber.Home;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -21,7 +19,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,18 +32,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
-import christian.eilers.flibber.Adapter.BeteiligteAdapter;
 import christian.eilers.flibber.Adapter.TaskBeteiligteAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.TaskEntry;
@@ -191,11 +180,20 @@ public class TaskActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void changeLayout() {
+    public void showSoftKeyboard(View view) {
+        if (view.requestFocus()) {
+            InputMethodManager imm = (InputMethodManager)
+                    getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
+
+    private void showEditLayout() {
         tv_frequenz.setVisibility(View.GONE);
         et_frequenz.setVisibility(View.VISIBLE);
         et_frequenz.setText(thisTask.getFrequenz() +"");
-        et_frequenz.requestFocus();
+        // TODO: show soft Keyboard not working
+        showSoftKeyboard(et_frequenz);
 
         menu.clear();
         getMenuInflater().inflate(R.menu.menu_new_task, menu);
@@ -208,13 +206,22 @@ public class TaskActivity extends AppCompatActivity {
         });
     }
 
+    private void showNormalLayout(long frequenz) {
+        et_frequenz.setVisibility(View.GONE);
+        tv_frequenz.setVisibility(View.VISIBLE);
+        tv_frequenz.setText(frequenz +"");
+
+        menu.clear();
+        getMenuInflater().inflate(R.menu.menu_task, menu);
+    }
+
     private void saveChanging() {
         String s_frequenz = et_frequenz.getText().toString().trim();
         if (TextUtils.isEmpty(s_frequenz)) {
             Toast.makeText(this, "Frequenz eingeben...", Toast.LENGTH_SHORT).show();
             return;
         }
-        long frequenz = Long.valueOf(s_frequenz);
+        final long frequenz = Long.valueOf(s_frequenz);
 
         HashMap<String, Object> changings = new HashMap<>();
         changings.put("frequenz", frequenz);
@@ -225,7 +232,7 @@ public class TaskActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Void aVoid) {
                 progressBar.setVisibility(View.GONE);
-                finish();
+                showNormalLayout(frequenz);
             }
         });
     }
@@ -242,7 +249,7 @@ public class TaskActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_change:
-                changeLayout();
+                showEditLayout();
                 return true;
             case R.id.action_delete:
                 deleteTask();

@@ -38,6 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_gravity="center_vertical"
+                android:textColor="@color/colorPrimary"
                 />
 
         </RelativeLayout>

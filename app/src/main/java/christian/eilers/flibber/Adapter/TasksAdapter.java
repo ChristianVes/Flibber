@@ -23,6 +23,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.functions.FirebaseFunctions;
 
 import java.util.ArrayList;
@@ -104,6 +105,8 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         if (System.currentTimeMillis() > model.getTimestamp().getTime())
             taskHolder.tv_datum.setTextColor(
                     taskHolder.itemView.getContext().getResources().getColor(R.color.colorAccent));
+        else taskHolder.tv_datum.setTextColor(
+                taskHolder.itemView.getContext().getResources().getColor(R.color.colorPrimary));
 
         // USER-ORDER
         // Next User: first from Involved-ArrayList
@@ -143,10 +146,9 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             taskHolder.btn_pass.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(taskHolder.itemView.getContext(), "Benachrichtigung gesendet!", Toast.LENGTH_SHORT)
-                            .show();
+                    taskHolder.progressBar.setVisibility(View.VISIBLE);
                     skippedNotification(model.getTitle(), model.getInvolvedIDs().get(1));
-                    skipUser(model, position);
+                    skipUser(taskHolder, model, position);
                 }
             });
         }
@@ -157,6 +159,8 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             taskHolder.btn_remind.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Toast.makeText(taskHolder.itemView.getContext(), "Benachrichtigung gesendet!", Toast.LENGTH_SHORT)
+                            .show();
                     remindNotification(model.getTitle(), model.getInvolvedIDs().get(0));
                 }
             });
@@ -165,6 +169,8 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             taskHolder.btn_remind.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Toast.makeText(taskHolder.itemView.getContext(), "Benachrichtigung gesendet!", Toast.LENGTH_SHORT)
+                            .show();
                     remindAllNotification(model.getTitle(), model.getInvolvedIDs());
                 }
             });
@@ -212,7 +218,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     }
 
     // Skip the current User and put him on the second Position in the involved User's List
-    private void skipUser(final TaskModel model, final int position) {
+    private void skipUser(final TaskHolder taskHolder, final TaskModel model, final int position) {
         // Change the current's user position with the user after him
         ArrayList<String> newOrder = (ArrayList<String>) model.getInvolvedIDs().clone();
         newOrder.remove(userID);
@@ -223,7 +229,13 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         // UPDATE the involved-List in the Database
         FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(TASKS)
                 .document(getSnapshots().getSnapshot(position).getId())
-                .update(taskMap);
+                .update(taskMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        taskHolder.progressBar.setVisibility(View.VISIBLE);
+                    }
+                });
     }
 
     // TODO: Punktesystem wieder entfernen
@@ -244,41 +256,15 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         // Create a TaskEntry
         final TaskEntry entry = new TaskEntry(userID);
 
-        final long partialPoints = Math.round((double) model.getPoints() / model.getInvolvedIDs().size());
-        final long roundedPoints = partialPoints * model.getInvolvedIDs().size();
-
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        final CollectionReference colUsers = db.collection(GROUPS).document(groupID).collection(USERS);
         final DocumentReference docTask = db.collection(GROUPS).document(groupID).collection(TASKS).document(taskID);
         final DocumentReference docEntry = db.collection(GROUPS).document(groupID).collection(TASKS)
                 .document(taskID).collection(ENTRIES).document();
 
-        db.runTransaction(new Transaction.Function<Void>() {
-            @Nullable
-            @Override
-            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                // Update the involved User's points
-                HashMap<String, Long> map_points = new HashMap<>();
-                for (String id : model.getInvolvedIDs()) {
-                    // Calculate user's new Points depending on whether he is the current user
-                    // (the user who has fulfilled this task)
-                    DocumentSnapshot snap_user = transaction.get(colUsers.document(id));
-                    if (id.equals(userID))
-                        map_points.put(id, snap_user.getLong(POINTS) + roundedPoints - partialPoints);
-                    else
-                        map_points.put(id, snap_user.getLong(POINTS) - partialPoints);
-                }
-
-                for (String id : map_points.keySet()) {
-                    transaction.update(colUsers.document(id), POINTS, map_points.get(id));
-                }
-                // Update the Task-Order & Timestamp
-                transaction.update(docTask, taskMap);
-                // Save TaskEntry (im Verlauf)
-                transaction.set(docEntry, entry);
-                return null;
-            }
-        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+        WriteBatch batch = db.batch();
+        batch.update(docTask, taskMap);
+        batch.set(docEntry, entry);
+        batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Toast.makeText(taskHolder.itemView.getContext(), model.getTitle() +" erledigt!", Toast.LENGTH_SHORT).show();
