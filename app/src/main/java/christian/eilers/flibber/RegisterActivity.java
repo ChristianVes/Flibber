@@ -125,6 +125,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     // Switch to LoginActivity
     private void toLogin() {
         Intent i_loginActivity = new Intent(RegisterActivity.this, LoginActivity.class);
+        i_loginActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i_loginActivity);
         //overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         finish();

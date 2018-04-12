@@ -145,6 +145,7 @@ public class ProfilActivity extends AppCompatActivity {
                         LocalStorage.setData(ProfilActivity.this, null, null, null, null);
                         // switch to LoginActivity
                         Intent login = new Intent(ProfilActivity.this, LoginActivity.class);
+                        login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(login);
                         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                         finish();
