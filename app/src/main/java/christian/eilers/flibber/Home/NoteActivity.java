@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -50,6 +51,8 @@ import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
 import de.hdodenhof.circleimageview.CircleImageView;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
+
 import static christian.eilers.flibber.Utils.Strings.*;
 
 /*
@@ -73,6 +76,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
     // Initialize views from layout file
     private void initializeViews() {
         bottomLayout = findViewById(R.id.bottomLayout);
+        scrollView = findViewById(R.id.scrollView);
         commentsView = findViewById(R.id.comments);
         img_note = findViewById(R.id.img_note);
         img_profile = findViewById(R.id.profile_image);
@@ -95,6 +99,8 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         btn_send.setOnClickListener(this);
         btn_more.setOnClickListener(this);
         btn_save.setOnClickListener(this);
+
+        OverScrollDecoratorHelper.setUpOverScroll(scrollView);
     }
 
     private void initializeVariables() {
@@ -379,6 +385,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private RelativeLayout bottomLayout;
+    private ScrollView scrollView;
     private RecyclerView commentsView;
     private TextView tv_title, tv_description, tv_username, tv_datum;
     private EditText et_title, et_description;

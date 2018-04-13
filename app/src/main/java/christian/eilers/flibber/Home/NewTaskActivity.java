@@ -99,13 +99,11 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
         }
 
         long frequenz = Long.valueOf(s_frequenz);
-        long points = 0;
-        if (!TextUtils.isEmpty(s_points)) points = Long.valueOf(s_points);
         boolean hasOrder = switch_order.isChecked();
 
         DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document();
 
-        TaskModel task = new TaskModel(title, frequenz, points, adapter_beteiligte.getInvolvedIDs(),
+        TaskModel task = new TaskModel(title, frequenz, adapter_beteiligte.getInvolvedIDs(),
                 hasOrder,
                 new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(frequenz)));
 

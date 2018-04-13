@@ -6,17 +6,16 @@ import java.util.Date;
 public class TaskModel {
 
     private String title;
-    private long frequenz, points;
+    private long frequenz;
     private ArrayList<String> involvedIDs;
     private Date timestamp;
     private boolean ordered;
 
     public TaskModel() {}
 
-    public TaskModel(String title, long frequenz, long points, ArrayList<String> involvedIDs, boolean ordered, Date timestamp) {
+    public TaskModel(String title, long frequenz, ArrayList<String> involvedIDs, boolean ordered, Date timestamp) {
         this.title = title;
         this.frequenz = frequenz;
-        this.points = points;
         this.involvedIDs = involvedIDs;
         this.ordered = ordered;
         this.timestamp = timestamp;
@@ -36,14 +35,6 @@ public class TaskModel {
 
     public void setFrequenz(long frequenz) {
         this.frequenz = frequenz;
-    }
-
-    public long getPoints() {
-        return points;
-    }
-
-    public void setPoints(long points) {
-        this.points = points;
     }
 
     public ArrayList<String> getInvolvedIDs() {

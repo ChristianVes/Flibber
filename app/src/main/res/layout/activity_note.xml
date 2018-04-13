@@ -79,7 +79,8 @@
         android:layout_above="@+id/bottomLayout"
         android:layout_below="@+id/topLayout">
 
-        <android.support.v4.widget.NestedScrollView
+        <ScrollView
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="vertical">
@@ -155,13 +156,14 @@
                     android:id="@+id/comments"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/layerlist_topedge">
+                    android:background="@drawable/layerlist_topedge"
+                    android:nestedScrollingEnabled="false">
 
                 </android.support.v7.widget.RecyclerView>
 
             </LinearLayout>
 
-        </android.support.v4.widget.NestedScrollView>
+        </ScrollView>
 
     </RelativeLayout>
 
