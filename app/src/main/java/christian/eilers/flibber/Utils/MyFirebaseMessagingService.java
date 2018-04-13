@@ -26,6 +26,7 @@ import static christian.eilers.flibber.Utils.Strings.*;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private final int CHANNEL_SHOPPING = 123;
+    private final int CHANNEL_FINANCES = 321;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -60,6 +61,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 String title = remoteMessage.getData().get(TITLE);
                 String description = remoteMessage.getData().get(DESCRIPTION);
                 notesNotification(username, title, description);
+                break;
+            case FINANCES:
+                if(!sharedPreferences.getBoolean(FINANCES, false)) break;
+                String paymentTitle = remoteMessage.getData().get(NAME);
+                financeNotification(paymentTitle);
                 break;
         }
     }
@@ -174,6 +180,56 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         notificationManager.notify(CHANNEL_SHOPPING, builder.build());
+    }
+
+    private void financeNotification(String paymentTitle) {
+        // Read out Articles from the Shared Preferences
+        Set<String> currentPayments = getSharedPreferences(NOTIFICATIONS, Context.MODE_PRIVATE).getStringSet(FINANCES, null);
+        if (currentPayments != null) currentPayments.add(paymentTitle);
+        else {
+            currentPayments = new HashSet<>();
+            currentPayments.add(paymentTitle);
+        }
+
+        // Add the new Article to the SharedPreference
+        SharedPreferences.Editor editor = getSharedPreferences(NOTIFICATIONS, Context.MODE_PRIVATE).edit();
+        editor.putStringSet(FINANCES, currentPayments);
+        editor.apply();
+
+        // Configure the Inbox-Style to display all recently added articles
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+        inboxStyle.setBigContentTitle("Neue Finanzeinträge:");
+        for (String payment : currentPayments) inboxStyle.addLine(payment);
+
+        // Intent for onClick-Event
+        Intent clickIntent = new Intent(this, HomeActivity.class);
+        clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent clickPendingIntent = PendingIntent.getActivity(this, 0 , clickIntent, PendingIntent.FLAG_ONE_SHOT);
+
+        // Default Notification Sound
+        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        // Build the Notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID_FINANCES)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(paymentTitle)
+                .setContentText("Finanzeintrag wurde hinzugefügt")
+                .setStyle(inboxStyle)
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setContentIntent(clickPendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID_FINANCES, "Finanzen",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        notificationManager.notify(CHANNEL_FINANCES, builder.build());
     }
 
     private void notesNotification(String username, String title, String description) {

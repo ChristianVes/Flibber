@@ -41,4 +41,5 @@ public class Strings {
     public static final String CHANNEL_ID_TASKS = "TASK";
     public static final String CHANNEL_ID_SHOPPING = "SHOPPING";
     public static final String CHANNEL_ID_NOTES = "NOTES";
+    public static final String CHANNEL_ID_FINANCES = "FINANCES";
 }

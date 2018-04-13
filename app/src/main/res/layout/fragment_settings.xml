@@ -146,12 +146,11 @@
             />
 
         <android.support.v7.widget.SwitchCompat
-            android:id="@+id/switch_finance"
+            android:id="@+id/switch_finances"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:checked="false"
-            android:enabled="false"
             />
 
     </RelativeLayout>

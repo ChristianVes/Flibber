@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.functions.FirebaseFunctions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +55,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         switch_notes = mainView.findViewById(R.id.switch_notes);
         switch_shopping = mainView.findViewById(R.id.switch_shopping);
         switch_tasks = mainView.findViewById(R.id.switch_tasks);
+        switch_finances = mainView.findViewById(R.id.switch_finances);
         btn_profil.setOnClickListener(this);
         btn_invite.setOnClickListener(this);
         btn_leave.setOnClickListener(this);
@@ -63,10 +65,12 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         switch_notes.setChecked(sharedPreferences.getBoolean(NOTES, true));
         switch_shopping.setChecked(sharedPreferences.getBoolean(SHOPPING, true));
         switch_tasks.setChecked(sharedPreferences.getBoolean(TASKS, true));
+        switch_finances.setChecked(sharedPreferences.getBoolean(FINANCES, false));
 
         switch_notes.setOnCheckedChangeListener(this);
         switch_shopping.setOnCheckedChangeListener(this);
         switch_tasks.setOnCheckedChangeListener(this);
+        switch_finances.setOnCheckedChangeListener(this);
     }
 
     // Send an Invitation to the user matching the given E-Mail Adress to join the WG
@@ -204,13 +208,16 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             case R.id.switch_tasks :
                 sharedPreferences.edit().putBoolean(TASKS, isChecked).apply();
                 break;
+            case R.id.switch_finances :
+                sharedPreferences.edit().putBoolean(FINANCES, isChecked).apply();
+                break;
         }
     }
 
     // Class Variables
     private View mainView;
     private Button btn_invite, btn_profil, btn_leave;
-    private SwitchCompat switch_notes, switch_shopping, switch_tasks;
+    private SwitchCompat switch_notes, switch_shopping, switch_tasks, switch_finances;
     private MaterialDialog inviteDialog;
 
     private FirebaseFirestore db;
