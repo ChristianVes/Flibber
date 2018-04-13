@@ -52,6 +52,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         btn_invite = mainView.findViewById(R.id.btn_invite);
         btn_profil = mainView.findViewById(R.id.btn_profil);
         btn_leave = mainView.findViewById(R.id.btn_leave);
+        btn_image = mainView.findViewById(R.id.btn_image);
         switch_notes = mainView.findViewById(R.id.switch_notes);
         switch_shopping = mainView.findViewById(R.id.switch_shopping);
         switch_tasks = mainView.findViewById(R.id.switch_tasks);
@@ -59,6 +60,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         btn_profil.setOnClickListener(this);
         btn_invite.setOnClickListener(this);
         btn_leave.setOnClickListener(this);
+        btn_image.setOnClickListener(this);
 
         // Switch-States from SharedPreferences
         sharedPreferences = getContext().getSharedPreferences(groupID, Context.MODE_PRIVATE);
@@ -193,6 +195,9 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         else if (id == R.id.btn_leave) {
             Toast.makeText(getContext(), "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
         }
+        else if (id == R.id.btn_image) {
+            Toast.makeText(getContext(), "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // Save new Notification Settings in the SharedPreferences
@@ -216,7 +221,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
     // Class Variables
     private View mainView;
-    private Button btn_invite, btn_profil, btn_leave;
+    private Button btn_invite, btn_profil, btn_leave, btn_image;
     private SwitchCompat switch_notes, switch_shopping, switch_tasks, switch_finances;
     private MaterialDialog inviteDialog;
 
