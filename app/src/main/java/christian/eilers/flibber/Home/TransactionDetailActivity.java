@@ -89,12 +89,6 @@ public class TransactionDetailActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         layout_normal = findViewById(R.id.layout_normal);
         layout_ueberweisung = findViewById(R.id.layout_ueberweisung);
-
-        final boolean isUeberweisung = getIntent().getExtras().getBoolean("isUeberweisung", false);
-        if (isUeberweisung) {
-            layout_normal.setVisibility(View.GONE);
-            layout_ueberweisung.setVisibility(View.VISIBLE);
-        }
     }
 
     // Load the task information from the database
@@ -154,6 +148,14 @@ public class TransactionDetailActivity extends AppCompatActivity {
 
                 adapter_beteiligte = new TaskBeteiligteAdapter(involvedUserList);
                 rec_beteiligte.setAdapter(adapter_beteiligte);
+
+                if (involvedUserList.size() == 1) {
+                    layout_normal.setVisibility(View.GONE);
+                    layout_ueberweisung.setVisibility(View.VISIBLE);
+                } else {
+                    layout_normal.setVisibility(View.VISIBLE);
+                    layout_ueberweisung.setVisibility(View.GONE);
+                }
 
                 progressBar.setVisibility(View.GONE);
             }

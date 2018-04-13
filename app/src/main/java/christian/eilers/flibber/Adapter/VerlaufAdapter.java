@@ -106,10 +106,8 @@ public class VerlaufAdapter extends FirestoreRecyclerAdapter<Payment, RecyclerVi
         transHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean isUeberweisung = model.getTitle().equals("Überweisung");
                 Intent i_detailed = new Intent(transHolder.itemView.getContext(), TransactionDetailActivity.class);
                 i_detailed.putExtra(TRANSACTIONID, model.getKey());
-                i_detailed.putExtra("isUeberweisung", isUeberweisung);
                 i_detailed.putExtra(USERS, users);
                 transHolder.itemView.getContext().startActivity(i_detailed);
             }
