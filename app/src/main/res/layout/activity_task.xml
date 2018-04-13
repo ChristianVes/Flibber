@@ -80,36 +80,35 @@
 
             </RelativeLayout>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Beteiligte:"
-                    android:textSize="20sp" />
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recView_beteiligte"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true">
-
-                </android.support.v7.widget.RecyclerView>
-
-            </RelativeLayout>
-
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingBottom="5dp"
+                android:text="Beteiligte"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="22sp"
+                android:textStyle="bold"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recView_beteiligte"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <TextView
+                android:id="@+id/label_verlauf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
+                android:paddingTop="10dp"
                 android:text="Verlauf"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="22sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recVerlauf"

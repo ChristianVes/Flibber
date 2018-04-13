@@ -76,10 +76,6 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
 
         int spanCount = 4;
         ArrayList<User> userList = new ArrayList<>(users.values());
-        if (userList.size() <= 3) {
-            spanCount = userList.size();
-        }
-        if (userList.size() == 5 || userList.size() == 6) spanCount = 3;
 
         recView_beteiligte.setHasFixedSize(true);
         recView_beteiligte.setLayoutManager(new GridLayoutManager(this, spanCount));

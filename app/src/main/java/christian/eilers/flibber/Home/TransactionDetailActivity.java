@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -12,7 +13,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -75,24 +78,23 @@ public class TransactionDetailActivity extends AppCompatActivity {
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
         tv_description = findViewById(R.id.description);
-        tv_payer = findViewById(R.id.payer_username);
+        tv_payer = findViewById(R.id.username);
+        tv_username_from = findViewById(R.id.username_from);
+        tv_username_to = findViewById(R.id.username_to);
         tv_price = findViewById(R.id.price);
-        img_profile_payer = findViewById(R.id.payer_profile_image);
+        img_profile_payer = findViewById(R.id.profile_image);
+        img_profile_from = findViewById(R.id.profile_image_from);
+        img_profile_to = findViewById(R.id.profile_image_to);
         rec_beteiligte = findViewById(R.id.recView_beteiligte);
         progressBar = findViewById(R.id.progressBar);
-        label_price = findViewById(R.id.label_price);
-        label_payer = findViewById(R.id.label_payer);
-        label_involved = findViewById(R.id.label_beteiligte);
+        layout_normal = findViewById(R.id.layout_normal);
+        layout_ueberweisung = findViewById(R.id.layout_ueberweisung);
 
         final boolean isUeberweisung = getIntent().getExtras().getBoolean("isUeberweisung", false);
         if (isUeberweisung) {
-            label_price.setText("Betrag:");
-            label_payer.setText("An:");
-            label_involved.setText("Von:");
+            layout_normal.setVisibility(View.GONE);
+            layout_ueberweisung.setVisibility(View.VISIBLE);
         }
-
-        rec_beteiligte.setHasFixedSize(true);
-        rec_beteiligte.setLayoutManager(new LinearLayoutManager(this));
     }
 
     // Load the task information from the database
@@ -114,13 +116,20 @@ public class TransactionDetailActivity extends AppCompatActivity {
                 // PAYER
                 User payer = allUsers.get(thisPayment.getPayerID());
                 tv_payer.setText(payer.getName());
+                tv_username_to.setText(payer.getName());
                 if (payer.getPicPath() != null) {
                     GlideApp.with(TransactionDetailActivity.this)
                             .load(storage.child(payer.getPicPath()))
                             .placeholder(R.drawable.profile_placeholder)
                             .dontAnimate()
                             .into(img_profile_payer);
+                    GlideApp.with(TransactionDetailActivity.this)
+                            .load(storage.child(payer.getPicPath()))
+                            .placeholder(R.drawable.profile_placeholder)
+                            .dontAnimate()
+                            .into(img_profile_to);
                 }
+
                 // INVOLVED
                 final HashMap<String, User> involvedUsers = new HashMap<>();
                 for (String key : allUsers.keySet()) {
@@ -128,6 +137,21 @@ public class TransactionDetailActivity extends AppCompatActivity {
                         involvedUsers.put(key, allUsers.get(key));
                 }
                 ArrayList<User> involvedUserList = new ArrayList<>(involvedUsers.values());
+
+                tv_username_from.setText(involvedUserList.get(0).getName());
+                if (involvedUserList.get(0).getPicPath() != null) {
+                    GlideApp.with(TransactionDetailActivity.this)
+                            .load(storage.child(involvedUserList.get(0).getPicPath()))
+                            .placeholder(R.drawable.profile_placeholder)
+                            .dontAnimate()
+                            .into(img_profile_from);
+                }
+
+                int spanCount = 4;
+
+                rec_beteiligte.setHasFixedSize(true);
+                rec_beteiligte.setLayoutManager(new GridLayoutManager(TransactionDetailActivity.this, spanCount));
+
                 adapter_beteiligte = new TaskBeteiligteAdapter(involvedUserList);
                 rec_beteiligte.setAdapter(adapter_beteiligte);
 
@@ -259,10 +283,11 @@ public class TransactionDetailActivity extends AppCompatActivity {
     private TaskBeteiligteAdapter adapter_beteiligte;
 
     private Toolbar toolbar;
-    private TextView tv_description, tv_payer;
-    private TextView label_price, label_payer, label_involved;
+    private TextView tv_description, tv_payer, tv_username_from, tv_username_to;
     private MoneyTextView tv_price;
-    private CircleImageView img_profile_payer;
+    private CircleImageView img_profile_payer, img_profile_from, img_profile_to;
     private RecyclerView rec_beteiligte;
     private ProgressBar progressBar;
+    private LinearLayout layout_normal;
+    private RelativeLayout layout_ueberweisung;
 }

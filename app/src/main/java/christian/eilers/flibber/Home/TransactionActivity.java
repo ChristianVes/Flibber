@@ -125,10 +125,6 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
 
         int spanCount = 4;
         ArrayList<User> userList = new ArrayList<>(users.values());
-        if (userList.size() <= 3) {
-            spanCount = userList.size();
-        }
-        if (userList.size() == 5 || userList.size() == 6) spanCount = 3;
 
         layoutManagerBeteiligte = new GridLayoutManager(this, spanCount);
         layoutManagerBezahler = new GridLayoutManager(this, spanCount);

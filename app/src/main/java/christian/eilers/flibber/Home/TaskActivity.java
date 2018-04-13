@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -74,13 +75,12 @@ public class TaskActivity extends AppCompatActivity {
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
         tv_frequenz = findViewById(R.id.frequenz);
+        label_verlauf = findViewById(R.id.label_verlauf);
         rec_involved = findViewById(R.id.recView_beteiligte);
         rec_verlauf = findViewById(R.id.recVerlauf);
         et_frequenz = findViewById(R.id.input_frequenz);
         progressBar = findViewById(R.id.progressBar);
 
-        rec_involved.setHasFixedSize(true);
-        rec_involved.setLayoutManager(new LinearLayoutManager(this));
         rec_verlauf.setLayoutManager(new LinearLayoutManager(this));
     }
 
@@ -104,6 +104,12 @@ public class TaskActivity extends AppCompatActivity {
                         users.put(key, allUsers.get(key));
                 }
                 ArrayList<User> userList = new ArrayList<>(users.values());
+
+                int spanCount = 4;
+
+                rec_involved.setHasFixedSize(true);
+                rec_involved.setLayoutManager(new GridLayoutManager(TaskActivity.this, spanCount));
+
                 adapter_beteiligte = new TaskBeteiligteAdapter(userList);
                 rec_involved.setAdapter(adapter_beteiligte);
 
@@ -144,6 +150,13 @@ public class TaskActivity extends AppCompatActivity {
                                     DateUtils.DAY_IN_MILLIS,
                                     DateUtils.FORMAT_ABBREV_RELATIVE)
                     );
+            }
+
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                if (adapter_entries.getItemCount() > 0) label_verlauf.setVisibility(View.VISIBLE);
+                else label_verlauf.setVisibility(View.GONE);
             }
         };
 
@@ -272,7 +285,7 @@ public class TaskActivity extends AppCompatActivity {
     }
 
     private Toolbar toolbar;
-    private TextView tv_frequenz;
+    private TextView tv_frequenz, label_verlauf;
     private RecyclerView rec_involved, rec_verlauf;
     private EditText et_frequenz;
     private ProgressBar progressBar;
