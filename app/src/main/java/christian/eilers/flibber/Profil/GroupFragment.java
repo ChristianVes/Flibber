@@ -94,14 +94,27 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
 
             // Bind data from the database to the UI-Object
             @Override
-            public void onBindViewHolder(GroupFragment.GroupHolder holder, int position, Group model) {
+            public void onBindViewHolder(GroupHolder holder, int position, final Group model) {
+
                 holder.v_name.setText(model.getName());
-                holder.group = model;
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        HashMap<String, Object> map_devicetoken = new HashMap<>();
+                        map_devicetoken.put(DEVICETOKEN, FirebaseInstanceId.getInstance().getToken());
+                        LocalStorage.setGroupID(getContext(), model.getKey());
+                        db.collection(GROUPS).document(model.getKey()).collection(USERS).document(userID)
+                                .update(map_devicetoken);
+                        Intent homeIntent = new Intent(getContext(), HomeActivity.class);
+                        startActivity(homeIntent);
+                        getActivity().finish();
+                    }
+                });
             }
 
             // Einmalige Zuweisung zum ViewHolder: GroupHolder
             @Override
-            public GroupFragment.GroupHolder onCreateViewHolder(ViewGroup group, int i) {
+            public GroupHolder onCreateViewHolder(ViewGroup group, int i) {
                 View view = LayoutInflater.from(group.getContext()).inflate(R.layout.item_wg, group, false);
                 return new GroupFragment.GroupHolder(view);
             }
@@ -220,7 +233,7 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
                 .setQuery(invitesQuery, Group.class)
                 .build();
 
-        FirestoreRecyclerAdapter invitesAdapter = new FirestoreRecyclerAdapter<Group, GroupFragment.InvitationHolder>(options) {
+        FirestoreRecyclerAdapter invitesAdapter = new FirestoreRecyclerAdapter<Group, InvitationHolder>(options) {
 
             // Aktualisiere Platzhalter und ProgressBar
             @Override
@@ -233,15 +246,22 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
 
             // Bind data from the database to the UI-Object
             @Override
-            public void onBindViewHolder(GroupFragment.InvitationHolder holder, int position, Group model) {
-                holder.group = model;
+            public void onBindViewHolder(InvitationHolder holder, int position, final Group model) {
+
                 holder.v_name.setText(model.getName());
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        joinWG(model.getKey());
+                        invitesDialog.dismiss();
+                    }
+                });
             }
 
             // Einmalige Zuweisung zum ViewHolder: GroupHolder
             @Override
-            public GroupFragment.InvitationHolder onCreateViewHolder(ViewGroup group, int i) {
-                View view = LayoutInflater.from(group.getContext()).inflate(R.layout.item_wg, group, false);
+            public InvitationHolder onCreateViewHolder(ViewGroup group, int i) {
+                View view = LayoutInflater.from(group.getContext()).inflate(R.layout.item_wg_invitations, group, false);
                 return new GroupFragment.InvitationHolder(view);
             }
         };
@@ -252,46 +272,22 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
     }
 
     // Custom ViewHolder for interacting with single items of the RecyclerView
-    public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class GroupHolder extends RecyclerView.ViewHolder{
         TextView v_name;
-        Group group;
 
         public GroupHolder(View itemView) {
             super(itemView);
             v_name = itemView.findViewById(R.id.wg_name);
-            itemView.setOnClickListener(this);
-        }
-
-        // Wechsel zur HomeActivity
-        @Override
-        public void onClick(View view) {
-            HashMap<String, Object> map_devicetoken = new HashMap<>();
-            map_devicetoken.put(DEVICETOKEN, FirebaseInstanceId.getInstance().getToken());
-            LocalStorage.setGroupID(getContext(), group.getKey());
-            db.collection(GROUPS).document(group.getKey()).collection(USERS).document(userID)
-                    .update(map_devicetoken);
-            Intent homeIntent = new Intent(getContext(), HomeActivity.class);
-            startActivity(homeIntent);
-            getActivity().finish();
-            //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }
     }
 
     // Custom ViewHolder for interacting with single items of the RecyclerView
-    public class InvitationHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class InvitationHolder extends RecyclerView.ViewHolder{
         TextView v_name;
-        Group group;
 
         public InvitationHolder(View itemView) {
             super(itemView);
             v_name = itemView.findViewById(R.id.wg_name);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            joinWG(group.getKey());
-            invitesDialog.dismiss();
         }
     }
 
