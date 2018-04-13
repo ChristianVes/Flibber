@@ -38,6 +38,7 @@ import christian.eilers.flibber.Models.Group;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 import static christian.eilers.flibber.Utils.Strings.*;
 
@@ -65,7 +66,8 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
 
         fab_new.setOnClickListener(this);
         fab_invitations.setOnClickListener(this);
-    }
+
+        }
 
     // Lädt Gruppen des Users aus der Datenbank in den RecyclerView und hält sie up-to-date über einen Listener
     private void loadData() {
