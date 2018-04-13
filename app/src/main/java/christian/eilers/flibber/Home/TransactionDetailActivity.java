@@ -109,8 +109,9 @@ public class TransactionDetailActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle(thisPayment.getTitle()); // Titel des Tasks setzen
                 // PAYER
                 User payer = allUsers.get(thisPayment.getPayerID());
-                tv_payer.setText(payer.getName());
-                tv_username_to.setText(payer.getName());
+                String[] names_payer = payer.getName().split(" ", 2);
+                tv_payer.setText(names_payer[0]);
+                tv_username_to.setText(names_payer[0]);
                 if (payer.getPicPath() != null) {
                     GlideApp.with(TransactionDetailActivity.this)
                             .load(storage.child(payer.getPicPath()))
@@ -132,7 +133,8 @@ public class TransactionDetailActivity extends AppCompatActivity {
                 }
                 ArrayList<User> involvedUserList = new ArrayList<>(involvedUsers.values());
 
-                tv_username_from.setText(involvedUserList.get(0).getName());
+                String[] names_from = involvedUserList.get(0).getName().split(" ", 2);
+                tv_username_from.setText(names_from[0]);
                 if (involvedUserList.get(0).getPicPath() != null) {
                     GlideApp.with(TransactionDetailActivity.this)
                             .load(storage.child(involvedUserList.get(0).getPicPath()))
