@@ -1,6 +1,7 @@
 package christian.eilers.flibber.Adapter;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -114,6 +115,8 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         // retrieve just the first Name of the User
         String[] nextUser_names = nextUser.getName().split(" ", 2);
         taskHolder.tv_order_first.setText(nextUser_names[0]);
+        /*if (userID.equals(nextUser.getUserID())) taskHolder.tv_order_first.setTypeface(null, Typeface.BOLD);
+        else taskHolder.tv_order_first.setTypeface(null, Typeface.NORMAL);*/
         // case: only one User involved
         if (model.getInvolvedIDs().size() == 1) {
             taskHolder.tv_order_second.setText(nextUser_names[0]);
