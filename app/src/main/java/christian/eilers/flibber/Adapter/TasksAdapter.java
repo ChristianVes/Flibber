@@ -190,6 +190,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     private void remindNotification(String taskName, String toUserID) {
         Map<String, Object> data = new HashMap<>();
         data.put("taskName", taskName);
+        data.put("groupID", groupID);
         data.put("userID", toUserID);
 
         // Calls the Http Function which makes the Notification
@@ -211,6 +212,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     private void skippedNotification(String taskName, String toUserID) {
         Map<String, Object> data = new HashMap<>();
         data.put("taskName", taskName);
+        data.put("groupID", groupID);
         data.put("userID", toUserID);
 
         // Calls the Http Function which makes the Notification

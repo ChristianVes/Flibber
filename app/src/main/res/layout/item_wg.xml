@@ -8,8 +8,8 @@
     android:padding="5dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_gravity="center"
         android:src="@drawable/placeholder_group"
         app:civ_border_color="@color/colorPrimary"
@@ -19,10 +19,11 @@
         android:id="@+id/wg_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
+        android:textSize="30sp"
         android:layout_marginLeft="10dp"
         android:layout_gravity="center"
         android:textStyle="bold"
-        android:text="balala"/>
+        android:lines="1"
+        android:ellipsize="end"/>
 
 </LinearLayout>

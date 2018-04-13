@@ -41,9 +41,9 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.fragment_settings, container, false);
-        initializeViews();
         db = FirebaseFirestore.getInstance();
         groupID = LocalStorage.getGroupID(getContext());
+        initializeViews();
         return mainView;
     }
 
@@ -61,7 +61,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         btn_leave.setOnClickListener(this);
 
         // Switch-States from SharedPreferences
-        sharedPreferences = getContext().getSharedPreferences(NOTIFICATION_SETTINGS, Context.MODE_PRIVATE);
+        sharedPreferences = getContext().getSharedPreferences(groupID, Context.MODE_PRIVATE);
         switch_notes.setChecked(sharedPreferences.getBoolean(NOTES, true));
         switch_shopping.setChecked(sharedPreferences.getBoolean(SHOPPING, true));
         switch_tasks.setChecked(sharedPreferences.getBoolean(TASKS, true));
