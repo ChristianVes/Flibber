@@ -10,7 +10,10 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.StyleSpan;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -70,7 +73,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 // TODO: If - Bedingungen falls title/description empty
                 title = username_notes + ": " + title_notes;
                 description = description_notes;
-                String noti_notes = title_notes;
                 showNotification(title, description, title, description);
                 break;
             case FINANCES:
@@ -91,6 +93,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Set<String> set_descriptions = getSharedPreferences(NOTIFICATIONS, Context.MODE_PRIVATE)
                 .getStringSet("DESCRIPTIONS", null);
 
+        // TODO: Problem -> Keine Dupilkate erlaubt in Sets
+        // Möglichkeit: Current Time davor setzen und mit Split wieder entfernen
+
         if (set_titles != null && set_descriptions != null) {
             set_titles.add(title_short);
             set_descriptions.add(description_short);
@@ -104,16 +109,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Add the new notification to the SharedPreference
         SharedPreferences.Editor editor = getSharedPreferences(NOTIFICATIONS, Context.MODE_PRIVATE).edit();
-        editor.putStringSet("TITLES", set_titles);
         editor.putStringSet("DESCRIPTIONS", set_descriptions);
+        editor.putStringSet("TITLES", set_titles);
         editor.apply();
 
         // Configure the Inbox-Style to display all recently notifications
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         inboxStyle.setBigContentTitle("Headquarter");
         inboxStyle.setSummaryText(set_titles.size() + " neue Benachrichtigungen");
-        // TODO !!!
-        for (String line : set_titles) inboxStyle.addLine(line);
+        String[] title_array = set_titles.toArray(new String[set_titles.size()]);
+        String[] desc_array = set_descriptions.toArray(new String[set_descriptions.size()]);
+        for (int i = 0; i < desc_array.length; i++) {
+            Spannable line_spannable = new SpannableString(title_array[i] + " " + desc_array[i]);
+            line_spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, title_array[i].length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            inboxStyle.addLine(line_spannable);
+        }
 
         // Intent for onClick-Event
         Intent clickIntent = new Intent(this, HomeActivity.class);
