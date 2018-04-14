@@ -36,10 +36,11 @@ public class Strings {
     public static final String TASK_SKIPPED = "task_skipped";
     public static final String FROMUSER = "fromUser";
     public static final String TYPE = "type";
-    public static final String NOTIFICATION_SETTINGS = "Notification_Settings";
+    //public static final String NOTIFICATION_SETTINGS = "Notification_Settings";
 
-    public static final String CHANNEL_ID_TASKS = "TASK";
+    /*public static final String CHANNEL_ID_TASKS = "TASK";
     public static final String CHANNEL_ID_SHOPPING = "SHOPPING";
     public static final String CHANNEL_ID_NOTES = "NOTES";
-    public static final String CHANNEL_ID_FINANCES = "FINANCES";
+    public static final String CHANNEL_ID_FINANCES = "FINANCES";*/
+    public static final String CHANNEL_ID_ALL = "Headquarter";
 }
