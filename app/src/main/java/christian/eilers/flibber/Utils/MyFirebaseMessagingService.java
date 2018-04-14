@@ -93,18 +93,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Set<String> set_descriptions = getSharedPreferences(NOTIFICATIONS, Context.MODE_PRIVATE)
                 .getStringSet("DESCRIPTIONS", null);
 
-        // TODO: Problem -> Keine Dupilkate erlaubt in Sets
-        // Möglichkeit: Current Time davor setzen und mit Split wieder entfernen
+        int time = (int) System.currentTimeMillis();
 
         if (set_titles != null && set_descriptions != null) {
-            set_titles.add(title_short);
-            set_descriptions.add(description_short);
+            set_titles.add(time + ":" + title_short);
+            set_descriptions.add(time + ":" + description_short);
         }
         else {
             set_titles = new HashSet<>();
-            set_titles.add(title_short);
+            set_titles.add(time + ":" + title_short);
             set_descriptions = new HashSet<>();
-            set_descriptions.add(description_short);
+            set_descriptions.add(time + ":" + description_short);
         }
 
         // Add the new notification to the SharedPreference
@@ -119,9 +118,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         inboxStyle.setSummaryText(set_titles.size() + " neue Benachrichtigungen");
         String[] title_array = set_titles.toArray(new String[set_titles.size()]);
         String[] desc_array = set_descriptions.toArray(new String[set_descriptions.size()]);
-        for (int i = 0; i < desc_array.length; i++) {
-            Spannable line_spannable = new SpannableString(title_array[i] + " " + desc_array[i]);
-            line_spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, title_array[i].length(),
+        for (int i = 0; i < title_array.length; i++) {
+            String boldText = title_array[i].split(":",2)[1];
+            String normalText = desc_array[i].split(":",2)[1];
+            Spannable line_spannable = new SpannableString(boldText + " " + normalText);
+            line_spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, boldText.length(),
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             inboxStyle.addLine(line_spannable);
