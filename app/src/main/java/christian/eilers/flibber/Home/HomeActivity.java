@@ -130,8 +130,8 @@ public class HomeActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         SharedPreferences.Editor editor = getSharedPreferences(NOTIFICATIONS, Context.MODE_PRIVATE).edit();
-        editor.putStringSet(SHOPPING, null);
-        editor.putStringSet(FINANCES, null);
+        editor.putStringSet("TITLES", null);
+        editor.putStringSet("DESCRIPTIONS", null);
         editor.apply();
     }
 

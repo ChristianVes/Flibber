@@ -38,109 +38,82 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String type = remoteMessage.getData().get(TYPE);
         String groupID = remoteMessage.getData().get("groupID");
 
-        switch (type) {
-            case SHOPPING:
-                if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(SHOPPING, true)) break;
-                String title_shopping = remoteMessage.getData().get(NAME);
-                String description_shopping = "wurde zur Einkaufsliste hinzugefügt";
-                String noti_shopping = title_shopping + " " + description_shopping;
-                showNotification(title_shopping, description_shopping, noti_shopping);
-                break;
-            case TASKS:
-                if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(TASKS, true)) break;
-                String taskName = remoteMessage.getData().get(NAME);
-                String title_tasks = "Aufgabe: " + taskName;
-                String description_tasks = "ist fällig";
-                String noti_tasks = "Aufgaben-Erinnerung: " + taskName;
-                showNotification(title_tasks, description_tasks, noti_tasks);
-                break;
-            case TASK_SKIPPED:
-                if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(TASKS, true)) break;
-                String taskName_skipped = remoteMessage.getData().get(NAME);
-                String fromUser = remoteMessage.getData().get(FROMUSER);
-                String title_skipped = "Aufgabe: " + taskName_skipped;
-                String description_skipped = "hat " + fromUser + " an dich weitergegeben";
-                String noti_skipped = taskName_skipped + " hat " + fromUser + " an dich weitergegeben";
-                showNotification(title_skipped, description_skipped, noti_skipped);
-                break;
-            case NOTES:
-                if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(NOTES, true)) break;
-                String username_notes = remoteMessage.getData().get(USER);
-                String data_title = remoteMessage.getData().get(TITLE);
-                String data_description = remoteMessage.getData().get(DESCRIPTION);
-                // TODO: If - Bedingungen falls title/description empty
-                String title_notes = username_notes + ": " + data_title;
-                String description_notes = data_description;
-                String noti_notes = title_notes;
-                showNotification(title_notes, description_notes, noti_notes);
-                break;
-            case FINANCES:
-                if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(FINANCES, false)) break;
-                String name_payment = remoteMessage.getData().get(NAME);
-                String title_payment = "Finanzeintrag: " + name_payment;
-                String description_payment = "wurde hinzugefügt";
-                String noti_payment = "Neuer Finanzeintrag: " + name_payment;
-                showNotification(title_payment, description_payment, noti_payment);
-                break;
-        }
-
-
-        /*
+        String title, description, title_short, description_short;
         switch (type) {
             case SHOPPING:
                 if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(SHOPPING, true)) break;
                 String articleName = remoteMessage.getData().get(NAME);
-                shoppingNotification(articleName);
+                title = articleName;
+                description = "wurde zur Einkaufsliste hinzugefügt";
+                showNotification(title, description, title, description);
                 break;
             case TASKS:
                 if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(TASKS, true)) break;
                 String taskName = remoteMessage.getData().get(NAME);
-                taskNotification(taskName);
+                title = "Aufgabe: " + taskName;
+                description = "ist fällig";
+                showNotification(title, description, title, description);
                 break;
             case TASK_SKIPPED:
                 if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(TASKS, true)) break;
                 String taskName_skipped = remoteMessage.getData().get(NAME);
                 String fromUser = remoteMessage.getData().get(FROMUSER);
-                taskSkippedNotification(taskName_skipped, fromUser);
+                title = "Aufgabe: " + taskName_skipped;
+                description = "hat " + fromUser + " an dich weitergegeben";
+                showNotification(title, description, title, description);
                 break;
             case NOTES:
                 if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(NOTES, true)) break;
-                String username = remoteMessage.getData().get(USER);
-                String title = remoteMessage.getData().get(TITLE);
-                String description = remoteMessage.getData().get(DESCRIPTION);
-                notesNotification(username, title, description);
+                String username_notes = remoteMessage.getData().get(USER);
+                String title_notes = remoteMessage.getData().get(TITLE);
+                String description_notes = remoteMessage.getData().get(DESCRIPTION);
+                // TODO: If - Bedingungen falls title/description empty
+                title = username_notes + ": " + title_notes;
+                description = description_notes;
+                String noti_notes = title_notes;
+                showNotification(title, description, title, description);
                 break;
             case FINANCES:
                 if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(FINANCES, false)) break;
-                String paymentTitle = remoteMessage.getData().get(NAME);
-                financeNotification(paymentTitle);
+                String name_payment = remoteMessage.getData().get(NAME);
+                title = "Finanzeintrag: " + name_payment;
+                description = "wurde hinzugefügt";
+                showNotification(title, description, title, description);
                 break;
-        }*/
+        }
+
     }
 
-    private void showNotification(String title, String description, String notificationText) {
+    private void showNotification(String title, String description, String title_short, String description_short) {
         // Read out old Notifications from the Shared Preferences
-        Set<String> set_notifications = getSharedPreferences(NOTIFICATIONS, Context.MODE_PRIVATE)
-                .getStringSet(NOTIFICATIONS, null);
+        Set<String> set_titles = getSharedPreferences(NOTIFICATIONS, Context.MODE_PRIVATE)
+                .getStringSet("TITLES", null);
+        Set<String> set_descriptions = getSharedPreferences(NOTIFICATIONS, Context.MODE_PRIVATE)
+                .getStringSet("DESCRIPTIONS", null);
 
-        if (set_notifications != null) {
-            set_notifications.add(notificationText);
+        if (set_titles != null && set_descriptions != null) {
+            set_titles.add(title_short);
+            set_descriptions.add(description_short);
         }
         else {
-            set_notifications = new HashSet<>();
-            set_notifications.add(notificationText);
+            set_titles = new HashSet<>();
+            set_titles.add(title_short);
+            set_descriptions = new HashSet<>();
+            set_descriptions.add(description_short);
         }
 
         // Add the new notification to the SharedPreference
         SharedPreferences.Editor editor = getSharedPreferences(NOTIFICATIONS, Context.MODE_PRIVATE).edit();
-        editor.putStringSet(NOTIFICATIONS, set_notifications);
+        editor.putStringSet("TITLES", set_titles);
+        editor.putStringSet("DESCRIPTIONS", set_descriptions);
         editor.apply();
 
         // Configure the Inbox-Style to display all recently notifications
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         inboxStyle.setBigContentTitle("Headquarter");
-        inboxStyle.setSummaryText(set_notifications.size() + " neue Benachrichtigungen");
-        for (String line : set_notifications) inboxStyle.addLine(line);
+        inboxStyle.setSummaryText(set_titles.size() + " neue Benachrichtigungen");
+        // TODO !!!
+        for (String line : set_titles) inboxStyle.addLine(line);
 
         // Intent for onClick-Event
         Intent clickIntent = new Intent(this, HomeActivity.class);
@@ -152,7 +125,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Build the Notification
         NotificationCompat.Builder builder;
-        if (set_notifications.size() == 1) {
+        if (set_titles.size() == 1) {
             builder = new NotificationCompat.Builder(this, CHANNEL_ID_ALL)
                     .setSmallIcon(R.drawable.ic_notification)
                     .setContentTitle(title)
@@ -164,7 +137,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             builder = new NotificationCompat.Builder(this, CHANNEL_ID_ALL)
                     .setSmallIcon(R.drawable.ic_notification)
                     .setContentTitle("Headquarter")
-                    .setContentText(set_notifications.size() + " neue Benachrichtigungen")
+                    .setContentText(set_titles.size() + " neue Benachrichtigungen")
                     .setStyle(inboxStyle)
                     .setAutoCancel(true)
                     .setSound(defaultSoundUri)
