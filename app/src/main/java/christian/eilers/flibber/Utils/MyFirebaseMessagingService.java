@@ -95,6 +95,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         int time = (int) System.currentTimeMillis();
 
+        // Check if old notifications exists
+        // Add the time to each String to avoid duplicates
         if (set_titles != null && set_descriptions != null) {
             set_titles.add(time + ":" + title_short);
             set_descriptions.add(time + ":" + description_short);
@@ -116,15 +118,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         inboxStyle.setBigContentTitle("Headquarter");
         inboxStyle.setSummaryText(set_titles.size() + " neue Benachrichtigungen");
+        // Cast sets to arrays
         String[] title_array = set_titles.toArray(new String[set_titles.size()]);
         String[] desc_array = set_descriptions.toArray(new String[set_descriptions.size()]);
+        // iterate over all notifications to display
         for (int i = 0; i < title_array.length; i++) {
+            // remove time from the string
             String boldText = title_array[i].split(":",2)[1];
             String normalText = desc_array[i].split(":",2)[1];
+            // Make the title bold
             Spannable line_spannable = new SpannableString(boldText + " " + normalText);
             line_spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, boldText.length(),
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
+            // add the notification
             inboxStyle.addLine(line_spannable);
         }
 
