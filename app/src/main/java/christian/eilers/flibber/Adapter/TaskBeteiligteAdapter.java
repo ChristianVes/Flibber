@@ -24,13 +24,11 @@ import static christian.eilers.flibber.Utils.Strings.*;
 public class TaskBeteiligteAdapter extends RecyclerView.Adapter<TaskBeteiligteAdapter.ViewHolder> {
 
     private ArrayList<User> users;
-    private ArrayList<String> involvedIDs;
     private Context context;
     private StorageReference storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
 
     public TaskBeteiligteAdapter(ArrayList<User> users) {
         this.users = users;
-        involvedIDs = new ArrayList<>();
     }
 
     @NonNull

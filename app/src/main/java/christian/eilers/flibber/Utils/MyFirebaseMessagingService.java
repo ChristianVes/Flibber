@@ -270,7 +270,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setSound(defaultSoundUri)
                 .setContentIntent(clickPendingIntent)
                 .setGroup(CHANNEL_ID_ALL);
-        if (currentArticles.size() > 1) builder.setStyle(inboxStyle);
+        if (currentArticles.size() > 1) {
+            builder.setContentTitle("Kürzlich hinzugefügte Einkaufsartikel:");
+            builder.setContentText(currentArticles.size() + " neue Artikel");
+            builder.setStyle(inboxStyle);
+        }
 
 
         NotificationManager notificationManager =
@@ -323,7 +327,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setSound(defaultSoundUri)
                 .setContentIntent(clickPendingIntent)
                 .setGroup(CHANNEL_ID_ALL);
-        if (currentTasks.size() > 1) builder.setStyle(inboxStyle);
+        if (currentTasks.size() > 1) {
+            builder.setContentTitle("Aufgaben Erinnerungen:");
+            builder.setContentText(currentTasks.size() + " neue Erinnerungen");
+            builder.setStyle(inboxStyle);
+        }
 
 
         NotificationManager notificationManager =
@@ -389,7 +397,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Configure the Inbox-Style to display all recently added articles
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        inboxStyle.setBigContentTitle("Kürzlich hinzugefügte Finanzeinträge");
+        inboxStyle.setBigContentTitle("Kürzlich hinzugefügte Finanzeinträge:");
         for (String payment : currentPayments) inboxStyle.addLine(payment);
 
         // Intent for onClick-Event
@@ -409,7 +417,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setSound(defaultSoundUri)
                 .setContentIntent(clickPendingIntent)
                 .setGroup(CHANNEL_ID_ALL);
-        if (currentPayments.size() > 1) builder.setStyle(inboxStyle);
+        if (currentPayments.size() > 1) {
+            builder.setContentTitle("Kürzlich hinzugefügte Finanzeinträge:");
+            builder.setContentText(currentPayments.size() + " neue Einträge");
+            builder.setStyle(inboxStyle);
+        }
 
 
         NotificationManager notificationManager =
@@ -470,19 +482,35 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void summaryNotification() {
+
+        Intent clickIntent = new Intent(this, HomeActivity.class);
+        clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent clickPendingIntent = PendingIntent.getActivity(this, 0, clickIntent, PendingIntent.FLAG_ONE_SHOT);
+
         Notification summaryNotification =
                 new NotificationCompat.Builder(this, CHANNEL_ID_ALL)
                         .setContentTitle("Headquarter")
                         //set content text to support devices running API level < 24
-                        .setContentText("???")
+                        .setContentText("keine weiteren Benachrichtigungen")
                         .setSmallIcon(R.drawable.ic_notification)
+                        .setContentIntent(clickPendingIntent)
+                        .setAutoCancel(true)
                         //specify which group this notification belongs to
                         .setGroup(CHANNEL_ID_ALL)
                         //set this notification as the summary for the group
                         .setGroupSummary(true)
                         .build();
 
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID_ALL, "Allgemeine",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
         notificationManager.notify(SUMMARY_ID, summaryNotification);
     }
 
