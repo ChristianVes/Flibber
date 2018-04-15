@@ -133,7 +133,8 @@
                 android:background="?selectableItemBackground"
                 app:srcCompat="@drawable/ic_notifications_active"
                 android:tint="@color/colorPrimary"
-                android:contentDescription="TODO" />
+                android:contentDescription="TODO"
+                android:visibility="gone"/>
 
 
         </RelativeLayout>

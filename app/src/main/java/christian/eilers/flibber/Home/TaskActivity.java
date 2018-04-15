@@ -33,9 +33,11 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.functions.FirebaseFunctions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import christian.eilers.flibber.Adapter.TaskBeteiligteAdapter;
 import christian.eilers.flibber.MainActivity;
@@ -61,6 +63,7 @@ public class TaskActivity extends AppCompatActivity {
         userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
         db = FirebaseFirestore.getInstance();
+        functions = FirebaseFunctions.getInstance();
         taskID = getIntent().getExtras().getString(TASKID);
         allUsers = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
         if(taskID == null || allUsers == null) {
@@ -250,6 +253,25 @@ public class TaskActivity extends AppCompatActivity {
         });
     }
 
+    // Notifiy the first User in the Involved User's List of the current Task
+    private void remindNotification() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("taskName", thisTask.getTitle());
+        data.put("groupID", groupID);
+
+        if (thisTask.isOrdered()) {
+            data.put("userID", thisTask.getInvolvedIDs().get(0));
+            // Calls the Http Function which makes the Notification
+            functions.getHttpsCallable("taskNotify").call(data);
+        } else {
+            data.put("involvedIDs", thisTask.getInvolvedIDs());
+            // Calls the Http Function which makes the Notification
+            functions.getHttpsCallable("taskNotifyAll").call(data);
+        }
+        Toast.makeText(TaskActivity.this, "Benachrichtigung gesendet!", Toast.LENGTH_SHORT)
+                .show();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
@@ -261,6 +283,9 @@ public class TaskActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_remind:
+                remindNotification();
+                return true;
             case R.id.action_change:
                 showEditLayout();
                 return true;
@@ -292,6 +317,7 @@ public class TaskActivity extends AppCompatActivity {
 
     private String userID, groupID, taskID;
     private FirebaseFirestore db;
+    private FirebaseFunctions functions;
     private TaskModel thisTask;
     private HashMap<String, User> users;
     private HashMap<String, User> allUsers;

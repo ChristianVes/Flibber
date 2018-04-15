@@ -1,5 +1,6 @@
 package christian.eilers.flibber.Utils;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -194,6 +195,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     }
 
+
+    private void showGroupNotification() {
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, CHANNEL_ID_ALL)
+                        .setSmallIcon(R.drawable.ic_notification)
+                        .setContentTitle("")
+                        .setContentText("You will not believe...")
+                        .setGroup("");
+    }
 
 
 
