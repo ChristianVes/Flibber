@@ -53,33 +53,50 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             case TASKS:
                 if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(TASKS, true)) break;
                 String taskName = remoteMessage.getData().get(NAME);
-                title = "Aufgabe: " + taskName;
-                description = "ist fällig";
-                showNotification(title, description, title, description);
+                title = taskName;
+                description = "Anstehende Aufgabe: " + taskName;
+                title_short = "Reminder";
+                description_short = "für anstehende Aufgabe " + taskName;
+                showNotification(title, description, title_short, description_short);
                 break;
             case TASK_SKIPPED:
                 if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(TASKS, true)) break;
                 String taskName_skipped = remoteMessage.getData().get(NAME);
                 String fromUser = remoteMessage.getData().get(FROMUSER);
                 title = "Aufgabe: " + taskName_skipped;
-                description = "hat " + fromUser + " an dich weitergegeben";
-                showNotification(title, description, title, description);
+                description = fromUser + "hat " + taskName_skipped + " an dich weitergegeben";
+                title_short = taskName_skipped;
+                description_short = " wurde von " + fromUser + "an dich weitergegeben";
+                showNotification(title, description, title_short, description_short);
                 break;
             case NOTES:
                 if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(NOTES, true)) break;
                 String username_notes = remoteMessage.getData().get(USER);
                 String title_notes = remoteMessage.getData().get(TITLE);
                 String description_notes = remoteMessage.getData().get(DESCRIPTION);
-                // TODO: If - Bedingungen falls title/description empty
-                title = username_notes + ": " + title_notes;
-                description = description_notes;
-                showNotification(title, description, title, description);
+                if (TextUtils.isEmpty(title_notes)) {
+                    title = username_notes;
+                    description = description_notes;
+                    title_short = username_notes;
+                    description_short = description_notes;
+                } else if (TextUtils.isEmpty(description_notes)) {
+                    title = username_notes;
+                    description = title_notes;
+                    title_short = username_notes;
+                    description_short = title_notes;
+                } else {
+                    title = title_notes;
+                    description = description_notes;
+                    title_short = username_notes;
+                    description_short = title_notes;
+                }
+                showNotification(title, description, title_short, description_short);
                 break;
             case FINANCES:
                 if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(FINANCES, false)) break;
                 String name_payment = remoteMessage.getData().get(NAME);
-                title = "Finanzeintrag: " + name_payment;
-                description = "wurde hinzugefügt";
+                title = "Neuer Finanzeintrag";
+                description = name_payment;
                 showNotification(title, description, title, description);
                 break;
         }
