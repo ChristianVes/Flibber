@@ -92,9 +92,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         break;
                     String taskName = remoteMessage.getData().get(NAME);
                     title = taskName;
-                    description = "Anstehende Aufgabe: " + taskName;
-                    title_short = "Reminder";
-                    description_short = "für anstehende Aufgabe " + taskName;
+                    description = "Erinnerung für anstehende Aufgabe";
+                    title_short = taskName;
+                    description_short = "ist fällig";
                     showNotification(title, description, title_short, description_short);
                     break;
                 case TASK_SKIPPED:
@@ -102,11 +102,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         break;
                     String taskName_skipped = remoteMessage.getData().get(NAME);
                     String fromUser = remoteMessage.getData().get(FROMUSER);
-                    title = "Aufgabe: " + taskName_skipped;
-                    description = fromUser + "hat " + taskName_skipped + " an dich weitergegeben";
-                    title_short = taskName_skipped;
-                    description_short = " wurde von " + fromUser + "an dich weitergegeben";
-                    showNotification(title, description, title_short, description_short);
+                    title = taskName_skipped;
+                    description = " wurde von " + fromUser + "an dich weitergegeben";
+                    showNotification(title, description, title, description);
                     break;
                 case NOTES:
                     if (!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(NOTES, true))
