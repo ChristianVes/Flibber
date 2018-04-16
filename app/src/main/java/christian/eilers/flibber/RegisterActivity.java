@@ -109,8 +109,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     FirebaseFirestore.getInstance().collection(USERS).document(userID).set(userData);
                     // Wechsel zum WG-Selector
                     Intent i_wgSelector = new Intent(RegisterActivity.this, ProfilActivity.class);
+                    i_wgSelector.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(i_wgSelector);
-                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                     finish();
                 } else {
                     Toast.makeText(RegisterActivity.this, "Authentication failed.",

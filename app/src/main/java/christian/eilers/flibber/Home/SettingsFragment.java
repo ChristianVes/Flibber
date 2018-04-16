@@ -188,8 +188,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             // Lösche WG Key und wechsel zur WG&Profil Activity
             LocalStorage.setGroupID(getContext(), null);
             Intent profilIntent = new Intent(getContext(), ProfilActivity.class);
+            profilIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(profilIntent);
-            //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             getActivity().finish();
         }
         else if (id == R.id.btn_leave) {
