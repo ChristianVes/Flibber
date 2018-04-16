@@ -116,12 +116,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                 DocumentReference ref = ref_users.document(u.getUserID()).collection(SHOPPING).document(article.getKey());
                 batch.set(ref, article);
             }
-            batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    // TODO: << Erfolgreich Arikel für jeden User hinzugefügt >>
-                }
-            });
+            batch.commit();
         }
     }
 
@@ -139,12 +134,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                 DocumentReference ref = ref_users.document(u.getUserID()).collection(SHOPPING).document(article.getKey());
                 batch.delete(ref);
             }
-            batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    // TODO: << Erfolgreich Arikel für jeden User hinzugefügt >>
-                }
-            });
+            batch.commit();
         }
     }
 
@@ -198,7 +188,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                 final User articleUser = users.get(model.getUserID());
                 holder.tv_username.setText(articleUser.getName());
                 // Timestamp
-                if (model.getTimestamp() != null)
+                if (model.getTimestamp() != null) {
                     holder.tv_datum.setText(
                             DateUtils.getRelativeTimeSpanString(
                                     model.getTimestamp().getTime(),
@@ -206,6 +196,11 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                                     DateUtils.MINUTE_IN_MILLIS,
                                     DateUtils.FORMAT_ABBREV_RELATIVE)
                     );
+                    holder.tv_datum.setVisibility(View.VISIBLE);
+                } else {
+                    holder.tv_datum.setVisibility(View.GONE);
+                }
+
                 // Group-Icon-Visibility
                 if (model.isPrivate()) holder.img_group.setVisibility(View.GONE);
                 else holder.img_group.setVisibility(View.VISIBLE);

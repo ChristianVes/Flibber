@@ -196,11 +196,6 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     // load and display the Comments
-    /*
-    TODO: Beim Erstellen eines Kommentars wird onBindViewHolder 2mal aufgerufen:
-          LÖSUNG: Timestamp direkt mitgeben über FieldValue.
-          Einmal bevor es zur Datenbank geschickt wird und einmal wenn es online geupdatet wurde
-    */
     private void loadData() {
         final Query commentsQuery = db.collection(GROUPS).document(groupID)
                 .collection(NOTES).document(noteID)
@@ -229,7 +224,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                 holder.comment_text.setText(model.getDescription());
 
                 // TIMESTAMP
-                if(model.getTimestamp() != null)
+                if(model.getTimestamp() != null) {
                     holder.comment_datum.setText(
                             DateUtils.getRelativeTimeSpanString(
                                     model.getTimestamp().getTime(),
@@ -237,6 +232,11 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                                     DateUtils.MINUTE_IN_MILLIS,
                                     DateUtils.FORMAT_ABBREV_RELATIVE)
                     );
+                    holder.comment_datum.setVisibility(View.VISIBLE);
+                } else {
+                    holder.comment_datum.setVisibility(View.GONE);
+                }
+
             }
         };
 

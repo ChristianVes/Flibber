@@ -243,7 +243,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
                 });
     }
 
-    // TODO: Punktesystem wieder entfernen
     // Handle actions to be done when User has finished/taken care of a task
     private void handleTaskDone(final TaskHolder taskHolder, final int position, final TaskModel model) {
         taskHolder.progressBar.setVisibility(View.VISIBLE);
