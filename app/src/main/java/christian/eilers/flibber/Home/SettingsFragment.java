@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
 import android.text.InputType;
@@ -196,7 +197,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             Toast.makeText(getContext(), "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
         }
         else if (id == R.id.btn_image) {
-            Toast.makeText(getContext(), "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
+            DialogFragment dialog_image = new GroupImageDialog();
+            dialog_image.show(getChildFragmentManager(), "group_image");
         }
     }
 

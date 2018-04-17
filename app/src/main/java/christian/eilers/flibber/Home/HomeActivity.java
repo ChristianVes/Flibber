@@ -1,6 +1,7 @@
 package christian.eilers.flibber.Home;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -25,6 +26,7 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import java.util.HashMap;
 
 import christian.eilers.flibber.Adapter.HomePagerAdapter;
+import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
@@ -37,6 +39,12 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         groupID = LocalStorage.getGroupID(this);
+        if(groupID == null) {
+            Intent main = new Intent(this, MainActivity.class);
+            main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(main);
+            finish();
+        }
 
         mView = findViewById(R.id.container);
         bottomNavigationView = findViewById(R.id.bnve);

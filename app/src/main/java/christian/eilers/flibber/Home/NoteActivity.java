@@ -334,8 +334,8 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         tv_description.setText(description);
         bottomLayout.setVisibility(View.VISIBLE);
         btn_more.setVisibility(View.VISIBLE);
-        tv_title.setVisibility(View.VISIBLE);
-        tv_description.setVisibility(View.VISIBLE);
+        if (!TextUtils.isEmpty(title)) tv_title.setVisibility(View.VISIBLE);
+        if (!TextUtils.isEmpty(description)) tv_description.setVisibility(View.VISIBLE);
     }
 
     // Lösche Notiz und lösche Kommentare via CloudFunction
