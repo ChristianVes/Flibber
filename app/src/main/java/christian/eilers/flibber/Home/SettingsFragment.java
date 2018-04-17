@@ -1,10 +1,12 @@
 package christian.eilers.flibber.Home;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -17,15 +19,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.signature.ObjectKey;
+import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +44,10 @@ import java.util.Map;
 import christian.eilers.flibber.Models.Group;
 import christian.eilers.flibber.Profil.ProfilActivity;
 import christian.eilers.flibber.R;
+import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
+import de.hdodenhof.circleimageview.CircleImageView;
+
 import static christian.eilers.flibber.Utils.Strings.*;
 
 public class SettingsFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener{
@@ -44,6 +58,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         mainView = inflater.inflate(R.layout.fragment_settings, container, false);
         db = FirebaseFirestore.getInstance();
         groupID = LocalStorage.getGroupID(getContext());
+        ref_img_group = FirebaseStorage.getInstance().getReference().child(GROUPS).child(groupID);
         initializeViews();
         return mainView;
     }
@@ -53,15 +68,16 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         btn_invite = mainView.findViewById(R.id.btn_invite);
         btn_profil = mainView.findViewById(R.id.btn_profil);
         btn_leave = mainView.findViewById(R.id.btn_leave);
-        btn_image = mainView.findViewById(R.id.btn_image);
+        img_group = mainView.findViewById(R.id.group_image);
         switch_notes = mainView.findViewById(R.id.switch_notes);
         switch_shopping = mainView.findViewById(R.id.switch_shopping);
         switch_tasks = mainView.findViewById(R.id.switch_tasks);
         switch_finances = mainView.findViewById(R.id.switch_finances);
+        progressBar = mainView.findViewById(R.id.progressBar);
         btn_profil.setOnClickListener(this);
         btn_invite.setOnClickListener(this);
         btn_leave.setOnClickListener(this);
-        btn_image.setOnClickListener(this);
+        img_group.setOnClickListener(this);
 
         // Switch-States from SharedPreferences
         sharedPreferences = getContext().getSharedPreferences(groupID, Context.MODE_PRIVATE);
@@ -74,6 +90,12 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         switch_shopping.setOnCheckedChangeListener(this);
         switch_tasks.setOnCheckedChangeListener(this);
         switch_finances.setOnCheckedChangeListener(this);
+
+        GlideApp.with(getContext())
+                .load(ref_img_group)
+                .dontAnimate()
+                .placeholder(R.drawable.placeholder_group)
+                .into(img_group);
     }
 
     // Send an Invitation to the user matching the given E-Mail Adress to join the WG
@@ -196,10 +218,55 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         else if (id == R.id.btn_leave) {
             Toast.makeText(getContext(), "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
         }
-        else if (id == R.id.btn_image) {
-            DialogFragment dialog_image = new GroupImageDialog();
-            dialog_image.show(getChildFragmentManager(), "group_image");
+        else if (id == R.id.group_image) {
+            Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(galleryIntent, REQUEST_CODE_GALLERY);
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Zuschneiden des Bildes auf 1:1 Ratio
+        if (resultCode != Activity.RESULT_CANCELED) {
+            if (requestCode == REQUEST_CODE_GALLERY) {
+                CropImage.activity(data.getData())
+                        .setGuidelines(CropImageView.Guidelines.ON)
+                        .setAspectRatio(1, 1)
+                        .start(getContext(), this);
+            } else super.onActivityResult(requestCode, resultCode, data);
+        }
+
+        // Zurückliefern des zugeschnitten Bildes
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == Activity.RESULT_OK) {
+                progressBar.setVisibility(View.VISIBLE);
+                ref_img_group.putFile(result.getUri()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressBar.setVisibility(View.GONE);
+                        GlideApp.with(getContext())
+                                .load(ref_img_group)
+                                .signature(new ObjectKey(System.currentTimeMillis()))
+                                .dontAnimate()
+                                .placeholder(R.drawable.placeholder_group)
+                                .into(img_group);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getContext(), "Fehler beim Upload!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Crashlytics.logException(result.getError());
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+
     }
 
     // Save new Notification Settings in the SharedPreferences
@@ -223,11 +290,16 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
     // Class Variables
     private View mainView;
-    private Button btn_invite, btn_profil, btn_leave, btn_image;
+    private Button btn_invite, btn_profil, btn_leave;
+    private CircleImageView img_group;
+    private ProgressBar progressBar;
     private SwitchCompat switch_notes, switch_shopping, switch_tasks, switch_finances;
     private MaterialDialog inviteDialog;
 
     private FirebaseFirestore db;
+    private StorageReference ref_img_group;
     private SharedPreferences sharedPreferences;
     private String groupID;
+
+    private final int REQUEST_CODE_GALLERY = 0;
 }

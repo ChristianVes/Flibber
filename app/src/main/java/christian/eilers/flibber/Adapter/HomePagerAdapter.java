@@ -55,7 +55,7 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
             case 3:
                 return "Finanzen";
             case 4:
-                return "Optionen";
+                return "Einstellungen";
             default:
                 return null;
         }
