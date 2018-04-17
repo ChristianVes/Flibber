@@ -9,16 +9,14 @@ public class Group implements Serializable {
 
     private String name;
     private String key;
-    private String picPath;
     private Date timestamp;
 
     public Group() {
     }
 
-    public Group(String name, String key, String picPath) {
+    public Group(String name, String key) {
         this.name = name;
         this.key = key;
-        this.picPath = picPath;
     }
 
     public String getName() {
@@ -35,14 +33,6 @@ public class Group implements Serializable {
 
     public void setKey(String key) {
         this.key = key;
-    }
-
-    public String getPicPath() {
-        return picPath;
-    }
-
-    public void setPicPath(String picPath) {
-        this.picPath = picPath;
     }
 
     @ServerTimestamp

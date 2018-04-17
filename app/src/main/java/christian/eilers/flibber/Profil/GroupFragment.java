@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -30,6 +31,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
 
@@ -37,7 +40,9 @@ import christian.eilers.flibber.Home.HomeActivity;
 import christian.eilers.flibber.Models.Group;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
+import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
+import de.hdodenhof.circleimageview.CircleImageView;
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 import static christian.eilers.flibber.Utils.Strings.*;
@@ -50,6 +55,7 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
         mainView = inflater.inflate(R.layout.fragment_groups, container, false);
         userID = LocalStorage.getUserID(getContext());
         db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance().getReference().child(GROUPS);
         initializeViews();
         loadData();
         return mainView;
@@ -97,6 +103,12 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
             public void onBindViewHolder(GroupHolder holder, int position, final Group model) {
 
                 holder.v_name.setText(model.getName());
+                Glide.with(getContext()).clear(holder.img_group);
+                GlideApp.with(getContext())
+                        .load(storage.child(model.getKey()))
+                        .dontAnimate()
+                        .placeholder(R.drawable.placeholder_group)
+                        .into(holder.img_group);
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -178,7 +190,7 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
 
     private void createGroup(final String groupname) {
         final DocumentReference reference = db.collection(GROUPS).document();
-        final Group group = new Group(groupname, reference.getId(), null);
+        final Group group = new Group(groupname, reference.getId());
         reference.set(group);
 
         // Add Group-Reference to the current user
@@ -274,10 +286,12 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
     // Custom ViewHolder for interacting with single items of the RecyclerView
     public class GroupHolder extends RecyclerView.ViewHolder{
         TextView v_name;
+        CircleImageView img_group;
 
         public GroupHolder(View itemView) {
             super(itemView);
             v_name = itemView.findViewById(R.id.wg_name);
+            img_group = itemView.findViewById(R.id.img_group);
         }
     }
 
@@ -355,5 +369,6 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
 
     private FirestoreRecyclerAdapter adapter;
     private FirebaseFirestore db;
+    private StorageReference storage;
     private String userID;
 }

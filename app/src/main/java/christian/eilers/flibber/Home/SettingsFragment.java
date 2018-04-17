@@ -160,7 +160,6 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                         Map<String,Object> map_user = new HashMap<>();
                         map_user.put(EMAIL , invitedUserSnapshot.getString(EMAIL));
                         map_user.put(NAME , invitedUserSnapshot.getString(NAME));
-                        map_user.put(PICPATH , invitedUserSnapshot.getString(PICPATH));
 
                         // Add invited User to Invitation-Collection of WG
                         currentWGSnapshot.getReference().collection(INVITATIONS).document(invitedUserSnapshot.getId()).set(map_user);
