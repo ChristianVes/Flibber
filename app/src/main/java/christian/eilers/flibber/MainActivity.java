@@ -43,10 +43,12 @@ public class MainActivity extends AppCompatActivity {
         auth.addAuthStateListener(auth_listener);
 
         groupID = LocalStorage.getGroupID(this);
+        groupName = LocalStorage.getGroupName(this);
         userID = LocalStorage.getUserID(this);
+        userName = LocalStorage.getUsername(this);
 
-        if(userID != null) {
-            if(groupID != null) {
+        if(userID != null && userName != null) {
+            if(groupID != null && groupName != null) {
                 Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
                 startActivity(homeIntent);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -71,5 +73,5 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener auth_listener;
-    private String groupID, userID;
+    private String groupID, groupName, userID, userName;
 }
