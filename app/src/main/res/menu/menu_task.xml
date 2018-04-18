@@ -5,8 +5,9 @@
     <item
         android:id="@+id/action_remind"
         android:title="Erinnern"
-        android:icon="@drawable/ic_notifications_active_colored"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
+        <!--android:icon="@drawable/ic_notifications_active_colored"-->
+
 
 
     <item

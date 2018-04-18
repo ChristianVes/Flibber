@@ -98,7 +98,7 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                     case R.id.ic_settings:
                         mView.setCurrentItem(4);
-                        getSupportActionBar().setTitle(groupName + " - Einstellungen");
+                        getSupportActionBar().setTitle(groupName);
                         break;
                 }
 
