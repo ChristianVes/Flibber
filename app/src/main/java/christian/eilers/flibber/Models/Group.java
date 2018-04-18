@@ -10,6 +10,7 @@ public class Group implements Serializable {
     private String name;
     private String key;
     private String picPath;
+    @ServerTimestamp
     private Date timestamp;
 
     public Group() {
@@ -45,8 +46,6 @@ public class Group implements Serializable {
         this.picPath = picPath;
     }
 
-    // TODO dont update timestamp on group Image change
-    @ServerTimestamp
     public Date getTimestamp() {
         return timestamp;
     }
