@@ -7,9 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -119,7 +120,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull UserHolder holder, int position, @NonNull final User model) {
+            protected void onBindViewHolder(@NonNull final UserHolder holder, int position, @NonNull final User model) {
                 // USERNAME & MONEY
                 holder.tv_username.setText(model.getName());
                 holder.tv_money.setAmount(model.getMoney());
@@ -220,6 +221,29 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                         CurrencyEditText et_price = dialog.getCustomView().findViewById(R.id.input_price);
                         et_price.setLocale(Locale.GERMANY);
                         et_price.configureViewForLocale(Locale.GERMANY);
+                    }
+                });
+
+                holder.img_profile.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                        View v_dialog = getLayoutInflater().inflate(R.layout.dialog_profile_image, null);
+                        ImageView img_profile = v_dialog.findViewById(R.id.profile_image);
+                        // PROFILE PICTURE
+                        if(model.getPicPath() != null)
+                            GlideApp.with(v.getContext())
+                                    .load(storage.child(PROFILE).child(model.getPicPath()))
+                                    .dontAnimate()
+                                    .placeholder(R.drawable.profile_placeholder)
+                                    .into(img_profile);
+                        builder.setView(v_dialog);
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                        final float scale = getContext().getResources().getDisplayMetrics().density;
+                        final int dps = 250;
+                        int pixels = (int) (dps * scale + 0.5f);
+                        dialog.getWindow().setLayout(pixels, pixels);
                     }
                 });
             }

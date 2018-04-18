@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.signature.ObjectKey;
 import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -106,6 +107,7 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
                 Glide.with(getContext()).clear(holder.img_group);
                 GlideApp.with(getContext())
                         .load(storage.child(model.getKey()))
+                        .signature(new ObjectKey(System.currentTimeMillis()))
                         .dontAnimate()
                         .placeholder(R.drawable.placeholder_group)
                         .into(holder.img_group);
