@@ -116,6 +116,8 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
                         HashMap<String, Object> map_devicetoken = new HashMap<>();
                         map_devicetoken.put(DEVICETOKEN, FirebaseInstanceId.getInstance().getToken());
                         LocalStorage.setGroupID(getContext(), model.getKey());
+                        LocalStorage.setGroupName(getContext(), model.getName());
+                        LocalStorage.setGroupPicPath(getContext(), model.getPicPath());
                         db.collection(GROUPS).document(model.getKey()).collection(USERS).document(userID)
                                 .update(map_devicetoken);
                         Intent homeIntent = new Intent(getContext(), HomeActivity.class);

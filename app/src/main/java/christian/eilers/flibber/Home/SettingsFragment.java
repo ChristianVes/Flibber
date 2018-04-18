@@ -239,6 +239,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         else if (id == R.id.btn_profil) {
             // Lösche WG Key und wechsel zur WG&Profil Activity
             LocalStorage.setGroupID(getContext(), null);
+            LocalStorage.setGroupPicPath(getContext(), null);
+            LocalStorage.setGroupName(getContext(), null);
             Intent profilIntent = new Intent(getContext(), ProfilActivity.class);
             profilIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(profilIntent);

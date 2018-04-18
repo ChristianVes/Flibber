@@ -27,6 +27,7 @@ public class Strings {
     public static final String INVITATIONS = "invitations";
     public static final String PICPATH = "picPath";
     public static final String GROUPPICPATH = "groupPicPath";
+    public static final String GROUPNAME = "groupName";
     public static final String SHOPPING = "shopping";
     public static final String USERDATA = "USERDATA";
     public static final String USERID = "USERID";

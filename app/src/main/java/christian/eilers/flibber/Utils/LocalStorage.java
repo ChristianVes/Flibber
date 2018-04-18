@@ -28,6 +28,10 @@ public class LocalStorage {
         return c.getSharedPreferences(USERDATA, Context.MODE_PRIVATE).getString(GROUPPICPATH, null);
     }
 
+    public static String getGroupName(Context c) {
+        return c.getSharedPreferences(USERDATA, Context.MODE_PRIVATE).getString(GROUPNAME, null);
+    }
+
     public static void setData(Context c, String groupID, String userID, String userName, String picPath) {
         SharedPreferences.Editor editor = c.getSharedPreferences(USERDATA, Context.MODE_PRIVATE).edit();
         editor.putString(GROUPID, groupID);
@@ -64,6 +68,12 @@ public class LocalStorage {
     public static void setGroupPicPath(Context c, String picPath) {
         SharedPreferences.Editor editor = c.getSharedPreferences(USERDATA, Context.MODE_PRIVATE).edit();
         editor.putString(GROUPPICPATH, picPath);
+        editor.apply();
+    }
+
+    public static void setGroupName(Context c, String name) {
+        SharedPreferences.Editor editor = c.getSharedPreferences(USERDATA, Context.MODE_PRIVATE).edit();
+        editor.putString(GROUPNAME, name);
         editor.apply();
     }
 }

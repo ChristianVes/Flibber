@@ -39,7 +39,8 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         groupID = LocalStorage.getGroupID(this);
-        if(groupID == null) {
+        groupName = LocalStorage.getGroupName(this);
+        if(groupID == null || groupName == null) {
             Intent main = new Intent(this, MainActivity.class);
             main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(main);
@@ -97,7 +98,7 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                     case R.id.ic_settings:
                         mView.setCurrentItem(4);
-                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(4));
+                        getSupportActionBar().setTitle(groupName);
                         break;
                 }
 
@@ -177,6 +178,6 @@ public class HomeActivity extends AppCompatActivity {
     private ViewPager mView;
     private ProgressBar progressBar;
     private Query usersQuery;
-    private String groupID;
+    private String groupID, groupName;
     private HashMap<String, User> users;
 }
