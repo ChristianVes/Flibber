@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -58,7 +59,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         mainView = inflater.inflate(R.layout.fragment_settings, container, false);
         db = FirebaseFirestore.getInstance();
         groupID = LocalStorage.getGroupID(getContext());
-        ref_img_group = FirebaseStorage.getInstance().getReference().child(GROUPS).child(groupID);
+        groupPicPath = LocalStorage.getGroupPicPath(getContext()); // CAN BE NULL !!!
+        storage_groups = FirebaseStorage.getInstance().getReference().child(GROUPS);
         initializeViews();
         return mainView;
     }
@@ -91,11 +93,12 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         switch_tasks.setOnCheckedChangeListener(this);
         switch_finances.setOnCheckedChangeListener(this);
 
-        GlideApp.with(getContext())
-                .load(ref_img_group)
-                .dontAnimate()
-                .placeholder(R.drawable.placeholder_group)
-                .into(img_group);
+        if (groupPicPath != null)
+            GlideApp.with(getContext())
+                    .load(storage_groups.child(groupPicPath))
+                    .dontAnimate()
+                    .placeholder(R.drawable.placeholder_group)
+                    .into(img_group);
     }
 
     // Send an Invitation to the user matching the given E-Mail Adress to join the WG
@@ -160,6 +163,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
                         Map<String,Object> map_user = new HashMap<>();
                         map_user.put(EMAIL , invitedUserSnapshot.getString(EMAIL));
                         map_user.put(NAME , invitedUserSnapshot.getString(NAME));
+                        map_user.put(PICPATH, invitedUserSnapshot.getString(PICPATH));
 
                         // Add invited User to Invitation-Collection of WG
                         currentWGSnapshot.getReference().collection(INVITATIONS).document(invitedUserSnapshot.getId()).set(map_user);
@@ -197,6 +201,32 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
         inviteDialog = builder.build();
         inviteDialog.show();
+    }
+
+    // Update all References to the Group-Picture
+    public void saveImageToDB() {
+        final Map<String, Object> groupData = new HashMap<>();
+        groupData.put(PICPATH, groupPicPath);
+
+        // Update Reference in the groups-collection
+        db.collection(GROUPS).document(groupID).update(groupData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Get all users from the group
+                        db.collection(GROUPS).document(groupID).collection(USERS).get()
+                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                                        // Update Group Picture-References for each user
+                                        for (DocumentSnapshot doc : documentSnapshots) {
+                                            db.collection(USERS).document(doc.getId()).collection(GROUPS).document(groupID).update(groupData);
+                                        }
+                                        progressBar.setVisibility(View.GONE);
+                                    }
+                                });
+                    }
+                });
     }
 
     // Check which Button has been clicked
@@ -240,16 +270,21 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == Activity.RESULT_OK) {
                 progressBar.setVisibility(View.VISIBLE);
-                ref_img_group.putFile(result.getUri()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                final Uri uri = result.getUri();
+                final String path_new = uri.getLastPathSegment();
+                storage_groups.child(path_new).putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        progressBar.setVisibility(View.GONE);
                         GlideApp.with(getContext())
-                                .load(ref_img_group)
-                                .signature(new ObjectKey(System.currentTimeMillis()))
+                                .load(storage_groups.child(path_new))
                                 .dontAnimate()
                                 .placeholder(R.drawable.placeholder_group)
                                 .into(img_group);
+                        if (groupPicPath != null) storage_groups.child(groupPicPath).delete();
+                        LocalStorage.setGroupPicPath(getContext(), path_new);
+                        groupPicPath = path_new;
+
+                        saveImageToDB();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -296,9 +331,9 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     private MaterialDialog inviteDialog;
 
     private FirebaseFirestore db;
-    private StorageReference ref_img_group;
+    private StorageReference storage_groups;
     private SharedPreferences sharedPreferences;
-    private String groupID;
+    private String groupID, groupPicPath;
 
     private final int REQUEST_CODE_GALLERY = 0;
 }

@@ -17,8 +17,8 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_image"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_gravity="center"
             android:src="@drawable/profile_placeholder"
             app:civ_border_color="@color/colorPrimary"
@@ -38,9 +38,11 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/money"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:text="..."/>
+                android:layout_marginRight="20dp"
+                android:textSize="23sp"
+                android:text="..."
+                android:lines="1"
+                android:ellipsize="end"/>
 
             <org.fabiomsr.moneytextview.MoneyTextView
                 android:id="@+id/money"
@@ -52,7 +54,7 @@
                 app:symbolGravity="end"
                 app:format="###0,00"
                 app:baseTextColor="@color/colorPrimary"
-                app:baseTextSize="20sp"/>
+                app:baseTextSize="23sp"/>
 
         </RelativeLayout>
 

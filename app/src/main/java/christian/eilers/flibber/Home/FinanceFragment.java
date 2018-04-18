@@ -2,6 +2,7 @@ package christian.eilers.flibber.Home;
 
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -123,6 +124,8 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
             protected void onBindViewHolder(@NonNull final UserHolder holder, int position, @NonNull final User model) {
                 // USERNAME & MONEY
                 holder.tv_username.setText(model.getName());
+                if (model.getUserID().equals(userID)) holder.tv_username.setTypeface(null, Typeface.BOLD);
+                else holder.tv_username.setTypeface(null, Typeface.NORMAL);
                 holder.tv_money.setAmount(model.getMoney());
 
                 // PROFILE PICTURE

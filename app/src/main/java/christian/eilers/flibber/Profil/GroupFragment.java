@@ -102,15 +102,14 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
             // Bind data from the database to the UI-Object
             @Override
             public void onBindViewHolder(GroupHolder holder, int position, final Group model) {
-
                 holder.v_name.setText(model.getName());
                 Glide.with(getContext()).clear(holder.img_group);
-                GlideApp.with(getContext())
-                        .load(storage.child(model.getKey()))
-                        .signature(new ObjectKey(System.currentTimeMillis()))
-                        .dontAnimate()
-                        .placeholder(R.drawable.placeholder_group)
-                        .into(holder.img_group);
+                if (model.getPicPath() != null)
+                    GlideApp.with(getContext())
+                            .load(storage.child(model.getPicPath()))
+                            .dontAnimate()
+                            .placeholder(R.drawable.placeholder_group)
+                            .into(holder.img_group);
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -192,7 +191,7 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
 
     private void createGroup(final String groupname) {
         final DocumentReference reference = db.collection(GROUPS).document();
-        final Group group = new Group(groupname, reference.getId());
+        final Group group = new Group(groupname, reference.getId(), null);
         reference.set(group);
 
         // Add Group-Reference to the current user
