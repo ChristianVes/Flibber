@@ -56,13 +56,13 @@ public class VerlaufActivity extends AppCompatActivity {
         groupID = LocalStorage.getGroupID(this);
 
         users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
-        if(users == null) {
+        if(users == null || groupID == null) {
             Intent main = new Intent(this, MainActivity.class);
             startActivity(main);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
         }
-        loadVerlauf();
+        else loadVerlauf();
     }
 
     // Load all transactions/payments

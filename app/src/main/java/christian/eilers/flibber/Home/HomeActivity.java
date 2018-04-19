@@ -45,6 +45,7 @@ public class HomeActivity extends AppCompatActivity {
             main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(main);
             finish();
+            return;
         }
 
         mView = findViewById(R.id.container);

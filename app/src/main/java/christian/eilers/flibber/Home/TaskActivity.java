@@ -54,25 +54,28 @@ public class TaskActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
-        initializeVariables();
-        initializeViews();
-        loadTask();
+        if (initializeVariables()) {
+            initializeViews();
+            loadTask();
+        }
     }
 
-    private void initializeVariables() {
+    private boolean initializeVariables() {
         userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
         db = FirebaseFirestore.getInstance();
         functions = FirebaseFunctions.getInstance();
-        taskID = getIntent().getExtras().getString(TASKID);
+        taskID = getIntent().getStringExtra(TASKID);
+        //taskID = getIntent().getExtras().getString(TASKID);
         allUsers = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
         if(taskID == null || allUsers == null) {
             Intent main = new Intent(this, MainActivity.class);
             startActivity(main);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
-        }
-
+            return false;
+        } else
+            return true;
     }
 
     private void initializeViews() {

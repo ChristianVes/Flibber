@@ -65,7 +65,8 @@ public class TransactionDetailActivity extends AppCompatActivity {
         groupID = LocalStorage.getGroupID(this);
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
-        transactionID = getIntent().getExtras().getString(TRANSACTIONID);
+        transactionID = getIntent().getStringExtra(TRANSACTIONID);
+        //transactionID = getIntent().getExtras().getString(TRANSACTIONID);
         allUsers = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
         if(transactionID == null || allUsers == null) {
             Intent main = new Intent(this, MainActivity.class);

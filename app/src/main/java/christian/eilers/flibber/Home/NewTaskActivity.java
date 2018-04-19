@@ -72,16 +72,16 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
             startActivity(main);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
+        } else {
+            int spanCount = 4;
+            ArrayList<User> userList = new ArrayList<>(users.values());
+
+            recView_beteiligte.setHasFixedSize(true);
+            recView_beteiligte.setLayoutManager(new GridLayoutManager(this, spanCount));
+
+            adapter_beteiligte = new BeteiligteAdapter(userList);
+            recView_beteiligte.setAdapter(adapter_beteiligte);
         }
-
-        int spanCount = 4;
-        ArrayList<User> userList = new ArrayList<>(users.values());
-
-        recView_beteiligte.setHasFixedSize(true);
-        recView_beteiligte.setLayoutManager(new GridLayoutManager(this, spanCount));
-
-        adapter_beteiligte = new BeteiligteAdapter(userList);
-        recView_beteiligte.setAdapter(adapter_beteiligte);
     }
 
     private void saveTask() {
