@@ -136,7 +136,12 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                 Toast.makeText(RegisterActivity.this, "Account created.\n" +
                                                 "Please verify your E-Mail.",
                                         Toast.LENGTH_LONG).show();
-                                toLogin();
+                                Intent i_loginActivity = new Intent(RegisterActivity.this, LoginActivity.class);
+                                i_loginActivity.putExtra(EMAIL, email);
+                                i_loginActivity.putExtra(PASSWORD, password);
+                                i_loginActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(i_loginActivity);
+                                finish();
                             }
                         });
                     }

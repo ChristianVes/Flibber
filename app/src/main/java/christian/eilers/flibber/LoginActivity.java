@@ -185,6 +185,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btn_newAcc = findViewById(R.id.button_newAccount);
         progressBar = findViewById(R.id.progressBar);
 
+        String email = getIntent().getStringExtra(EMAIL);
+        String password = getIntent().getStringExtra(PASSWORD);
+        if (email != null && password != null) {
+            eT_email.setText(email);
+            eT_password.setText(password);
+        }
+
         btn_password.setOnClickListener(this);
         btn_login.setOnClickListener(this);
         btn_newAcc.setOnClickListener(this);

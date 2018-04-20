@@ -12,6 +12,7 @@ public class Strings {
     public static final String TIMESTAMP = "timestamp";
     public static final String NAME = "name";
     public static final String EMAIL = "email";
+    public static final String PASSWORD = "password";
     public static final String DEVICETOKEN = "deviceToken";
     public static final String PROFILE = "profile";
     public static final String INVOLVEDIDS = "involvedIDs";
