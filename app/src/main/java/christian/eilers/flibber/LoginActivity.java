@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .title("Dein Account ist noch nicht verifiziert")
                 .content("Bestätige deinen Account mithilfe der E-Mail die du erhalten hast.")
                 .positiveText("Okay")
-                .neutralText("E-Mail erneut senden")
+                .neutralText("Erneut senden")
                 .onNeutral(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {

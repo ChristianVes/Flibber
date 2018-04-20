@@ -133,9 +133,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             public void onSuccess(Void aVoid) {
                                 // Go back to login page
                                 progressBar.setVisibility(View.GONE);
-                                Toast.makeText(RegisterActivity.this, "Account created. \n " +
-                                                "Please verify your E-Mail now to login.",
-                                        Toast.LENGTH_SHORT).show();
+                                Toast.makeText(RegisterActivity.this, "Account created.\n" +
+                                                "Please verify your E-Mail.",
+                                        Toast.LENGTH_LONG).show();
                                 toLogin();
                             }
                         });
@@ -150,7 +150,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         Intent i_loginActivity = new Intent(RegisterActivity.this, LoginActivity.class);
         i_loginActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i_loginActivity);
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         finish();
     }
 

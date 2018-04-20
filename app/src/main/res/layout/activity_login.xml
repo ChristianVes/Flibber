@@ -80,7 +80,7 @@
                 android:layout_gravity="center_vertical"
                 android:background="?selectableItemBackground"
                 android:layout_marginRight="20dp"
-                android:text="Forget \nPassword?"
+                android:text="Forgot \nPassword?"
                 android:textAllCaps="false"
                 android:textColor="@color/colorPrimaryBlack" />
 
