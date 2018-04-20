@@ -2,6 +2,7 @@ package christian.eilers.flibber;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -48,13 +49,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         auth = FirebaseAuth.getInstance();
     }
 
-    // Switches to RegisterActivity to create a new Account
-    private void toRegisterActivity() {
-        Intent i_registerActivity = new Intent(LoginActivity.this, RegisterActivity.class);
-        startActivity(i_registerActivity);
-        //overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-    }
-
     // Send Email to Reset Password
     private void resetPasswordEmail() {
         final String email = eT_email.getText().toString().trim();
@@ -64,7 +58,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
         new MaterialDialog.Builder(LoginActivity.this)
                 .title("Passwort wirklich zurücksetzen?")
-                .content("Du erhälst in Kürze eine E-Mail, um dein Passwort zu zurückzusetzen...")
+                .content("Nach dem Bestätigen erhälst du eine E-Mail, um dein Passwort zu zurückzusetzen.")
                 .positiveText("Bestätigen")
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
@@ -87,6 +81,38 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .show();
     }
 
+    private void verificationDialog() {
+        new MaterialDialog.Builder(LoginActivity.this)
+                .title("Dein Account ist noch nicht verifiziert")
+                .content("Bestätige deinen Account mithilfe der E-Mail die du erhalten hast.")
+                .positiveText("Okay")
+                .neutralText("E-Mail erneut senden")
+                .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        progressBar.setVisibility(View.VISIBLE);
+                        auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                auth.signOut();
+                                if (task.isSuccessful())
+                                    Toast.makeText(LoginActivity.this, "E-Mail sent.", Toast.LENGTH_SHORT).show();
+                                else
+                                    Toast.makeText(LoginActivity.this, "Failed to send E-Mail.", Toast.LENGTH_SHORT).show();
+                                progressBar.setVisibility(View.GONE);
+                            }
+                        });
+                    }
+                })
+                .cancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        auth.signOut();
+                    }
+                })
+                .show();
+    }
+
     // Login the user with e-mail and password
     private void login() {
         final String email = eT_email.getText().toString().trim();
@@ -97,7 +123,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {
-                    // TODO: check if user is EmailVerified durch -> auth.getCurrentUser().isEmailVerified();
+                    if (!auth.getCurrentUser().isEmailVerified()) {
+                        progressBar.setVisibility(View.GONE);
+                        verificationDialog();
+                        return;
+                    }
                     final String userID = auth.getCurrentUser().getUid();
                     final String deviceToken = FirebaseInstanceId.getInstance().getToken();
                     final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -172,7 +202,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         int id = v.getId();
         if (id == R.id.button_ok) login();
         else if (id == R.id.button_forget) resetPasswordEmail();
-        else if (id == R.id.button_newAccount) toRegisterActivity();
+        else if (id == R.id.button_newAccount) {
+            Intent i_registerActivity = new Intent(LoginActivity.this, RegisterActivity.class);
+            startActivity(i_registerActivity);
+        }
     }
 
     // Apply Action on Keyboard Action

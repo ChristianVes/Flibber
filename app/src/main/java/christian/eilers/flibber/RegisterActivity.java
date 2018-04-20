@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,6 +31,7 @@ import java.util.Map;
 
 import christian.eilers.flibber.Profil.ProfilActivity;
 import christian.eilers.flibber.Utils.LocalStorage;
+
 import static christian.eilers.flibber.Utils.Strings.*;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener, View.OnFocusChangeListener {
@@ -84,40 +86,61 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         return false;
     }
 
-    // Sign Up new user with e-amil and password
+    /*
+    - Create User Account with E-Mail & Password
+    - Send E-Mail Verification
+    - Save User-Data in the Database
+    - Go back to Login Page
+    */
     private void signUp() {
         final String username = eT_name.getText().toString().trim();
         final String email = eT_email.getText().toString().trim();
         final String password = eT_password.getText().toString().trim();
         if (!isValidForm(email, password, username)) return;
         progressBar.setVisibility(View.VISIBLE);
-        auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+
+        // Create the user account
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    final String userID = auth.getCurrentUser().getUid();
-                    final String deviceToken = FirebaseInstanceId.getInstance().getToken();
-                    // TODO: E-Mail verification wieder einbauen
-                    // sendEmailVerification();
-
-                    LocalStorage.setData(RegisterActivity.this, null, userID, username, null);
-                    // Speichere Username in DB
-                    Map<String, Object> userData = new HashMap<>();
-                    userData.put(NAME, username);
-                    userData.put(EMAIL, email);
-                    userData.put(DEVICETOKEN, deviceToken);
-                    FirebaseFirestore.getInstance().collection(USERS).document(userID).set(userData);
-                    // Wechsel zum WG-Selector
-                    Intent i_wgSelector = new Intent(RegisterActivity.this, ProfilActivity.class);
-                    i_wgSelector.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(i_wgSelector);
-                    finish();
-                } else {
+                if (!task.isSuccessful()) {
                     Toast.makeText(RegisterActivity.this, "Authentication failed.",
                             Toast.LENGTH_SHORT).show();
                     eT_password.setText("");
+                    progressBar.setVisibility(View.GONE);
+                    return;
                 }
-                progressBar.setVisibility(View.GONE);
+
+                // Send E-Mail Verification
+                auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(RegisterActivity.this, "Sending Verification E-Mail failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            eT_password.setText("");
+                            progressBar.setVisibility(View.GONE);
+                            return;
+                        }
+
+                        // Save Userdata in the database
+                        Map<String, Object> userData = new HashMap<>();
+                        userData.put(NAME, username);
+                        userData.put(EMAIL, email);
+                        FirebaseFirestore.getInstance().collection(USERS).document(auth.getCurrentUser().getUid()).set(userData)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                // Go back to login page
+                                progressBar.setVisibility(View.GONE);
+                                Toast.makeText(RegisterActivity.this, "Account created. \n " +
+                                                "Please verify your E-Mail now to login.",
+                                        Toast.LENGTH_SHORT).show();
+                                toLogin();
+                            }
+                        });
+                    }
+                });
             }
         });
     }
@@ -127,28 +150,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         Intent i_loginActivity = new Intent(RegisterActivity.this, LoginActivity.class);
         i_loginActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i_loginActivity);
-        //overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         finish();
-    }
-
-    // Send email verification
-    private void sendEmailVerification() {
-        final FirebaseUser user = auth.getCurrentUser();
-        user.sendEmailVerification()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(RegisterActivity.this,
-                                    "Verification email sent to " + user.getEmail(),
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(RegisterActivity.this,
-                                    "Failed to send verification email.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
     }
 
     // Check if email, password or name is empty
@@ -172,7 +175,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     public void onFocusChange(View v, boolean hasFocus) {
         if (eT_name.hasFocus() || eT_email.hasFocus() || eT_password.hasFocus()) return;
         if (!hasFocus) {
-            InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
     }
