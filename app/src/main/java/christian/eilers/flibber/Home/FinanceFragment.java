@@ -300,11 +300,19 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                 .content("Die Bilanz jedes Mitglieds wird auf 0,00 \u20ac zurückgesetzt.\n" +
                         "Die zu zahlenden Beträge sind anschlißend einsehbar.")
                 .positiveText("Bestätigen")
-                .negativeText("Abbrechen")
+                .neutralText("Vergangene")
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         balancing();
+                    }
+                })
+                .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        Intent intentVerlauf = new Intent(getContext(), VerlaufBalanceActivity.class);
+                        intentVerlauf.putExtra(USERS, ((HomeActivity) getActivity()).getUsers());
+                        getActivity().startActivity(intentVerlauf);
                     }
                 })
                 .show();
