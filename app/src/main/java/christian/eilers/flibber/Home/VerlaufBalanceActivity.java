@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -41,7 +40,6 @@ import static christian.eilers.flibber.Utils.Strings.GROUPS;
 import static christian.eilers.flibber.Utils.Strings.TIMESTAMP;
 import static christian.eilers.flibber.Utils.Strings.USERS;
 
-//TODO: Platzhalter wenn noch keine vorhanden sind
 public class VerlaufBalanceActivity extends AppCompatActivity {
 
     @Override
@@ -94,7 +92,7 @@ public class VerlaufBalanceActivity extends AppCompatActivity {
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull final BalancingHolder holder, final int position, @NonNull final Balancing model) {
+            protected void onBindViewHolder(@NonNull final BalancingHolder holder, final int position, @NonNull Balancing model) {
                 // CREATOR_NAME
                 holder.tv_creator.setText(users.get(model.getCreatorID()).getName());
                 // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
@@ -113,11 +111,10 @@ public class VerlaufBalanceActivity extends AppCompatActivity {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // TODO: Balance Detail Activity
-                        Toast.makeText(holder.itemView.getContext(), "noch nicht möglich...", Toast.LENGTH_SHORT).show();
-                        /*Intent i = new Intent(holder.itemView.getContext(), BalanceActivity.class);
+                        Intent i = new Intent(holder.itemView.getContext(), BalanceActivity.class);
+                        i.putExtra(USERS, users);
                         i.putExtra(BALANCING, getSnapshots().getSnapshot(position).getId());
-                        startActivity(i);*/
+                        startActivity(i);
                     }
                 });
             }

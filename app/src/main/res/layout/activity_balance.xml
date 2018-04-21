@@ -34,22 +34,10 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <org.fabiomsr.moneytextview.MoneyTextView
-                android:id="@+id/money"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/layerlist_bottomedge_white"
-                app:symbol="€"
-                app:symbolGravity="end"
-                app:format="###0,00"
-                app:baseTextColor="@color/colorPrimaryDark"
-                app:baseTextSize="30sp" />
-
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
                 android:nestedScrollingEnabled="false" />
 
         </LinearLayout>

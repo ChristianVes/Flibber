@@ -55,9 +55,8 @@ public class TransactionDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transaction_detail);
-        initializeVariables();
         initializeViews();
-        loadTransaction();
+        initializeVariables();
     }
 
     private void initializeVariables() {
@@ -66,14 +65,14 @@ public class TransactionDetailActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
         transactionID = getIntent().getStringExtra(TRANSACTIONID);
-        //transactionID = getIntent().getExtras().getString(TRANSACTIONID);
         allUsers = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
-        if(transactionID == null || allUsers == null) {
+        if(transactionID == null || allUsers == null || groupID == null) {
             Intent main = new Intent(this, MainActivity.class);
             startActivity(main);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
-        }
+        } else
+            loadTransaction();
     }
 
     private void initializeViews() {
