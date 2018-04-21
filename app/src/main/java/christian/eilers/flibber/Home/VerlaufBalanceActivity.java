@@ -53,6 +53,7 @@ public class VerlaufBalanceActivity extends AppCompatActivity {
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
         recView = findViewById(R.id.recVerlauf);
+        placeholder = findViewById(R.id.placeholder);
         progressBar = findViewById(R.id.progressBar);
         setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
     }
@@ -89,6 +90,15 @@ public class VerlaufBalanceActivity extends AppCompatActivity {
             public BalancingHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_balancing, parent, false);
                 return new BalancingHolder(view);
+            }
+
+            // Aktualisiere Platzhalter und ProgressBar
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                if (getItemCount() == 0) placeholder.setVisibility(View.VISIBLE);
+                else placeholder.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -159,4 +169,5 @@ public class VerlaufBalanceActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private RecyclerView recView;
     private ProgressBar progressBar;
+    private TextView placeholder;
 }

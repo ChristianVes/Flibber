@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -39,6 +41,7 @@ public class BalanceActivity extends AppCompatActivity {
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
         recView = findViewById(R.id.recView);
+        progressBar = findViewById(R.id.progressBar);
     }
 
     private void initializeVariables() {
@@ -57,6 +60,7 @@ public class BalanceActivity extends AppCompatActivity {
     }
 
     private void loadBalance() {
+        progressBar.setVisibility(View.VISIBLE);
         db.collection(GROUPS).document(groupID).collection(BALANCING).document(balancingID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -80,12 +84,14 @@ public class BalanceActivity extends AppCompatActivity {
                 recView.setLayoutManager(new LinearLayoutManager(BalanceActivity.this));
                 BalanceUserAdapter adapter = new BalanceUserAdapter(balanceUsers);
                 recView.setAdapter(adapter);
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
 
     private Toolbar toolbar;
     private RecyclerView recView;
+    private ProgressBar progressBar;
 
     private String userID, groupID, balancingID;
     private FirebaseFirestore db;
