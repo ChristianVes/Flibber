@@ -32,8 +32,11 @@ import com.blackcat.currencyedittext.CurrencyEditText;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -51,6 +54,7 @@ import java.util.Locale;
 
 import christian.eilers.flibber.Adapter.VerlaufAdapter;
 import christian.eilers.flibber.MainActivity;
+import christian.eilers.flibber.Models.Balancing;
 import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
@@ -291,15 +295,53 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
     }
 
     private void balancingDialog() {
-        Toast.makeText(getContext(), "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
-
-        /*MaterialDialog dialog = new MaterialDialog.Builder(getContext())
+        MaterialDialog dialog = new MaterialDialog.Builder(getContext())
                 .title("Finanzenausgleich")
-                .content("Achtung: Nachdem alle Mitglieder der Gruppe dem Finanzausgleich zugestimmt " +
-                        "haben, wird die Bilanz jedes Mitglieds auf 0,00 \u20ac zurückgesetzt!")
-                .positiveText("Zustimmen")
-                .negativeText("Ablehnen")
-                .show();*/
+                .content("Die Bilanz jedes Mitglieds wird auf 0,00 \u20ac zurückgesetzt.\n" +
+                        "Die zu zahlenden Beträge sind anschlißend einsehbar.")
+                .positiveText("Bestätigen")
+                .negativeText("Abbrechen")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        balancing();
+                    }
+                })
+                .show();
+    }
+
+    private void balancing() {
+        progressBar.setVisibility(View.VISIBLE);
+        final DocumentReference ref_group = db.collection(GROUPS).document(groupID);
+        users = ((HomeActivity) getActivity()).getUsers();
+        db.runTransaction(new Transaction.Function<Void>() {
+            @Nullable
+            @Override
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                // Read out current money from each user
+                HashMap<String, Long> map = new HashMap<>();
+                for (String key : users.keySet()) {
+                    DocumentSnapshot snap_user = transaction.get(ref_group.collection(USERS).document(key));
+                    map.put(key, snap_user.getLong(MONEY));
+                }
+                // Create a new balancing entry
+                Balancing balancing = new Balancing(userID, map);
+                transaction.set(ref_group.collection(BALANCING).document(), balancing);
+                // Set money for each user to zero
+                for (String key : users.keySet()) {
+                    HashMap<String, Object> map_money = new HashMap<>();
+                    map_money.put(MONEY, 0);
+                    transaction.update(ref_group.collection(USERS).document(key), map_money);
+                }
+
+                return null;
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                progressBar.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override

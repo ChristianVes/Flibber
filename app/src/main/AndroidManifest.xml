@@ -47,10 +47,12 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".LoginActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".RegisterActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".RegisterActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Home.HomeActivity"
             android:screenOrientation="portrait"
@@ -64,23 +66,28 @@
             android:theme="@style/Base.Theme.AppCompat" /> <!-- optional (needed if default theme has no action bar) -->
         <activity
             android:name=".Home.NoteCreateActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Home.NoteActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Home.TransactionActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".Home.VerlaufActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Home.NewTaskActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Home.TaskActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Home.TransactionDetailActivity"
-            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".Home.VerlaufActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Home.NewTaskActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Home.TaskActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Home.TransactionDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Home.BalancingActivity"></activity>
     </application>
 
 </manifest>

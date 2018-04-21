@@ -11,7 +11,6 @@
     android:focusableInTouchMode="true"
     tools:context="christian.eilers.flibber.Home.NoteActivity">
 
-
     <RelativeLayout
         android:id="@+id/topLayout"
         android:layout_width="match_parent"

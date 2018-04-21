@@ -39,6 +39,7 @@ public class Strings {
     public static final String TASK_SKIPPED = "task_skipped";
     public static final String FROMUSER = "fromUser";
     public static final String TYPE = "type";
+    public static final String BALANCING = "balancing";
 
     public static final String CHANNEL_ID_TASKS = "TASK";
     public static final String CHANNEL_ID_SHOPPING = "SHOPPING";
