@@ -92,7 +92,7 @@ public class VerlaufBalanceActivity extends AppCompatActivity {
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull BalancingHolder holder, int position, @NonNull Balancing model) {
+            protected void onBindViewHolder(@NonNull final BalancingHolder holder, final int position, @NonNull final Balancing model) {
                 // CREATOR_NAME
                 holder.tv_creator.setText(users.get(model.getCreatorID()).getName());
                 // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
@@ -107,6 +107,15 @@ public class VerlaufBalanceActivity extends AppCompatActivity {
                 if (model.getValues().containsKey(userID))
                     holder.tv_value.setAmount(model.getValues().get(userID));
                 else holder.tv_value.setAmount(0);
+
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(holder.itemView.getContext(), BalanceActivity.class);
+                        i.putExtra(BALANCING, getSnapshots().getSnapshot(position).getId());
+                        startActivity(i);
+                    }
+                });
             }
         };
 

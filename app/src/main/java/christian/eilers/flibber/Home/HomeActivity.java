@@ -76,36 +76,6 @@ public class HomeActivity extends AppCompatActivity {
         Fragment wechseln, je nachdem welches Item in der Bottom Navigation View angegklickt wurde
         */
         setBottomNavigationBar(bottomNavigationView);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                item.setChecked(true);
-                switch (item.getItemId()) {
-                    case R.id.ic_putzplan:
-                        mView.setCurrentItem(0);
-                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(0));
-                        break;
-                    case R.id.ic_einkaufsliste:
-                        mView.setCurrentItem(1);
-                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(1));
-                        break;
-                    case R.id.ic_home:
-                        mView.setCurrentItem(2);
-                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(2));
-                        break;
-                    case R.id.ic_finanzen:
-                        mView.setCurrentItem(3);
-                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(3));
-                        break;
-                    case R.id.ic_settings:
-                        mView.setCurrentItem(4);
-                        getSupportActionBar().setTitle(groupName);
-                        break;
-                }
-
-                return false;
-            }
-        });
 
         setSupportActionBar(toolbar);
 
@@ -120,6 +90,36 @@ public class HomeActivity extends AppCompatActivity {
             public void onSuccess(QuerySnapshot documentSnapshots) {
                 retrieveUsers(documentSnapshots);
                 adapterViewPager = new HomePagerAdapter(getSupportFragmentManager());
+                bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        item.setChecked(true);
+                        switch (item.getItemId()) {
+                            case R.id.ic_putzplan:
+                                mView.setCurrentItem(0);
+                                getSupportActionBar().setTitle(adapterViewPager.getPageTitle(0));
+                                break;
+                            case R.id.ic_einkaufsliste:
+                                mView.setCurrentItem(1);
+                                getSupportActionBar().setTitle(adapterViewPager.getPageTitle(1));
+                                break;
+                            case R.id.ic_home:
+                                mView.setCurrentItem(2);
+                                getSupportActionBar().setTitle(adapterViewPager.getPageTitle(2));
+                                break;
+                            case R.id.ic_finanzen:
+                                mView.setCurrentItem(3);
+                                getSupportActionBar().setTitle(adapterViewPager.getPageTitle(3));
+                                break;
+                            case R.id.ic_settings:
+                                mView.setCurrentItem(4);
+                                getSupportActionBar().setTitle(groupName);
+                                break;
+                        }
+
+                        return false;
+                    }
+                });
                 mView.setAdapter(adapterViewPager);
                 mView.setCurrentItem(2);
                 progressBar.setVisibility(View.GONE);

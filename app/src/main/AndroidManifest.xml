@@ -87,7 +87,8 @@
         <activity
             android:name=".Home.TransactionDetailActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".Home.VerlaufBalanceActivity"></activity>
+        <activity android:name=".Home.VerlaufBalanceActivity" />
+        <activity android:name=".Home.BalanceActivity"></activity>
     </application>
 
 </manifest>
