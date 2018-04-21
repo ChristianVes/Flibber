@@ -75,6 +75,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     String name_payment = remoteMessage.getData().get(NAME);
                     paymentNotification(name_payment);
                     break;
+                case BALANCING:
+                    String username_balancing = remoteMessage.getData().get(NAME);
+                    balancingNotification(username_balancing);
+                    break;
             }
         } else {
             String title, description, title_short, description_short;
@@ -136,6 +140,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     String name_payment = remoteMessage.getData().get(NAME);
                     title = "Neuer Finanzeintrag";
                     description = name_payment;
+                    showNotification(title, description, title, description);
+                    break;
+                case BALANCING:
+                    String username_balancing = remoteMessage.getData().get(NAME);
+                    title = "Finanzabrechnung durchgeführt";
+                    description = "von " + username_balancing;
                     showNotification(title, description, title, description);
                     break;
             }
@@ -433,6 +443,39 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         notificationManager.notify(CHANNEL_FINANCES, builder.build());
+        summaryNotification();
+    }
+
+    private void balancingNotification(String username) {
+        // Intent for onClick-Event
+        Intent clickIntent = new Intent(this, HomeActivity.class);
+        clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent clickPendingIntent = PendingIntent.getActivity(this, 0, clickIntent, PendingIntent.FLAG_ONE_SHOT);
+
+        // Default Notification Sound
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        // Build the Notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID_ALL)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle("Finanzabrechnung durchgeführt")
+                .setContentText("von " + username)
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setContentIntent(clickPendingIntent)
+                .setGroup(CHANNEL_ID_ALL);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID_ALL, "Allgemeine",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        notificationManager.notify(CHANNEL_ID, builder.build());
         summaryNotification();
     }
 

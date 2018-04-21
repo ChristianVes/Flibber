@@ -296,9 +296,9 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
 
     private void balancingDialog() {
         MaterialDialog dialog = new MaterialDialog.Builder(getContext())
-                .title("Finanzenausgleich")
+                .title("Finanzausgleich")
                 .content("Die Bilanz jedes Mitglieds wird auf 0,00 \u20ac zurückgesetzt.\n" +
-                        "Die zu zahlenden Beträge sind anschlißend einsehbar.")
+                        "Die zu zahlenden Beträge sind anschließend unter \"Vergangene\" einsehbar.")
                 .positiveText("Bestätigen")
                 .neutralText("Vergangene")
                 .onPositive(new MaterialDialog.SingleButtonCallback() {

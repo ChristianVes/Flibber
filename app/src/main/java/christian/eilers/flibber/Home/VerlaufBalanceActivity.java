@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -40,6 +41,7 @@ import static christian.eilers.flibber.Utils.Strings.GROUPS;
 import static christian.eilers.flibber.Utils.Strings.TIMESTAMP;
 import static christian.eilers.flibber.Utils.Strings.USERS;
 
+//TODO: Platzhalter wenn noch keine vorhanden sind
 public class VerlaufBalanceActivity extends AppCompatActivity {
 
     @Override
@@ -111,9 +113,11 @@ public class VerlaufBalanceActivity extends AppCompatActivity {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent i = new Intent(holder.itemView.getContext(), BalanceActivity.class);
+                        // TODO: Balance Detail Activity
+                        Toast.makeText(holder.itemView.getContext(), "noch nicht möglich...", Toast.LENGTH_SHORT).show();
+                        /*Intent i = new Intent(holder.itemView.getContext(), BalanceActivity.class);
                         i.putExtra(BALANCING, getSnapshots().getSnapshot(position).getId());
-                        startActivity(i);
+                        startActivity(i);*/
                     }
                 });
             }

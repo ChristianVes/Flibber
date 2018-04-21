@@ -123,11 +123,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {
-                    if (!auth.getCurrentUser().isEmailVerified()) {
+                    // TODO: EMail verifizieren wieder einbauen
+                    /*if (!auth.getCurrentUser().isEmailVerified()) {
                         progressBar.setVisibility(View.GONE);
                         verificationDialog();
                         return;
-                    }
+                    }*/
                     final String userID = auth.getCurrentUser().getUid();
                     final String deviceToken = FirebaseInstanceId.getInstance().getToken();
                     final FirebaseFirestore db = FirebaseFirestore.getInstance();

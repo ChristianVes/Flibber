@@ -204,6 +204,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     }
 
     // Update all References to the Group-Picture
+    // TODO: picture still loading from cache for other users until they re-login
     public void saveImageToDB() {
         final Map<String, Object> groupData = new HashMap<>();
         groupData.put(PICPATH, groupPicPath);
