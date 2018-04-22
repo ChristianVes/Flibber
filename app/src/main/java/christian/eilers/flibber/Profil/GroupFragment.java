@@ -104,9 +104,9 @@ public class GroupFragment extends Fragment implements View.OnClickListener{
             @Override
             public void onBindViewHolder(GroupHolder holder, int position, final Group model) {
                 holder.v_name.setText(model.getName());
-                Glide.with(getContext()).clear(holder.img_group);
+                Glide.with(getActivity()).clear(holder.img_group);
                 if (model.getPicPath() != null)
-                    GlideApp.with(getContext())
+                    GlideApp.with(getActivity())
                             .load(storage.child(model.getPicPath()))
                             .dontAnimate()
                             .placeholder(R.drawable.placeholder_group)

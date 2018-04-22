@@ -30,6 +30,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
@@ -120,8 +121,7 @@ public class ProfilFragment extends Fragment implements View.OnClickListener {
     // Save the Image in the FirebaseStorage and its Reference in the Database
     private void saveImage() {
         progressBar.setVisibility(View.VISIBLE);
-        // TODO: randomStringGenerator instead of LastPathSegment
-        final String newPicPath = imageUri.getLastPathSegment();
+        final String newPicPath = UUID.randomUUID().toString().replaceAll("-","");
         storage.child(newPicPath).putFile(imageUri)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override

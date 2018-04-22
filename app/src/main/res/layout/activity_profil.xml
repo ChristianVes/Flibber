@@ -44,6 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:background="@drawable/layerlist_topedge"
             app:itemBackground="@drawable/selector_navigationview_items"
             app:itemIconTint="@drawable/selector_navigationview_color"
             app:menu="@menu/profil_navigation_menu" />

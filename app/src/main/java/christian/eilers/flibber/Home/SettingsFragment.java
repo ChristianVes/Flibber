@@ -44,6 +44,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Group;
@@ -322,7 +323,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             if (resultCode == Activity.RESULT_OK) {
                 progressBar.setVisibility(View.VISIBLE);
                 final Uri uri = result.getUri();
-                final String path_new = uri.getLastPathSegment();
+                final String path_new = UUID.randomUUID().toString().replaceAll("-","");
                 storage_groups.child(path_new).putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {

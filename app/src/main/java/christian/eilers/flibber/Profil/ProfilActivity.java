@@ -76,20 +76,15 @@ public class ProfilActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 item.setChecked(true);
                 switch (item.getItemId()) {
-                    case R.id.ic_locked:
+                    case R.id.ic_home:
                         viewPager.setCurrentItem(0);
                         getSupportActionBar().setTitle(adapter.getPageTitle(0));
                         break;
-                    case R.id.ic_home:
+                    case R.id.ic_profil:
                         viewPager.setCurrentItem(1);
                         getSupportActionBar().setTitle(adapter.getPageTitle(1));
                         break;
-                    case R.id.ic_profil:
-                        viewPager.setCurrentItem(2);
-                        getSupportActionBar().setTitle(adapter.getPageTitle(2));
-                        break;
                 }
-
                 return false;
             }
         });
@@ -98,7 +93,7 @@ public class ProfilActivity extends AppCompatActivity {
 
         adapter = new ProfilPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(1);
+        viewPager.setCurrentItem(0);
     }
 
     @Override
@@ -161,7 +156,7 @@ public class ProfilActivity extends AppCompatActivity {
         bottomView.enableShiftingMode(false);
         bottomView.enableItemShiftingMode(false);
         bottomView.setIconSize(32, 32);
-        bottomView.setCurrentItem(1);
+        bottomView.setCurrentItem(0);
     }
 
     private ViewPager viewPager;
