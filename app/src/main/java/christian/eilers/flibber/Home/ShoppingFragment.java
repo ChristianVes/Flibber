@@ -49,23 +49,20 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         mainView = inflater.inflate(R.layout.fragment_shopping, container, false);
         initializeViews();
-        // Initialize Variables
-        userID = LocalStorage.getUserID(getContext());
-        groupID = LocalStorage.getGroupID(getContext());
-        users = ((HomeActivity) getActivity()).getUsers();
-        db = FirebaseFirestore.getInstance();
-        ref_shopping = db.collection(GROUPS).document(groupID).collection(USERS).document(userID).collection(SHOPPING);
-        // Load Shopping-List if User-List exists
-        if (users != null) loadData();
-        else {
+        initializeVariables();
+        if (hasNulls()) {
             Intent main = new Intent(getContext(), MainActivity.class);
+            main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(main);
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             getActivity().finish();
+        } else {
+            ref_shopping = db.collection(GROUPS).document(groupID).collection(USERS).document(userID).collection(SHOPPING);
+            loadData();
         }
+
         return mainView;
     }
 
@@ -89,9 +86,21 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         btn_save.setOnClickListener(this);
         btn_group.setOnClickListener(this);
 
-        // Setup Toolbar as Actionbar
-        /*((HomeActivity)getActivity()).setSupportActionBar(toolbar);*/
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(true); // activate options menu for this fragment
+    }
+
+    // Initialize Variables
+    private void initializeVariables() {
+        userID = LocalStorage.getUserID(getContext());
+        groupID = LocalStorage.getGroupID(getContext());
+        users = ((HomeActivity) getActivity()).getUsers();
+        db = FirebaseFirestore.getInstance();
+    }
+
+    // check for null pointers
+    private boolean hasNulls() {
+        if (users == null || userID == null || groupID == null) return false;
+        else return true;
     }
 
     // Add article to the user's database
@@ -139,8 +148,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     }
 
     // Find all checked Articles and delete them
-    private void findCheckedArticles()
-    {
+    private void findCheckedArticles() {
         for (int i = 0; i < adapter.getItemCount(); i++) {
             try {
                 CheckBox checkBox = ((ShoppingHolder) recView.findViewHolderForAdapterPosition(i)).checkBox;
@@ -149,20 +157,18 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                     deleteArticle(article);
                 }
             }
-            // Falls onBindView noch nicht auf dem Item aufgerufen wurde (zb. wenn Article unmittelbar
-            // vorher hinzugefügt wird
+            // Sometimes throws exceptions e.g. if article was added just now
             catch (Exception e) {
                 Crashlytics.logException(e);
             }
-
         }
     }
 
     // Load the Shopping-List, update checkedItems and set Listeners
     private void loadData() {
-        Query shoppingQuery = ref_shopping.orderBy(TIMESTAMP, Query.Direction.DESCENDING);
+        final Query shoppingQuery = ref_shopping.orderBy(TIMESTAMP, Query.Direction.DESCENDING);
 
-        FirestoreRecyclerOptions<Article> options = new FirestoreRecyclerOptions.Builder<Article>()
+        final FirestoreRecyclerOptions<Article> options = new FirestoreRecyclerOptions.Builder<Article>()
                 .setQuery(shoppingQuery, Article.class)
                 .build();
 

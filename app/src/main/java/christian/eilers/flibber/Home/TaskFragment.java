@@ -34,26 +34,25 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         mainView = inflater.inflate(R.layout.fragment_task, container, false);
         initializeViews();
         initializeVariables();
-        if(users != null) {
-            loadTasks();
-        }
-        else {
+        if (hasNulls()) {
             Intent main = new Intent(getContext(), MainActivity.class);
+            main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(main);
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             getActivity().finish();
         }
+        else loadTasks();
+
         return mainView;
     }
 
+    // Initialize views
     private void initializeViews() {
         recView = mainView.findViewById(R.id.recView);
         fab = mainView.findViewById(R.id.fab);
-        progressBar = mainView.findViewById(R.id.progressBar);
         placeholder = mainView.findViewById(R.id.placeholder);
 
         fab.setOnClickListener(this);
@@ -67,16 +66,22 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
         users = ((HomeActivity) getActivity()).getUsers();
     }
 
+    // check for null pointers
+    private boolean hasNulls() {
+        if (users == null || userID == null || groupID == null) return false;
+        else return true;
+    }
+
+    // Show all tasks the current user is involved in
     private void loadTasks() {
-        Query query = db.collection(GROUPS).document(groupID)
+        final Query query = db.collection(GROUPS).document(groupID)
                 .collection(TASKS)
                 .orderBy(TIMESTAMP, Query.Direction.ASCENDING); // order by date
 
-        FirestoreRecyclerOptions<TaskModel> options = new FirestoreRecyclerOptions.Builder<TaskModel>()
+        final FirestoreRecyclerOptions<TaskModel> options = new FirestoreRecyclerOptions.Builder<TaskModel>()
                 .setQuery(query, TaskModel.class)
                 .build();
 
-        users = ((HomeActivity) getActivity()).getUsers();
         adapter = new TasksAdapter(options, userID, groupID, users) {
             @Override
             public void onDataChanged() {
@@ -86,7 +91,6 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
             }
         };
 
-
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
         recView.setAdapter(adapter);
         recView.setNestedScrollingEnabled(false);
@@ -94,11 +98,11 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View view) {
+        // Intent @NewTaskActivity
         if (view.getId() == R.id.fab) {
             Intent newTask = new Intent(getContext(), NewTaskActivity.class);
             newTask.putExtra(USERS, ((HomeActivity) getActivity()).getUsers());
             getActivity().startActivity(newTask);
-            //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }
     }
 
@@ -118,7 +122,6 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
     private RecyclerView recView;
     private TasksAdapter adapter;
     private FloatingActionButton fab;
-    private ProgressBar progressBar;
     private TextView placeholder;
 
     private FirebaseFirestore db;

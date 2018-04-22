@@ -144,7 +144,7 @@ public class HomeActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    // Erzeugt eine Userliste mithilfe eines Snapshots aus der Datenbank
+    // produces a map of users for given snapshots
     private void retrieveUsers(QuerySnapshot documentSnapshots) {
         HashMap<String, User> refreshedUsers = new HashMap<>();
         for(DocumentSnapshot doc : documentSnapshots) {
@@ -154,7 +154,7 @@ public class HomeActivity extends AppCompatActivity {
         users = (HashMap<String, User>) refreshedUsers.clone();
     }
 
-    // Allgemeine Einstellungen für Bottom Navigation View
+    // General settings for the @bottomNavigationView
     private void setBottomNavigationBar(BottomNavigationViewEx bottomView) {
         bottomView.enableAnimation(false);
         bottomView.enableShiftingMode(false);
@@ -163,7 +163,6 @@ public class HomeActivity extends AppCompatActivity {
         bottomView.setCurrentItem(2);
     }
 
-    // Liefert Zugriff auf die Userliste innherlab von Fragmenten
     public HashMap<String, User> getUsers() {
         return users;
     }
