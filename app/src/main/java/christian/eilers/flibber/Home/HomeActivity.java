@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -40,6 +41,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         groupID = LocalStorage.getGroupID(this);
         groupName = LocalStorage.getGroupName(this);
+        isInitialized = false;
         if(groupID == null || groupName == null) {
             Intent main = new Intent(this, MainActivity.class);
             main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -53,8 +55,9 @@ public class HomeActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
+        setSupportActionBar(toolbar);
 
-        // Das "gecheckte" Item in der Bottom Navigation View anpassen, je nachdem, welches Fragment gerade aktiv ist
+        // adjust checked item in @bottomNavigationView when view page changes
         mView.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -71,71 +74,64 @@ public class HomeActivity extends AppCompatActivity {
         });
         mView.setOffscreenPageLimit(5);
 
-        /*
-        Bottom Navigation View initialisieren und auf Home Screen setzen
-        Fragment wechseln, je nachdem welches Item in der Bottom Navigation View angegklickt wurde
-        */
+        // initialize bottomNavigationView
         setBottomNavigationBar(bottomNavigationView);
 
-        setSupportActionBar(toolbar);
-
-        /*
-        Lade Liste aller User dieser Gruppe einmalig und initalisiere anschließend die Fragmente
-        Anschließend wird die Userliste über einen Listener up-to-date gehalten
-        Der Listener ist an den Lifecycle der Activity gebunden
-         */
+        // get all users from the current group
+        // initialize fragments at the first time
         usersQuery = FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(USERS);
-        usersQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                retrieveUsers(documentSnapshots);
-                adapterViewPager = new HomePagerAdapter(getSupportFragmentManager());
-                bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        item.setChecked(true);
-                        switch (item.getItemId()) {
-                            case R.id.ic_putzplan:
-                                mView.setCurrentItem(0);
-                                getSupportActionBar().setTitle(adapterViewPager.getPageTitle(0));
-                                break;
-                            case R.id.ic_einkaufsliste:
-                                mView.setCurrentItem(1);
-                                getSupportActionBar().setTitle(adapterViewPager.getPageTitle(1));
-                                break;
-                            case R.id.ic_home:
-                                mView.setCurrentItem(2);
-                                getSupportActionBar().setTitle(adapterViewPager.getPageTitle(2));
-                                break;
-                            case R.id.ic_finanzen:
-                                mView.setCurrentItem(3);
-                                getSupportActionBar().setTitle(adapterViewPager.getPageTitle(3));
-                                break;
-                            case R.id.ic_settings:
-                                mView.setCurrentItem(4);
-                                getSupportActionBar().setTitle(groupName);
-                                break;
-                        }
-
-                        return false;
-                    }
-                });
-                mView.setAdapter(adapterViewPager);
-                mView.setCurrentItem(2);
-                progressBar.setVisibility(View.GONE);
-            }
-        });
         usersQuery.addSnapshotListener(HomeActivity.this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                 retrieveUsers(documentSnapshots);
+                progressBar.setVisibility(View.GONE);
+                if (isInitialized) return;
+                initializeFragments();
+                isInitialized = true;
             }
         });
 
         bottomNavigationView.setupWithViewPager(mView);
     }
 
-    // Delete the recent Articles from the SharedPreferences for Shopping-List-Notifications
+    // initialize the fragments & setup the listener for the @bottomNavigationView
+    private void initializeFragments() {
+        adapterViewPager = new HomePagerAdapter(getSupportFragmentManager());
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                item.setChecked(true);
+                switch (item.getItemId()) {
+                    case R.id.ic_putzplan:
+                        mView.setCurrentItem(0);
+                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(0));
+                        break;
+                    case R.id.ic_einkaufsliste:
+                        mView.setCurrentItem(1);
+                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(1));
+                        break;
+                    case R.id.ic_home:
+                        mView.setCurrentItem(2);
+                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(2));
+                        break;
+                    case R.id.ic_finanzen:
+                        mView.setCurrentItem(3);
+                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(3));
+                        break;
+                    case R.id.ic_settings:
+                        mView.setCurrentItem(4);
+                        getSupportActionBar().setTitle(groupName);
+                        break;
+                }
+
+                return false;
+            }
+        });
+        mView.setAdapter(adapterViewPager);
+        mView.setCurrentItem(2);
+    }
+
+    // Delete the recent Notifications from the SharedPreferences
     @Override
     protected void onStart() {
         super.onStart();
@@ -150,12 +146,12 @@ public class HomeActivity extends AppCompatActivity {
 
     // Erzeugt eine Userliste mithilfe eines Snapshots aus der Datenbank
     private void retrieveUsers(QuerySnapshot documentSnapshots) {
-        HashMap<String, User> userHashMap = new HashMap<>();
+        HashMap<String, User> refreshedUsers = new HashMap<>();
         for(DocumentSnapshot doc : documentSnapshots) {
             User user = doc.toObject(User.class);
-            userHashMap.put(user.getUserID(), user);
+            refreshedUsers.put(user.getUserID(), user);
         }
-        users = (HashMap<String, User>) userHashMap.clone();
+        users = (HashMap<String, User>) refreshedUsers.clone();
     }
 
     // Allgemeine Einstellungen für Bottom Navigation View
@@ -172,7 +168,6 @@ public class HomeActivity extends AppCompatActivity {
         return users;
     }
 
-
     private BottomNavigationViewEx bottomNavigationView;
     private Toolbar toolbar;
     private FragmentPagerAdapter adapterViewPager;
@@ -181,4 +176,5 @@ public class HomeActivity extends AppCompatActivity {
     private Query usersQuery;
     private String groupID, groupName;
     private HashMap<String, User> users;
+    private boolean isInitialized = false;
 }
