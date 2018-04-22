@@ -25,12 +25,15 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.signature.ObjectKey;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.storage.FirebaseStorage;
@@ -70,6 +73,42 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             groupPicPath = LocalStorage.getGroupPicPath(getContext()); // CAN BE NULL !!!
             storage_groups = FirebaseStorage.getInstance().getReference().child(GROUPS);
             initializeViews();
+            // Update Profile Picture on change
+            db.collection(GROUPS).document(groupID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                    String picPath = documentSnapshot.getString(PICPATH);
+                    if (groupPicPath == null) {
+                        if (picPath == null) return;
+                        groupPicPath = picPath;
+                        LocalStorage.setGroupPicPath(getActivity(), picPath);
+                        GlideApp.with(getActivity())
+                                .load(storage_groups.child(groupPicPath))
+                                .dontAnimate()
+                                .placeholder(R.drawable.placeholder_group)
+                                .into(img_group);
+                        return;
+                    }
+                    else {
+                        if (picPath == null) {
+                            groupPicPath = null;
+                            LocalStorage.setGroupPicPath(getActivity(), null);
+                            Glide.with(getActivity()).clear(img_group);
+                            return;
+                        }
+                        if (groupPicPath.equals(picPath)) return;
+                        groupPicPath = picPath;
+                        LocalStorage.setGroupPicPath(getActivity(), picPath);
+                        GlideApp.with(getActivity())
+                                .load(storage_groups.child(groupPicPath))
+                                .dontAnimate()
+                                .placeholder(R.drawable.placeholder_group)
+                                .into(img_group);
+                        return;
+                    }
+
+                }
+            });
         }
 
         return mainView;
@@ -214,7 +253,6 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     }
 
     // Update all References to the Group-Picture
-    // TODO: Local Picture Data is not getting refreshed (needs listener for group-ref)
     public void saveImageToDB() {
         final Map<String, Object> groupData = new HashMap<>();
         groupData.put(PICPATH, groupPicPath);
