@@ -42,6 +42,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.util.HashMap;
 import java.util.Map;
 
+import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Group;
 import christian.eilers.flibber.Profil.ProfilActivity;
 import christian.eilers.flibber.R;
@@ -59,9 +60,18 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         mainView = inflater.inflate(R.layout.fragment_settings, container, false);
         db = FirebaseFirestore.getInstance();
         groupID = LocalStorage.getGroupID(getContext());
-        groupPicPath = LocalStorage.getGroupPicPath(getContext()); // CAN BE NULL !!!
-        storage_groups = FirebaseStorage.getInstance().getReference().child(GROUPS);
-        initializeViews();
+        if (groupID == null) {
+            Intent main = new Intent(getContext(), MainActivity.class);
+            main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(main);
+            getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            getActivity().finish();
+        } else {
+            groupPicPath = LocalStorage.getGroupPicPath(getContext()); // CAN BE NULL !!!
+            storage_groups = FirebaseStorage.getInstance().getReference().child(GROUPS);
+            initializeViews();
+        }
+
         return mainView;
     }
 
@@ -204,7 +214,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     }
 
     // Update all References to the Group-Picture
-    // TODO: picture still loading from cache for other users until they re-login
+    // TODO: Local Picture Data is not getting refreshed (needs listener for group-ref)
     public void saveImageToDB() {
         final Map<String, Object> groupData = new HashMap<>();
         groupData.put(PICPATH, groupPicPath);

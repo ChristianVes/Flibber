@@ -43,13 +43,15 @@ public class HomeFragment extends Fragment {
         mainView = inflater.inflate(R.layout.fragment_home, container, false);
         initializeViews();
         initializeVariables();
-        if(users != null) loadData();
-        else {
+        if (hasNulls()) {
             Intent main = new Intent(getContext(), MainActivity.class);
+            main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(main);
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             getActivity().finish();
         }
+        else loadData();
+
         return mainView;
     }
 
@@ -65,7 +67,6 @@ public class HomeFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent_newNote = new Intent(getContext(), NoteCreateActivity.class);
                 getActivity().startActivity(intent_newNote);
-                //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
     }
@@ -75,6 +76,12 @@ public class HomeFragment extends Fragment {
         storage = FirebaseStorage.getInstance().getReference();
         groupID = LocalStorage.getGroupID(getContext());
         users = ((HomeActivity) getActivity()).getUsers();
+    }
+
+    // check for null pointers
+    private boolean hasNulls() {
+        if (users == null || groupID == null) return false;
+        else return true;
     }
 
     // Lädt Notizen aus der Datenbank in den RecyclerView und hält sie up-to-date über einen Listener

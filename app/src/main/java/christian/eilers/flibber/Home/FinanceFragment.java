@@ -76,19 +76,21 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         mainView= inflater.inflate(R.layout.fragment_finanzen, container, false);
         initializeViews();
         initializeVariables();
-        if(users != null) {
-            loadBilanz();
-            loadVerlauf();
-        }
-        else {
+        if (hasNulls()) {
             Intent main = new Intent(getContext(), MainActivity.class);
+            main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(main);
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             getActivity().finish();
+        } else {
+            loadBilanz();
+            loadVerlauf();
         }
+
         return mainView;
     }
 
+    // Initialize views
     private void initializeViews() {
         recBilanz = mainView.findViewById(R.id.recProfils);
         recVerlauf = mainView.findViewById(R.id.recVerlauf);
@@ -109,6 +111,12 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         users = ((HomeActivity) getActivity()).getUsers();
 
         setHasOptionsMenu(true);
+    }
+
+    // check for null pointers
+    private boolean hasNulls() {
+        if (users == null || userID == null || groupID == null) return false;
+        else return true;
     }
 
     // Load user's finance-balance
@@ -280,12 +288,12 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         }
     }
 
-    // Load the last 5 transactions/payments
+    // Load the last transactions/payments
     private void loadVerlauf() {
         Query query = db.collection(GROUPS).document(groupID)
                 .collection(FINANCES)
                 .orderBy(TIMESTAMP, Query.Direction.DESCENDING) // order by date
-                .whereGreaterThan(TIMESTAMP, new Date(System.currentTimeMillis() - 7L * 24 * 3600 * 1000)); // only from last 7 Days
+                .whereGreaterThan(TIMESTAMP, new Date(System.currentTimeMillis() - ONE_WEEK)); // only from last 7 Days
 
         FirestoreRecyclerOptions<Payment> options = new FirestoreRecyclerOptions.Builder<Payment>()
                 .setQuery(query, Payment.class)
@@ -414,13 +422,11 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                 Intent intentTransaction = new Intent(getContext(), TransactionActivity.class);
                 intentTransaction.putExtra(USERS, ((HomeActivity) getActivity()).getUsers());
                 getActivity().startActivity(intentTransaction);
-                //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 break;
             case R.id.zumVerlauf:
                 Intent intentVerlauf = new Intent(getContext(), VerlaufActivity.class);
                 intentVerlauf.putExtra(USERS, ((HomeActivity) getActivity()).getUsers());
                 getActivity().startActivity(intentVerlauf);
-                //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 break;
         }
     }

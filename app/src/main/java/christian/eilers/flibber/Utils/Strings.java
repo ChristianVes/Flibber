@@ -3,6 +3,7 @@ package christian.eilers.flibber.Utils;
 public class Strings {
 
     public static final int BUFFER = 10000; // Millisekunden // entspricht 10 Sekunden
+    public static final long ONE_WEEK = 7L * 24 * 3600 * 1000; // Millisekunden // entspricht 10 Sekunden
 
     public static final String TASKID = "taskID";
     public static final String TASKS = "tasks";
