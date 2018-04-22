@@ -30,12 +30,15 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="17sp"
+                    android:textStyle="italic"
                     android:text="Von "/>
 
                 <TextView
                     android:id="@+id/from"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:textSize="17sp"/>
 
             </LinearLayout>
 
@@ -47,12 +50,15 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="17sp"
+                    android:textStyle="italic"
                     android:text="An "/>
 
                 <TextView
                     android:id="@+id/to"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:textSize="17sp"/>
 
             </LinearLayout>
 
@@ -63,6 +69,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             app:symbol="€"
             app:symbolGravity="end"
             app:format="###0,00"

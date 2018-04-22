@@ -326,7 +326,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         progressBar.setVisibility(View.VISIBLE);
         final DocumentReference ref_group = db.collection(GROUPS).document(groupID);
         users = ((HomeActivity) getActivity()).getUsers();
-        db.runTransaction(new Transaction.Function<Void>() {
+        db.runTransaction(new Transaction.Function<String>() {
 
             ArrayList<Offset> list_offsets;
 
@@ -354,7 +354,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
 
             @Nullable
             @Override
-            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+            public String apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
                 list_offsets = new ArrayList<>();
                 // Read out current money from each user
                 HashMap<String, Long> map = new HashMap<>();
@@ -392,12 +392,16 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                 for (Offset o : list_offsets) {
                     transaction.set(ref_balance.collection(ENTRIES).document(), o);
                 }
-                return null;
+                return ref_balance.getId();
             }
-        }).addOnCompleteListener(new OnCompleteListener<Void>() {
+        }).addOnCompleteListener(new OnCompleteListener<String>() {
             @Override
-            public void onComplete(@NonNull Task<Void> task) {
+            public void onComplete(@NonNull Task<String> task) {
                 progressBar.setVisibility(View.GONE);
+                Intent intent = new Intent(getContext(), BalanceActivity.class);
+                intent.putExtra(BALANCING, task.getResult());
+                intent.putExtra(USERS, ((HomeActivity) getActivity()).getUsers());
+                getActivity().startActivity(intent);
             }
         });
     }

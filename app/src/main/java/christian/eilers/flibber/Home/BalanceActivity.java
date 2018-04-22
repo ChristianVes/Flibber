@@ -17,9 +17,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import org.fabiomsr.moneytextview.MoneyTextView;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import christian.eilers.flibber.Adapter.BalanceOffsetAdapter;
@@ -42,13 +44,17 @@ public class BalanceActivity extends AppCompatActivity {
         initializeVariables();
     }
 
+    // Initialize Views
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
         recView = findViewById(R.id.recView);
         recView_offsets = findViewById(R.id.recView_offsets);
         progressBar = findViewById(R.id.progressBar);
+        setSupportActionBar(toolbar);
     }
 
+    // Initialize Variables
+    // Finish Activity if not all variables are accessible
     private void initializeVariables() {
         userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
@@ -64,40 +70,48 @@ public class BalanceActivity extends AppCompatActivity {
             loadBalance();
     }
 
+    // Load the Balance & possible Offsets
     private void loadBalance() {
         progressBar.setVisibility(View.VISIBLE);
         db.collection(GROUPS).document(groupID).collection(BALANCING).document(balancingID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                thisBalancing = documentSnapshot.toObject(Balancing.class);
-                final ArrayList<User> balanceUsers = new ArrayList<>();
+                Balancing thisBalancing = documentSnapshot.toObject(Balancing.class);
+                // DATE (ActionBar Title)
+                String date = DateFormat.getDateInstance(DateFormat.LONG).format(thisBalancing.getTimestamp());
+                getSupportActionBar().setTitle(date);
+                // USER-LIST
+                final ArrayList<User> list_users = new ArrayList<>();
                 for (String key : thisBalancing.getValues().keySet()) {
                     User user = users.get(key);
                     user.setMoney(thisBalancing.getValues().get(key));
-                    balanceUsers.add(user);
+                    list_users.add(user);
                 }
                 // Sorting by money
-                Collections.sort(balanceUsers, new Comparator<User>() {
+                Collections.sort(list_users, new Comparator<User>() {
                     @Override
-                    public int compare(User user2, User user1)
-                    {
+                    public int compare(User user2, User user1) {
                         if (user1.getMoney() < user2.getMoney()) return -1;
                         return 1;
                     }
                 });
+                // Display user and their balance in a recyclerView
                 recView.setHasFixedSize(true);
                 recView.setLayoutManager(new LinearLayoutManager(BalanceActivity.this));
-                BalanceUserAdapter adapter = new BalanceUserAdapter(balanceUsers);
+                BalanceUserAdapter adapter = new BalanceUserAdapter(list_users);
                 recView.setAdapter(adapter);
                 progressBar.setVisibility(View.GONE);
             }
         });
 
+        // Load possible offsets from the sub-collection
+        // order by name
         db.collection(GROUPS).document(groupID).collection(BALANCING).document(balancingID)
                 .collection(ENTRIES).orderBy("fromID").get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                // retrieve all offset-payments to be payed
                 final ArrayList<Offset> list_offsets = new ArrayList<>();
                 for (QueryDocumentSnapshot snap : queryDocumentSnapshots) {
                     list_offsets.add(snap.toObject(Offset.class));
@@ -116,6 +130,5 @@ public class BalanceActivity extends AppCompatActivity {
 
     private String userID, groupID, balancingID;
     private FirebaseFirestore db;
-    private Balancing thisBalancing;
     private HashMap<String, User> users;
 }

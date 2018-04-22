@@ -20,7 +20,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Ausgleichszahlungen"
+            app:title="Abrechnungen"
             app:titleTextAppearance="@style/Toolbar.TitleText"/>
 
     </android.support.design.widget.AppBarLayout>

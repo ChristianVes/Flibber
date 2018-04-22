@@ -1,17 +1,12 @@
 package christian.eilers.flibber.Adapter;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import org.fabiomsr.moneytextview.MoneyTextView;
 
@@ -21,11 +16,6 @@ import java.util.HashMap;
 import christian.eilers.flibber.Models.Offset;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
-import christian.eilers.flibber.Utils.GlideApp;
-import christian.eilers.flibber.Utils.LocalStorage;
-import de.hdodenhof.circleimageview.CircleImageView;
-
-import static christian.eilers.flibber.Utils.Strings.PROFILE;
 
 public class BalanceOffsetAdapter extends RecyclerView.Adapter<BalanceOffsetAdapter.ViewHolder> {
 
@@ -42,7 +32,7 @@ public class BalanceOffsetAdapter extends RecyclerView.Adapter<BalanceOffsetAdap
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_balance_entry, parent, false);
+                .inflate(R.layout.item_offset, parent, false);
         context = parent.getContext();
         return new ViewHolder(view);
     }
