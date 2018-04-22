@@ -85,36 +85,6 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone">
-
-                <EditText
-                    android:id="@+id/input_points"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_toLeftOf="@+id/minuten"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/shape_rounded"
-                    android:hint="Aufwand [optional]"
-                    android:imeOptions="actionNext"
-                    android:inputType="number"
-                    android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/minuten"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:text="Minuten"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:textSize="20sp"/>
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:layout_margin="10dp">
 
                 <TextView

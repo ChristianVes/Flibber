@@ -47,15 +47,13 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
         et_name = findViewById(R.id.input_title);
-        et_frequenz = findViewById(R.id.input_frequenz);
-        et_points = findViewById(R.id.input_points);
+        et_frequency = findViewById(R.id.input_frequenz);
         switch_order = findViewById(R.id.switch_order);
         recView_beteiligte = findViewById(R.id.recView_beteiligte);
         progressBar = findViewById(R.id.progressBar);
 
         et_name.setOnFocusChangeListener(this);
-        et_points.setOnFocusChangeListener(this);
-        et_frequenz.setOnFocusChangeListener(this);
+        et_frequency.setOnFocusChangeListener(this);
 
         setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
         getSupportActionBar().setDisplayShowTitleEnabled(false); // Titel der Actionbar ausblenden
@@ -67,8 +65,9 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
         groupID = LocalStorage.getGroupID(this);
         db = FirebaseFirestore.getInstance();
         users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
-        if(users == null) {
+        if (hasNulls()) {
             Intent main = new Intent(this, MainActivity.class);
+            main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(main);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
@@ -84,12 +83,17 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
         }
     }
 
+    // check for null pointers
+    private boolean hasNulls() {
+        if (users == null || userID == null || groupID == null) return false;
+        else return true;
+    }
+
     private void saveTask() {
         String title = et_name.getText().toString().trim();
-        String s_frequenz = et_frequenz.getText().toString().trim();
-        String s_points = et_points.getText().toString().trim();
+        String s_frequency = et_frequency.getText().toString().trim();
 
-        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(s_frequenz)) {
+        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(s_frequency)) {
             Toast.makeText(this, "Eingaben unvollstädnig...", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -102,14 +106,14 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
             return;
         }
 
-        long frequenz = Long.valueOf(s_frequenz);
+        long frequency = Long.valueOf(s_frequency);
         boolean hasOrder = switch_order.isChecked();
 
         DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document();
 
-        TaskModel task = new TaskModel(title, frequenz, adapter_beteiligte.getInvolvedIDs(),
+        TaskModel task = new TaskModel(title, frequency, adapter_beteiligte.getInvolvedIDs(),
                 hasOrder,
-                new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(frequenz)));
+                new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(frequency)));
 
         progressBar.setVisibility(View.VISIBLE);
         doc.set(task).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -123,7 +127,7 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
 
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
-        if (et_frequenz.hasFocus() || et_points.hasFocus() || et_name.hasFocus()) return;
+        if (et_frequency.hasFocus() || et_name.hasFocus()) return;
         if (!hasFocus) {
             InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -144,7 +148,7 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
     }
 
     private Toolbar toolbar;
-    private EditText et_name, et_frequenz, et_points;
+    private EditText et_name, et_frequency;
     private SwitchCompat switch_order;
     private RecyclerView recView_beteiligte;
     private BeteiligteAdapter adapter_beteiligte;

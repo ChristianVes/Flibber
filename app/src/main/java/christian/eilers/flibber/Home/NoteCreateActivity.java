@@ -34,6 +34,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 
+import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Note;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
@@ -79,6 +80,13 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
         groupID = LocalStorage.getGroupID(this);
         storage = FirebaseStorage.getInstance().getReference().child(NOTES).child(groupID);
         db = FirebaseFirestore.getInstance();
+        if (userID == null || groupID == null) {
+            Intent main = new Intent(this, MainActivity.class);
+            main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(main);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            finish();
+        }
     }
 
     @Override

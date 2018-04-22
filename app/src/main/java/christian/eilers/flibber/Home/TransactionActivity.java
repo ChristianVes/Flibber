@@ -114,13 +114,14 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
         db = FirebaseFirestore.getInstance();
-
         users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
-        if(users == null) {
+        if(users == null || userID == null || groupID == null) {
             Intent main = new Intent(this, MainActivity.class);
+            main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(main);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
+            return;
         }
 
         int spanCount = 4;
@@ -173,7 +174,6 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
                 price
         );
 
-        // doc.set(payment); auf Transaction ausgelagert
         chargeCosts(payment);
     }
 

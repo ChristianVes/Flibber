@@ -55,12 +55,6 @@ import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 import static christian.eilers.flibber.Utils.Strings.*;
 
-/*
-Detail Ansicht einer Notiz und ihrer Kommentare
-Möglichkeit zum Kommentieren der Notiz
-HINWEIS: Um Keyboard auszublenden das Layout eines scrollbaren Layouts focusable/clickable machen
-         Hier: MainLayout, Layout unter NestedScrollView, List Item des Recycler Views
-*/
 public class NoteActivity extends AppCompatActivity implements View.OnClickListener, View.OnFocusChangeListener{
 
     @Override
@@ -68,6 +62,14 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
         initializeVariables();
+        if (hasNulls()) {
+            Intent main = new Intent(this, MainActivity.class);
+            main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(main);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            finish();
+            return;
+        }
         initializeViews();
         loadNote();
         loadData();
@@ -110,12 +112,12 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         storage = FirebaseStorage.getInstance().getReference();
         noteID = getIntent().getExtras().getString(NOTEID);
         users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
-        if(noteID == null || users == null) {
-            Intent main = new Intent(this, MainActivity.class);
-            startActivity(main);
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-            finish();
-        }
+    }
+
+    // check for null pointers
+    private boolean hasNulls() {
+        if (noteID == null || users == null || userID == null || groupID == null) return false;
+        else return true;
     }
 
     // Lade den Inhalt der Notiz aus DB und zeige sie an

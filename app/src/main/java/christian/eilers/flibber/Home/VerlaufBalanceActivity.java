@@ -63,10 +63,10 @@ public class VerlaufBalanceActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
-
         users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
-        if(users == null || groupID == null) {
+        if(users == null || groupID == null || userID == null) {
             Intent main = new Intent(this, MainActivity.class);
+            main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(main);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();

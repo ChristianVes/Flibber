@@ -17,7 +17,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -54,28 +53,30 @@ public class TaskActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
-        if (initializeVariables()) {
-            initializeViews();
-            loadTask();
-        }
+        initializeViews();
+        initializeVariables();
+        if (hasNulls()) {
+            Intent main = new Intent(this, MainActivity.class);
+            main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(main);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            finish();
+        } else loadTask();
     }
 
-    private boolean initializeVariables() {
+    private void initializeVariables() {
         userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
         db = FirebaseFirestore.getInstance();
         functions = FirebaseFunctions.getInstance();
         taskID = getIntent().getStringExtra(TASKID);
-        //taskID = getIntent().getExtras().getString(TASKID);
         allUsers = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
-        if(taskID == null || allUsers == null) {
-            Intent main = new Intent(this, MainActivity.class);
-            startActivity(main);
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-            finish();
-            return false;
-        } else
-            return true;
+    }
+
+    // check for null pointers
+    private boolean hasNulls() {
+        if (taskID == null || allUsers == null || userID == null || groupID == null) return false;
+        else return true;
     }
 
     private void initializeViews() {
@@ -84,7 +85,7 @@ public class TaskActivity extends AppCompatActivity {
         label_verlauf = findViewById(R.id.label_verlauf);
         rec_involved = findViewById(R.id.recView_beteiligte);
         rec_verlauf = findViewById(R.id.recVerlauf);
-        et_frequenz = findViewById(R.id.input_frequenz);
+        et_frequency = findViewById(R.id.input_frequenz);
         progressBar = findViewById(R.id.progressBar);
 
         rec_verlauf.setLayoutManager(new LinearLayoutManager(this));
@@ -209,10 +210,10 @@ public class TaskActivity extends AppCompatActivity {
 
     private void showEditLayout() {
         tv_frequenz.setVisibility(View.GONE);
-        et_frequenz.setVisibility(View.VISIBLE);
-        et_frequenz.setText(thisTask.getFrequenz() +"");
+        et_frequency.setVisibility(View.VISIBLE);
+        et_frequency.setText(thisTask.getFrequenz() +"");
         // TODO: show soft Keyboard not working
-        showSoftKeyboard(et_frequenz);
+        showSoftKeyboard(et_frequency);
 
         menu.clear();
         getMenuInflater().inflate(R.menu.menu_new_task, menu);
@@ -225,25 +226,25 @@ public class TaskActivity extends AppCompatActivity {
         });
     }
 
-    private void showNormalLayout(long frequenz) {
-        et_frequenz.setVisibility(View.GONE);
+    private void showNormalLayout(long frequency) {
+        et_frequency.setVisibility(View.GONE);
         tv_frequenz.setVisibility(View.VISIBLE);
-        tv_frequenz.setText(frequenz +"");
+        tv_frequenz.setText(frequency +"");
 
         menu.clear();
         getMenuInflater().inflate(R.menu.menu_task, menu);
     }
 
     private void saveChanging() {
-        String s_frequenz = et_frequenz.getText().toString().trim();
-        if (TextUtils.isEmpty(s_frequenz)) {
+        String s_frequency = et_frequency.getText().toString().trim();
+        if (TextUtils.isEmpty(s_frequency)) {
             Toast.makeText(this, "Frequenz eingeben...", Toast.LENGTH_SHORT).show();
             return;
         }
-        final long frequenz = Long.valueOf(s_frequenz);
+        final long frequency = Long.valueOf(s_frequency);
 
         HashMap<String, Object> changings = new HashMap<>();
-        changings.put("frequenz", frequenz);
+        changings.put("frequenz", frequency);
 
         progressBar.setVisibility(View.VISIBLE);
         DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document(taskID);
@@ -251,7 +252,7 @@ public class TaskActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Void aVoid) {
                 progressBar.setVisibility(View.GONE);
-                showNormalLayout(frequenz);
+                showNormalLayout(frequency);
             }
         });
     }
@@ -315,7 +316,7 @@ public class TaskActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private TextView tv_frequenz, label_verlauf;
     private RecyclerView rec_involved, rec_verlauf;
-    private EditText et_frequenz;
+    private EditText et_frequency;
     private ProgressBar progressBar;
 
     private String userID, groupID, taskID;

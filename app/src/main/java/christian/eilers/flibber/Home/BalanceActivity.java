@@ -42,6 +42,14 @@ public class BalanceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_balance);
         initializeViews();
         initializeVariables();
+        if (hasNulls()) {
+            Intent main = new Intent(this, MainActivity.class);
+            main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(main);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            finish();
+        }
+        else loadBalance();
     }
 
     // Initialize Views
@@ -54,20 +62,18 @@ public class BalanceActivity extends AppCompatActivity {
     }
 
     // Initialize Variables
-    // Finish Activity if not all variables are accessible
     private void initializeVariables() {
         userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
         db = FirebaseFirestore.getInstance();
         balancingID = getIntent().getStringExtra(BALANCING);
         users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
-        if(balancingID == null || users == null || groupID == null) {
-            Intent main = new Intent(this, MainActivity.class);
-            startActivity(main);
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-            finish();
-        } else
-            loadBalance();
+    }
+
+    // check for null pointers
+    private boolean hasNulls() {
+        if (balancingID == null ||users == null || userID == null || groupID == null) return false;
+        else return true;
     }
 
     // Load the Balance & possible Offsets

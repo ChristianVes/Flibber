@@ -66,13 +66,13 @@ public class TransactionDetailActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
         transactionID = getIntent().getStringExtra(TRANSACTIONID);
         allUsers = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
-        if(transactionID == null || allUsers == null || groupID == null) {
+        if(transactionID == null || allUsers == null || groupID == null || userID == null) {
             Intent main = new Intent(this, MainActivity.class);
+            main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(main);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
-        } else
-            loadTransaction();
+        } else loadTransaction();
     }
 
     private void initializeViews() {
