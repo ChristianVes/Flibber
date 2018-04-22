@@ -12,6 +12,8 @@ import android.widget.ProgressBar;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.fabiomsr.moneytextview.MoneyTextView;
 
@@ -20,9 +22,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
+import christian.eilers.flibber.Adapter.BalanceOffsetAdapter;
 import christian.eilers.flibber.Adapter.BalanceUserAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Balancing;
+import christian.eilers.flibber.Models.Offset;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
@@ -41,6 +45,7 @@ public class BalanceActivity extends AppCompatActivity {
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
         recView = findViewById(R.id.recView);
+        recView_offsets = findViewById(R.id.recView_offsets);
         progressBar = findViewById(R.id.progressBar);
     }
 
@@ -87,10 +92,26 @@ public class BalanceActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
             }
         });
+
+        db.collection(GROUPS).document(groupID).collection(BALANCING).document(balancingID)
+                .collection(ENTRIES).orderBy("fromID").get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                final ArrayList<Offset> list_offsets = new ArrayList<>();
+                for (QueryDocumentSnapshot snap : queryDocumentSnapshots) {
+                    list_offsets.add(snap.toObject(Offset.class));
+                }
+                recView_offsets.setHasFixedSize(true);
+                recView_offsets.setLayoutManager(new LinearLayoutManager(BalanceActivity.this));
+                BalanceOffsetAdapter adapter = new BalanceOffsetAdapter(users, list_offsets);
+                recView_offsets.setAdapter(adapter);
+            }
+        });
     }
 
     private Toolbar toolbar;
-    private RecyclerView recView;
+    private RecyclerView recView, recView_offsets;
     private ProgressBar progressBar;
 
     private String userID, groupID, balancingID;
