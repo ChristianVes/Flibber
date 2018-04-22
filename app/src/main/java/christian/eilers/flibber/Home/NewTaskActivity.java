@@ -85,8 +85,8 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
 
     // check for null pointers
     private boolean hasNulls() {
-        if (users == null || userID == null || groupID == null) return false;
-        else return true;
+        if (users == null || userID == null || groupID == null) return true;
+        else return false;
     }
 
     private void saveTask() {

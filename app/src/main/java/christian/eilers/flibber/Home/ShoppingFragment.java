@@ -99,8 +99,8 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
 
     // check for null pointers
     private boolean hasNulls() {
-        if (users == null || userID == null || groupID == null) return false;
-        else return true;
+        if (users == null || userID == null || groupID == null) return true;
+        else return false;
     }
 
     // Add article to the user's database

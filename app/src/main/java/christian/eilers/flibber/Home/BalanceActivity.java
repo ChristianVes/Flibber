@@ -72,8 +72,8 @@ public class BalanceActivity extends AppCompatActivity {
 
     // check for null pointers
     private boolean hasNulls() {
-        if (balancingID == null ||users == null || userID == null || groupID == null) return false;
-        else return true;
+        if (balancingID == null ||users == null || userID == null || groupID == null) return true;
+        else return false;
     }
 
     // Load the Balance & possible Offsets

@@ -116,8 +116,8 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
 
     // check for null pointers
     private boolean hasNulls() {
-        if (noteID == null || users == null || userID == null || groupID == null) return false;
-        else return true;
+        if (noteID == null || users == null || userID == null || groupID == null) return true;
+        else return false;
     }
 
     // Lade den Inhalt der Notiz aus DB und zeige sie an

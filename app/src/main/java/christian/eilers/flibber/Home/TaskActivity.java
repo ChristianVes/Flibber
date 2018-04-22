@@ -75,8 +75,8 @@ public class TaskActivity extends AppCompatActivity {
 
     // check for null pointers
     private boolean hasNulls() {
-        if (taskID == null || allUsers == null || userID == null || groupID == null) return false;
-        else return true;
+        if (taskID == null || allUsers == null || userID == null || groupID == null) return true;
+        else return false;
     }
 
     private void initializeViews() {

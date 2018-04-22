@@ -80,8 +80,8 @@ public class HomeFragment extends Fragment {
 
     // check for null pointers
     private boolean hasNulls() {
-        if (users == null || groupID == null) return false;
-        else return true;
+        if (users == null || groupID == null) return true;
+        else return false;
     }
 
     // Lädt Notizen aus der Datenbank in den RecyclerView und hält sie up-to-date über einen Listener

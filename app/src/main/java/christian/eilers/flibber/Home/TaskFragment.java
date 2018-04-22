@@ -68,8 +68,8 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
 
     // check for null pointers
     private boolean hasNulls() {
-        if (users == null || userID == null || groupID == null) return false;
-        else return true;
+        if (users == null || userID == null || groupID == null) return true;
+        else return false;
     }
 
     // Show all tasks the current user is involved in
