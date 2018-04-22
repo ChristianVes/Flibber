@@ -33,6 +33,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Note;
@@ -173,8 +174,7 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
             createDbEntry(null);
         }
         else {
-            // TODO: Random String Generator
-            final String notePicPath = imageUri.getLastPathSegment();
+            final String notePicPath = UUID.randomUUID().toString().replaceAll("-","");
             storage.child(notePicPath).putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
