@@ -97,6 +97,10 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
             Toast.makeText(this, "Beteiligte auswählen...", Toast.LENGTH_SHORT).show();
             return;
         }
+        if (!adapter_beteiligte.getInvolvedIDs().contains(userID)) {
+            Toast.makeText(this, "Du musst beteiligt sein...", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         long frequenz = Long.valueOf(s_frequenz);
         boolean hasOrder = switch_order.isChecked();

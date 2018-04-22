@@ -48,13 +48,17 @@ import com.google.firebase.storage.StorageReference;
 import org.fabiomsr.moneytextview.MoneyTextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import christian.eilers.flibber.Adapter.VerlaufAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Balancing;
+import christian.eilers.flibber.Models.Offset;
 import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
@@ -295,7 +299,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
     }
 
     private void balancingDialog() {
-        MaterialDialog dialog = new MaterialDialog.Builder(getContext())
+        new MaterialDialog.Builder(getContext())
                 .title("Finanzausgleich")
                 .content("Die Bilanz jedes Mitglieds wird auf 0,00 \u20ac zurückgesetzt.\n" +
                         "Die zu zahlenden Beträge sind anschließend unter \"Vergangene\" einsehbar.")
@@ -323,18 +327,47 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         final DocumentReference ref_group = db.collection(GROUPS).document(groupID);
         users = ((HomeActivity) getActivity()).getUsers();
         db.runTransaction(new Transaction.Function<Void>() {
+
+            ArrayList<Offset> list_offsets;
+
+            public ArrayList<User> offset(ArrayList<User> list_users) {
+                User first = list_users.get(0);
+                User last = list_users.get(list_users.size()-1);
+                list_users.remove(0);
+                list_users.remove(list_users.size()-1);
+                Offset o;
+                if (first.getMoney() < Math.abs(last.getMoney())) {
+                    o = new Offset(last.getUserID(), first.getUserID(), first.getMoney());
+                    last.setMoney(last.getMoney() + first.getMoney());
+                    first.setMoney(0);
+                } else {
+                    o = new Offset(last.getUserID(), first.getUserID(), -last.getMoney());
+                    first.setMoney(first.getMoney() + last.getMoney());
+                    last.setMoney(0);
+                }
+                list_users.add(first);
+                list_users.add(last);
+                list_offsets.add(o);
+
+                return list_users;
+            }
+
             @Nullable
             @Override
             public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                list_offsets = new ArrayList<>();
                 // Read out current money from each user
                 HashMap<String, Long> map = new HashMap<>();
+                ArrayList<User> list_user = new ArrayList<>();
                 for (String key : users.keySet()) {
                     DocumentSnapshot snap_user = transaction.get(ref_group.collection(USERS).document(key));
                     map.put(key, snap_user.getLong(MONEY));
+                    list_user.add(snap_user.toObject(User.class));
                 }
                 // Create a new balancing entry
                 Balancing balancing = new Balancing(userID, map);
-                transaction.set(ref_group.collection(BALANCING).document(), balancing);
+                DocumentReference ref_balance = ref_group.collection(BALANCING).document();
+                transaction.set(ref_balance, balancing);
                 // Set money for each user to zero
                 for (String key : users.keySet()) {
                     HashMap<String, Object> map_money = new HashMap<>();
@@ -342,6 +375,23 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                     transaction.update(ref_group.collection(USERS).document(key), map_money);
                 }
 
+                while(true) {
+                    // Sorting by money
+                    Collections.sort(list_user, new Comparator<User>() {
+                        @Override
+                        public int compare(User user2, User user1)
+                        {
+                            if (user1.getMoney() < user2.getMoney()) return -1;
+                            return 1;
+                        }
+                    });
+                    if (list_user.get(0).getMoney() == 0) break;
+                    list_user = offset(list_user);
+                };
+
+                for (Offset o : list_offsets) {
+                    transaction.set(ref_balance.collection(ENTRIES).document(), o);
+                }
                 return null;
             }
         }).addOnCompleteListener(new OnCompleteListener<Void>() {
