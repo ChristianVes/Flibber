@@ -1,4 +1,4 @@
-package christian.eilers.flibber.Home;
+package christian.eilers.flibber.Home.Finance;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -15,17 +15,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.fabiomsr.moneytextview.MoneyTextView;
-
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 
-import christian.eilers.flibber.Adapter.BalanceOffsetAdapter;
-import christian.eilers.flibber.Adapter.BalanceUserAdapter;
+import christian.eilers.flibber.RecyclerAdapter.BalanceOffsetAdapter;
+import christian.eilers.flibber.RecyclerAdapter.BalanceUserAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Balancing;
 import christian.eilers.flibber.Models.Offset;

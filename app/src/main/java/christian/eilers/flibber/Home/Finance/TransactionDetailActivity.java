@@ -1,4 +1,4 @@
-package christian.eilers.flibber.Home;
+package christian.eilers.flibber.Home.Finance;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -21,25 +20,22 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import org.fabiomsr.moneytextview.MoneyTextView;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-import christian.eilers.flibber.Adapter.TaskBeteiligteAdapter;
+import christian.eilers.flibber.RecyclerAdapter.TaskBeteiligteAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;

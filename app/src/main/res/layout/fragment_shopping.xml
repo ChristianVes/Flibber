@@ -8,7 +8,7 @@
     android:fitsSystemWindows="true"
     android:clickable="true"
     android:focusableInTouchMode="true"
-    tools:context="christian.eilers.flibber.Home.FinanceFragment"
+    tools:context="christian.eilers.flibber.Home.Finance.FinanceFragment"
     android:focusable="true">
 
     <RelativeLayout

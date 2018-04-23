@@ -1,4 +1,4 @@
-package christian.eilers.flibber.Home;
+package christian.eilers.flibber.Home.Finance;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,21 +9,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ProgressBar;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 
-import christian.eilers.flibber.Adapter.VerlaufAdapter;
-import christian.eilers.flibber.Adapter.VerlaufAllAdapter;
+import christian.eilers.flibber.FirestoreAdapter.VerlaufAdapter;
+import christian.eilers.flibber.FirestoreAdapter.VerlaufAllAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;

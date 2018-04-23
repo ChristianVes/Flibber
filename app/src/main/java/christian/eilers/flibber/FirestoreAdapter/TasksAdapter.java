@@ -1,4 +1,4 @@
-package christian.eilers.flibber.Adapter;
+package christian.eilers.flibber.FirestoreAdapter;
 
 import android.content.Intent;
 import android.graphics.Typeface;

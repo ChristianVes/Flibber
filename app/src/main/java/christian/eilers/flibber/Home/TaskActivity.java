@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import christian.eilers.flibber.Adapter.TaskBeteiligteAdapter;
+import christian.eilers.flibber.RecyclerAdapter.TaskBeteiligteAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.TaskEntry;
 import christian.eilers.flibber.Models.TaskModel;

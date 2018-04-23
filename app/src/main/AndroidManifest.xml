@@ -73,10 +73,10 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".Home.TransactionActivity"
+            android:name=".Home.Finance.TransactionActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Home.VerlaufActivity"
+            android:name=".Home.Finance.VerlaufActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Home.NewTaskActivity"
@@ -85,10 +85,10 @@
             android:name=".Home.TaskActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Home.TransactionDetailActivity"
+            android:name=".Home.Finance.TransactionDetailActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".Home.VerlaufBalanceActivity" />
-        <activity android:name=".Home.BalanceActivity"></activity>
+        <activity android:name=".Home.Finance.VerlaufBalanceActivity" />
+        <activity android:name=".Home.Finance.BalanceActivity"></activity>
     </application>
 
 </manifest>

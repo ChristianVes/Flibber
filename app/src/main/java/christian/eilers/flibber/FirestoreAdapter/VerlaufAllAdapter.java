@@ -1,4 +1,4 @@
-package christian.eilers.flibber.Adapter;
+package christian.eilers.flibber.FirestoreAdapter;
 
 import android.content.Intent;
 import android.graphics.Paint;
@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
@@ -18,7 +17,7 @@ import org.fabiomsr.moneytextview.MoneyTextView;
 
 import java.util.HashMap;
 
-import christian.eilers.flibber.Home.TransactionDetailActivity;
+import christian.eilers.flibber.Home.Finance.TransactionDetailActivity;
 import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;

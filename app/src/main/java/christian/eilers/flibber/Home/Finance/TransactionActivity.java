@@ -1,10 +1,9 @@
-package christian.eilers.flibber.Home;
+package christian.eilers.flibber.Home.Finance;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -37,8 +35,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
-import christian.eilers.flibber.Adapter.BeteiligteAdapter;
-import christian.eilers.flibber.Adapter.BezahlerAdapter;
+import christian.eilers.flibber.RecyclerAdapter.BeteiligteAdapter;
+import christian.eilers.flibber.RecyclerAdapter.BezahlerAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;

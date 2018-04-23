@@ -1,4 +1,4 @@
-package christian.eilers.flibber.Adapter;
+package christian.eilers.flibber.RecyclerAdapter;
 
 import android.content.Context;
 import android.graphics.Typeface;

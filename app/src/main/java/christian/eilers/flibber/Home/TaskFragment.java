@@ -11,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -20,7 +19,7 @@ import com.google.firebase.firestore.Query;
 
 import java.util.HashMap;
 
-import christian.eilers.flibber.Adapter.TasksAdapter;
+import christian.eilers.flibber.FirestoreAdapter.TasksAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;

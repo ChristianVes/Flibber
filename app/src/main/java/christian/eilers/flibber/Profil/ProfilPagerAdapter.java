@@ -1,4 +1,4 @@
-package christian.eilers.flibber.Adapter;
+package christian.eilers.flibber.Profil;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

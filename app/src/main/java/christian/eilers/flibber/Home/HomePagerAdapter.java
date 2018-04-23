@@ -1,10 +1,10 @@
-package christian.eilers.flibber.Adapter;
+package christian.eilers.flibber.Home;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import christian.eilers.flibber.Home.FinanceFragment;
+import christian.eilers.flibber.Home.Finance.FinanceFragment;
 import christian.eilers.flibber.Home.HomeFragment;
 import christian.eilers.flibber.Home.TaskFragment;
 import christian.eilers.flibber.Home.SettingsFragment;

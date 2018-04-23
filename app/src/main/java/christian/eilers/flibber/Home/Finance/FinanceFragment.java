@@ -1,4 +1,4 @@
-package christian.eilers.flibber.Home;
+package christian.eilers.flibber.Home.Finance;
 
 
 import android.content.Intent;
@@ -53,9 +53,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
-import christian.eilers.flibber.Adapter.VerlaufAdapter;
+import christian.eilers.flibber.FirestoreAdapter.VerlaufAdapter;
+import christian.eilers.flibber.Home.HomeActivity;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Balancing;
 import christian.eilers.flibber.Models.Offset;
