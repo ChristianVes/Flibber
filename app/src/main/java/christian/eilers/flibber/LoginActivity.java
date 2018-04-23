@@ -1,7 +1,6 @@
 package christian.eilers.flibber;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,7 +34,6 @@ import com.google.firebase.firestore.Transaction;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import christian.eilers.flibber.Models.User;
-import christian.eilers.flibber.Profil.ProfilActivity;
 import christian.eilers.flibber.Utils.LocalStorage;
 import static christian.eilers.flibber.Utils.Strings.*;
 
@@ -151,7 +149,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             eT_password.setText("");
                             // Set Local Data
                             LocalStorage.setData(LoginActivity.this, null, userID, user.getName(), user.getPicPath());
-                            // Start ProfilActivity
+                            // Start ProfileActivity
                             progressBar.setVisibility(View.GONE);
                             Intent i_login = new Intent(LoginActivity.this, ProfileActivity.class);
                             i_login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

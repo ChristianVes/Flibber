@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
 import android.text.InputType;
@@ -26,7 +25,6 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.signature.ObjectKey;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -35,7 +33,6 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -48,7 +45,6 @@ import java.util.UUID;
 
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Group;
-import christian.eilers.flibber.Profil.ProfilActivity;
 import christian.eilers.flibber.ProfileActivity;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
@@ -79,6 +75,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             db.collection(GROUPS).document(groupID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                    if (e != null || documentSnapshot == null || !documentSnapshot.exists()) return;
                     String picPath = documentSnapshot.getString(PICPATH);
                     if (groupPicPath == null) {
                         if (picPath == null) return;
