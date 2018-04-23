@@ -3,6 +3,7 @@ package christian.eilers.flibber.Home.Finance;
 
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -307,7 +308,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
     }
 
     private void balancingDialog() {
-        new MaterialDialog.Builder(getContext())
+        MaterialDialog dialog = new MaterialDialog.Builder(getContext())
                 .title("Abrechnung")
                 .content("Die Bilanz jedes Mitglieds wird auf 0,00 \u20ac zurückgesetzt.\n" +
                         "Alle Einträge im Verlauf bleiben erhalten.\n" +

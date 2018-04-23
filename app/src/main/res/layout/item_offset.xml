@@ -20,12 +20,12 @@
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@+id/money"
             android:layout_centerVertical="true"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -35,24 +35,24 @@
                     android:text="Von "/>
 
                 <TextView
-                    android:id="@+id/from"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="17sp"/>
+                    android:textSize="17sp"
+                    android:textStyle="italic"
+                    android:text="An "/>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/from"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="17sp"
-                    android:textStyle="italic"
-                    android:text="An "/>
+                    android:textSize="17sp"/>
 
                 <TextView
                     android:id="@+id/to"

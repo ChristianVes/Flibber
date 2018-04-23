@@ -9,6 +9,7 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -115,8 +116,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         // retrieve just the first Name of the User
         String[] nextUser_names = nextUser.getName().split(" ", 2);
         taskHolder.tv_order_first.setText(nextUser_names[0]);
-        /*if (userID.equals(nextUser.getUserID())) taskHolder.tv_order_first.setTypeface(null, Typeface.BOLD);
-        else taskHolder.tv_order_first.setTypeface(null, Typeface.NORMAL);*/
         // case: only one User involved
         if (model.getInvolvedIDs().size() == 1) {
             taskHolder.tv_order_second.setText(nextUser_names[0]);
@@ -128,7 +127,11 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             taskHolder.tv_order_second.setText(secUser_names[0]);
         }
 
-        // Click-Listener für Gesamtlayout zur Navigation in Detailansicht
+        // User-Order Layout visibility
+        if (!model.isOrdered()) taskHolder.layout_order.setVisibility(View.GONE);
+        else taskHolder.layout_order.setVisibility(View.VISIBLE);
+
+        // Click-Listener for navigation to detailed view
         taskHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,10 +141,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
                 taskHolder.itemView.getContext().startActivity(i);
             }
         });
-
-        // User-Order Layout
-        if (!model.isOrdered()) taskHolder.layout_order.setVisibility(View.GONE);
-        else taskHolder.layout_order.setVisibility(View.VISIBLE);
 
         // PASS-Button -> Current User's turn && Ordered Task
         if (nextUser.getUserID().equals(userID) && model.isOrdered() && model.getInvolvedIDs().size() > 1) {
@@ -157,28 +156,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         }
         else taskHolder.btn_pass.setVisibility(View.GONE);
 
-        // NOTIFICATION-Button Listener
-        if (model.isOrdered()) {
-            taskHolder.btn_remind.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(taskHolder.itemView.getContext(), "Benachrichtigung gesendet!", Toast.LENGTH_SHORT)
-                            .show();
-                    remindNotification(model.getTitle(), model.getInvolvedIDs().get(0));
-                }
-            });
-        }
-        else {
-            taskHolder.btn_remind.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(taskHolder.itemView.getContext(), "Benachrichtigung gesendet!", Toast.LENGTH_SHORT)
-                            .show();
-                    remindAllNotification(model.getTitle(), model.getInvolvedIDs());
-                }
-            });
-        }
-
         // DONE-Listener
         taskHolder.btn_done.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,28 +164,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             }
         });
 
-    }
-
-    // Notifiy the first User in the Involved User's List of the current Task
-    private void remindNotification(String taskName, String toUserID) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("taskName", taskName);
-        data.put("groupID", groupID);
-        data.put("userID", toUserID);
-
-        // Calls the Http Function which makes the Notification
-        functions.getHttpsCallable("taskNotify").call(data);
-    }
-
-    // Notifiy the Involved Users of the current Task
-    private void remindAllNotification(String taskName, ArrayList<String> involved) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("taskName", taskName);
-        data.put("groupID", groupID);
-        data.put("involvedIDs", involved);
-
-        // Calls the Http Function which makes the Notification
-        functions.getHttpsCallable("taskNotifyAll").call(data);
     }
 
     // Notifiy the first User in the Involved User's List of the current Task
@@ -280,7 +235,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     // Custom ViewHolder for a Task
     public class TaskHolder extends RecyclerView.ViewHolder {
         TextView tv_title, tv_datum, tv_order_first, tv_order_second;
-        ImageButton btn_done, btn_pass, btn_remind;
+        ImageButton btn_done, btn_pass;
         LinearLayout layout_order;
         ProgressBar progressBar;
 
@@ -292,7 +247,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             tv_title = itemView.findViewById(R.id.taskName);
             btn_done = itemView.findViewById(R.id.btn_done);
             btn_pass = itemView.findViewById(R.id.btn_pass);
-            btn_remind = itemView.findViewById(R.id.btn_remind);
             layout_order = itemView.findViewById(R.id.layout_order);
             progressBar = itemView.findViewById(R.id.progressBar);
         }
@@ -300,7 +254,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
 
     // Just an Empty Viewholder (for tasks the current user is not involved in)
     public class EmptyHolder extends RecyclerView.ViewHolder {
-
         public EmptyHolder(View itemView) {
             super(itemView);
         }

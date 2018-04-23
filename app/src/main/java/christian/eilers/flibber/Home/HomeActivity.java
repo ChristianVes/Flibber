@@ -80,6 +80,13 @@ public class HomeActivity extends AppCompatActivity {
         usersQuery.addSnapshotListener(HomeActivity.this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Intent main = new Intent(HomeActivity.this, MainActivity.class);
+                    main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(main);
+                    finish();
+                    return;
+                }
                 retrieveUsers(documentSnapshots);
                 progressBar.setVisibility(View.GONE);
                 if (isInitialized) return;

@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -24,18 +23,15 @@ import org.fabiomsr.moneytextview.MoneyTextView;
 
 import java.util.HashMap;
 
-import christian.eilers.flibber.Adapter.VerlaufAdapter;
-import christian.eilers.flibber.Adapter.VerlaufAllAdapter;
+import christian.eilers.flibber.Home.Finance.BalanceActivity;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Balancing;
-import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 
 import static christian.eilers.flibber.Utils.Strings.BALANCING;
 import static christian.eilers.flibber.Utils.Strings.BUFFER;
-import static christian.eilers.flibber.Utils.Strings.FINANCES;
 import static christian.eilers.flibber.Utils.Strings.GROUPS;
 import static christian.eilers.flibber.Utils.Strings.TIMESTAMP;
 import static christian.eilers.flibber.Utils.Strings.USERS;
