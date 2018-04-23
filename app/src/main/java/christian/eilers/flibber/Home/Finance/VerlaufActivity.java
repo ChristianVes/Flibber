@@ -109,6 +109,7 @@ public class VerlaufActivity extends AppCompatActivity {
                 showMine();
                 item.setVisible(false);
                 menu.findItem(R.id.action_all).setVisible(true);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/wallpaper_home2"
+    tools:context=".ProfileActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/profile_appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/layerlist_bottomedge"
+        app:elevation="0dp"
+        android:fitsSystemWindows="true">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Mein Profil"
+            app:titleTextAppearance="@style/Toolbar.TitleText"/>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"
+            android:paddingBottom="20dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/profile_image"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/profile_placeholder" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:textColor="@color/colorPrimaryBlack"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:textColor="@color/colorPrimaryBlack"
+                android:textSize="20sp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:background="@drawable/layerlist_bottomedge_white">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/Toolbar.TitleText"
+                    android:layout_centerVertical="true"
+                    android:text="Gruppen"
+                    android:textSize="25sp"
+                    android:paddingLeft="15dp"
+                    />
+
+                <ImageButton
+                    android:id="@+id/btn_add"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:padding="5dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="?selectableItemBackground"
+                    android:scaleType="fitEnd"
+                    android:tint="@color/colorPrimaryDark"
+                    app:srcCompat="@drawable/ic_add_blank"
+                    android:contentDescription="TODO" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:gravity="center"
+                android:visibility="gone"
+                android:text="Noch keine Gruppen vorhanden..."
+                android:textStyle="italic"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recView_groups"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <TextView
+                android:id="@+id/tv_invitations"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:textSize="25sp"
+                android:text="Einladungen"
+                android:textAppearance="@style/Toolbar.TitleText"
+                android:background="@drawable/layerlist_bottomedge_white">
+
+            </TextView>
+
+            <android.support.v7.widget.RecyclerView
+                android:visibility="gone"
+                android:id="@+id/recView_invitations"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
+
+</android.support.design.widget.CoordinatorLayout>

@@ -153,7 +153,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             LocalStorage.setData(LoginActivity.this, null, userID, user.getName(), user.getPicPath());
                             // Start ProfilActivity
                             progressBar.setVisibility(View.GONE);
-                            Intent i_login = new Intent(LoginActivity.this, ProfilActivity.class);
+                            Intent i_login = new Intent(LoginActivity.this, ProfileActivity.class);
                             i_login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(i_login);
                             finish();

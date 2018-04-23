@@ -87,8 +87,13 @@
         <activity
             android:name=".Home.Finance.TransactionDetailActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".Home.Finance.VerlaufBalanceActivity" />
-        <activity android:name=".Home.Finance.BalanceActivity"></activity>
+        <activity android:name=".Home.Finance.VerlaufBalanceActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Home.Finance.BalanceActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ProfileActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing"></activity>
     </application>
 
 </manifest>

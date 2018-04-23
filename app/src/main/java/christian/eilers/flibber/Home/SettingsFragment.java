@@ -49,6 +49,7 @@ import java.util.UUID;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Group;
 import christian.eilers.flibber.Profil.ProfilActivity;
+import christian.eilers.flibber.ProfileActivity;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
@@ -291,9 +292,9 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             LocalStorage.setGroupID(getContext(), null);
             LocalStorage.setGroupPicPath(getContext(), null);
             LocalStorage.setGroupName(getContext(), null);
-            Intent profilIntent = new Intent(getContext(), ProfilActivity.class);
-            profilIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(profilIntent);
+            Intent profileIntent = new Intent(getContext(), ProfileActivity.class);
+            profileIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(profileIntent);
             getActivity().finish();
         }
         else if (id == R.id.btn_leave) {

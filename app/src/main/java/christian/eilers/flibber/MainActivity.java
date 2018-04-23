@@ -55,8 +55,8 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
             else {
-                Intent profilIntent = new Intent(MainActivity.this, ProfilActivity.class);
-                startActivity(profilIntent);
+                Intent profileIntent = new Intent(MainActivity.this, ProfileActivity.class);
+                startActivity(profileIntent);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 finish();
             }

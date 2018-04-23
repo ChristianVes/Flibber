@@ -308,7 +308,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
     }
 
     private void balancingDialog() {
-        MaterialDialog dialog = new MaterialDialog.Builder(getContext())
+        new MaterialDialog.Builder(getContext())
                 .title("Abrechnung")
                 .content("Die Bilanz jedes Mitglieds wird auf 0,00 \u20ac zurückgesetzt.\n" +
                         "Alle Einträge im Verlauf bleiben erhalten.\n" +
