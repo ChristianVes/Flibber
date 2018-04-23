@@ -75,6 +75,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     String name_payment = remoteMessage.getData().get(NAME);
                     paymentNotification(name_payment);
                     break;
+                case FINANCE_DELETED:
+                    if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(FINANCES, false)) break;
+                    String name_payment_deleted = remoteMessage.getData().get(NAME);
+                    paymentDeletedNotification(name_payment_deleted);
+                    break;
                 case BALANCING:
                     String username_balancing = remoteMessage.getData().get(NAME);
                     balancingNotification(username_balancing);
@@ -140,6 +145,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     String name_payment = remoteMessage.getData().get(NAME);
                     title = "Neuer Finanzeintrag";
                     description = name_payment;
+                    showNotification(title, description, title, description);
+                    break;
+                case FINANCE_DELETED:
+                    if (!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(FINANCES, false))
+                        break;
+                    String name_payment_deleted = remoteMessage.getData().get(NAME);
+                    title = "Finanzeintrag gelöscht";
+                    description = name_payment_deleted;
                     showNotification(title, description, title, description);
                     break;
                 case BALANCING:
@@ -446,6 +459,63 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         summaryNotification();
     }
 
+    private void paymentDeletedNotification(String paymentTitle) {
+        // Read out Articles from the Shared Preferences
+        Set<String> deletedPayments = getSharedPreferences(NOTIFICATIONS, Context.MODE_PRIVATE).getStringSet(FINANCE_DELETED, null);
+        if (deletedPayments != null) deletedPayments.add(paymentTitle);
+        else {
+            deletedPayments = new HashSet<>();
+            deletedPayments.add(paymentTitle);
+        }
+
+        // Add the new Article to the SharedPreference
+        SharedPreferences.Editor editor = getSharedPreferences(NOTIFICATIONS, Context.MODE_PRIVATE).edit();
+        editor.putStringSet(FINANCE_DELETED, deletedPayments);
+        editor.apply();
+
+        // Configure the Inbox-Style to display all recently added articles
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+        inboxStyle.setBigContentTitle("Kürzlich gelöschte Finanzeinträge:");
+        for (String payment : deletedPayments) inboxStyle.addLine(payment);
+
+        // Intent for onClick-Event
+        Intent clickIntent = new Intent(this, HomeActivity.class);
+        clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent clickPendingIntent = PendingIntent.getActivity(this, 0, clickIntent, PendingIntent.FLAG_ONE_SHOT);
+
+        // Default Notification Sound
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        // Build the Notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID_TASKS)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle("Finanzeintrag gelöscht")
+                .setContentText(paymentTitle)
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setContentIntent(clickPendingIntent)
+                .setGroup(CHANNEL_ID_ALL);
+        if (deletedPayments.size() > 1) {
+            builder.setContentTitle("Kürzlich gelöschte Finanzeinträge:");
+            builder.setContentText(deletedPayments.size() + " Einträge wurden gelöscht");
+            builder.setStyle(inboxStyle);
+        }
+
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID_FINANCES, "Finanzen",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        notificationManager.notify(CHANNEL_FINANCES, builder.build());
+        summaryNotification();
+    }
+
     private void balancingNotification(String username) {
         // Intent for onClick-Event
         Intent clickIntent = new Intent(this, HomeActivity.class);
@@ -531,7 +601,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Notification summaryNotification =
                 new NotificationCompat.Builder(this, CHANNEL_ID_ALL)
                         .setContentTitle("Headquarter")
-                        //set content text to support devices running API level < 24
+                        // set content text to support devices running API level < 24
+                        // ..but API < 24 should never get to this method
                         .setContentText("keine weiteren Benachrichtigungen")
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentIntent(clickPendingIntent)

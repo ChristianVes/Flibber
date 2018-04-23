@@ -19,6 +19,7 @@ public class Strings {
     public static final String INVOLVEDIDS = "involvedIDs";
     public static final String TRANSACTIONID = "transactionID";
     public static final String FINANCES = "finances";
+    public static final String FINANCE_DELETED = "financeDeleted";
     public static final String MONEY = "money";
     public static final String NOTEID = "noteID";
     public static final String COMMENTS = "comments";

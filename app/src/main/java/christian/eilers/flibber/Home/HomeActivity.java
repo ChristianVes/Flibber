@@ -144,6 +144,7 @@ public class HomeActivity extends AppCompatActivity {
         editor.putStringSet("DESCRIPTIONS", null);
         editor.putStringSet(SHOPPING, null);
         editor.putStringSet(FINANCES, null);
+        editor.putStringSet(FINANCE_DELETED, null);
         editor.putStringSet(TASKS, null);
         editor.apply();
     }
