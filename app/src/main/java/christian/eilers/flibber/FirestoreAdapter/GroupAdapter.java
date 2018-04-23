@@ -2,10 +2,8 @@ package christian.eilers.flibber.FirestoreAdapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,26 +18,18 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import org.fabiomsr.moneytextview.MoneyTextView;
-
 import java.util.HashMap;
 
-import christian.eilers.flibber.Home.Finance.TransactionDetailActivity;
 import christian.eilers.flibber.Home.HomeActivity;
 import christian.eilers.flibber.Models.Group;
-import christian.eilers.flibber.Models.Payment;
-import christian.eilers.flibber.Models.User;
-import christian.eilers.flibber.Profil.GroupFragment;
 import christian.eilers.flibber.ProfileActivity;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static christian.eilers.flibber.Utils.Strings.BUFFER;
 import static christian.eilers.flibber.Utils.Strings.DEVICETOKEN;
 import static christian.eilers.flibber.Utils.Strings.GROUPS;
-import static christian.eilers.flibber.Utils.Strings.TRANSACTIONID;
 import static christian.eilers.flibber.Utils.Strings.USERS;
 
 public class GroupAdapter extends FirestoreRecyclerAdapter<Group, GroupAdapter.GroupHolder> {
