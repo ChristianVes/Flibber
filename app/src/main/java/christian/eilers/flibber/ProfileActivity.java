@@ -72,7 +72,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        initializeViews();
         initializeVariables();
         if (hasNulls()) {
             Intent main = new Intent(this, MainActivity.class);
@@ -82,6 +81,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             finish();
             return;
         }
+        initializeViews();
         progressBar.setVisibility(View.VISIBLE);
         loadUserInformation();
         loadGroups();
@@ -103,6 +103,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         btn_add = findViewById(R.id.btn_add);
 
         setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
+        //getSupportActionBar().setTitle(userName);
         btn_add.setOnClickListener(this);
         img_profile.setOnClickListener(this);
     }
@@ -402,6 +403,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         super.onStop();
         if (adapter_group != null) adapter_group.stopListening();
         if (adapter_invitations != null) adapter_invitations.stopListening();
+    }
+
+    // TODO: Backstack
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     private String userID, userName, picPath;

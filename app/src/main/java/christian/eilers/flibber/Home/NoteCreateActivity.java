@@ -79,7 +79,6 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
     private void initializeVariables() {
         userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
-        storage = FirebaseStorage.getInstance().getReference().child(NOTES).child(groupID);
         db = FirebaseFirestore.getInstance();
         if (userID == null || groupID == null) {
             Intent main = new Intent(this, MainActivity.class);
@@ -87,7 +86,9 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
             startActivity(main);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
+            return;
         }
+        storage = FirebaseStorage.getInstance().getReference().child(NOTES).child(groupID);
     }
 
     @Override

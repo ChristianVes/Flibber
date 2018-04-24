@@ -110,7 +110,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         groupID = LocalStorage.getGroupID(this);
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
-        noteID = getIntent().getExtras().getString(NOTEID);
+        noteID = getIntent().getStringExtra(NOTEID);
         users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
     }
 
