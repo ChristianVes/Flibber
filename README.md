@@ -2,7 +2,7 @@
 ### Organisation deines Haushaltes - Pinnwand, Finanzen, Einkaufsliste und Aufgaben
 ##### Einfacher, Schneller, Unkomplizierter - denn niemand will sich lange mit Haushaltsorganisation und Finanzverechnung beschäftigen
 
-- Pinnwnad für Mitteilungen von Terminen, Fragen, Ankündigungen, Bildern, ...
+- Pinnwand für Mitteilungen von Terminen, Fragen, Ankündigungen, Bildern, ...
 - Schnelles Verrechnen der Finanzen innerhalb einer Gruppe
 - Einkaufsliste für gemeinsame und persönliche Artikel
 - Anlegen periodischer Aufgaben (zB. für einen Putzplan)
@@ -18,6 +18,7 @@
 - Jeder User kann zu jeder Zeit Aufgaben erledigen (nicht nur der, der gerade dran ist)
 - Möglichkeit zum Überspringen/Abgeben einer Aufgabe, wenn man dran ist (zB. wegen Abwesenheit/Urlaub). Die Person, an die die Aufgabe weitergegeben wird, wird jedoch darüber informiert.
 - Das Erledigen einer Aufgabe wird im aufgabenspezifischen Verlauf gespeichert
+
 
 - Synchronisation in Echtzeit über Google's Firebase Server/Datenbanken
 - Schnelle, lagfreie Navigation innerhalb der App (selbst bei älteren/langsameren Geräten)
