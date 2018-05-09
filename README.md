@@ -24,4 +24,9 @@
 - Schnelle, lagfreie Navigation innerhalb der App (selbst bei älteren/langsameren Geräten)
 - Auf die wichtigste Funktionalitäten begrenzt, um ein übersichtliches Userinterface zu bewahren
 
+##### Keys
+- Speed & Usability
+- Stability (will become better over time)
+- Design (I give my best)
+
 [zum Google Play Store](https://play.google.com/store/apps/details?id=christian.eilers.flibber)
