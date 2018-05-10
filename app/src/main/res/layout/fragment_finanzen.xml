@@ -33,8 +33,9 @@
                 android:id="@+id/recProfils"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false">
-
+                android:nestedScrollingEnabled="false"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp">
 
             </android.support.v7.widget.RecyclerView>
 
@@ -68,15 +69,15 @@
                     android:tint="@color/colorPrimaryDark"
                     app:srcCompat="@drawable/ic_right"
                     android:contentDescription="TODO" />
+
             </RelativeLayout>
-
-
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recVerlauf"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false">
+                android:nestedScrollingEnabled="false"
+                android:background="@drawable/layerlist_topedge">
 
             </android.support.v7.widget.RecyclerView>
 

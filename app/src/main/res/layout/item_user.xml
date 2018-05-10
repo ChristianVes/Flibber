@@ -29,7 +29,7 @@
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="15dp"
         android:text="..."
-        android:textColor="@color/colorWhite"
+        android:textColor="@color/grey300"
         android:textSize="22sp"
         android:maxLines="1"
         android:ellipsize="end"/>
