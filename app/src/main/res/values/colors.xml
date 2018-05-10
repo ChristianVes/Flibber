@@ -11,4 +11,5 @@
     <color name="colorWhite50">#8CFFFFFF</color>
     <color name="colorBlack">#000000</color>
     <color name="grey300">#E0E0E0</color>
+    <color name="translucent_black">#BF424242</color>
 </resources>

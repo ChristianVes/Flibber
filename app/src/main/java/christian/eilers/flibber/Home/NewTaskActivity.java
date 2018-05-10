@@ -1,7 +1,10 @@
 package christian.eilers.flibber.Home;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -15,6 +18,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -49,8 +54,9 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
         et_name = findViewById(R.id.input_title);
         et_frequency = findViewById(R.id.input_frequenz);
         switch_order = findViewById(R.id.switch_order);
-        recView_beteiligte = findViewById(R.id.recView_beteiligte);
         progressBar = findViewById(R.id.progressBar);
+        tv_beteiligte = findViewById(R.id.tv_count);
+        layout_beteiligte = findViewById(R.id.layout_beteiligte);
 
         et_name.setOnFocusChangeListener(this);
         et_frequency.setOnFocusChangeListener(this);
@@ -72,14 +78,16 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
         } else {
-            int spanCount = 4;
-            ArrayList<User> userList = new ArrayList<>(users.values());
-
-            recView_beteiligte.setHasFixedSize(true);
-            recView_beteiligte.setLayoutManager(new GridLayoutManager(this, spanCount));
-
-            adapter_beteiligte = new BeteiligteAdapter(userList);
-            recView_beteiligte.setAdapter(adapter_beteiligte);
+            final ArrayList<User> userList = new ArrayList<>(users.values());
+            selectedIDs = new ArrayList<>();
+            layout_beteiligte.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Dialog dialog = new UserSelectionDialog(NewTaskActivity.this,
+                            android.R.style.Theme_Translucent_NoTitleBar, userList);
+                    dialog.show();
+                }
+            });
         }
     }
 
@@ -97,11 +105,11 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
             Toast.makeText(this, "Eingaben unvollstädnig...", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (adapter_beteiligte.getInvolvedIDs().isEmpty()) {
+        if (selectedIDs.isEmpty()) {
             Toast.makeText(this, "Beteiligte auswählen...", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (!adapter_beteiligte.getInvolvedIDs().contains(userID)) {
+        if (!selectedIDs.contains(userID)) {
             Toast.makeText(this, "Du musst beteiligt sein...", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -111,7 +119,7 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
 
         DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document();
 
-        TaskModel task = new TaskModel(title, frequency, adapter_beteiligte.getInvolvedIDs(),
+        TaskModel task = new TaskModel(title, frequency, selectedIDs,
                 hasOrder,
                 new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(frequency)));
 
@@ -123,6 +131,16 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
                 finish();
             }
         });
+    }
+
+    public void setBeteiligte(ArrayList<String> selectedIDs) {
+        this.selectedIDs = selectedIDs;
+        if (selectedIDs.size() == 1) tv_beteiligte.setText("1 Person");
+        else tv_beteiligte.setText(selectedIDs.size() + " Personen");
+    }
+
+    public ArrayList<String> getSelectedIDs() {
+        return selectedIDs;
     }
 
     @Override
@@ -148,14 +166,15 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
     }
 
     private Toolbar toolbar;
+    private RelativeLayout layout_beteiligte;
+    private TextView tv_beteiligte;
     private EditText et_name, et_frequency;
     private SwitchCompat switch_order;
-    private RecyclerView recView_beteiligte;
-    private BeteiligteAdapter adapter_beteiligte;
     private ProgressBar progressBar;
 
     private String userID, groupID;
     private FirebaseFirestore db;
     private HashMap<String, User> users;
+    private ArrayList<String> selectedIDs;
 
 }

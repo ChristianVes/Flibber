@@ -2,6 +2,7 @@ package christian.eilers.flibber.Home;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -59,6 +60,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             getActivity().finish();
         } else {
+            getContext().getSharedPreferences(SHOPPING, Context.MODE_PRIVATE).edit().clear().commit();
             ref_shopping = db.collection(GROUPS).document(groupID).collection(USERS).document(userID).collection(SHOPPING);
             loadData();
         }
@@ -186,7 +188,9 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             @Override
             protected void onBindViewHolder(@NonNull final ShoppingHolder holder, int position, @NonNull final Article model) {
                 // Set Checkbox-State
-                holder.checkBox.setChecked(model.isChecked);
+                boolean checked = holder.itemView.getContext().getSharedPreferences(SHOPPING, Context.MODE_PRIVATE)
+                        .getBoolean(model.getKey(), model.isChecked());
+                holder.checkBox.setChecked(checked);
                 // Artikelname
                 holder.tv_article.setText(model.getName());
                 // Username
@@ -214,9 +218,15 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        model.isChecked = !model.isChecked;
-                        if (model.isChecked) holder.checkBox.setChecked(true);
-                        else holder.checkBox.setChecked(false);
+                        model.setChecked(!model.isChecked());
+                        holder.itemView.getContext().getSharedPreferences(SHOPPING, Context.MODE_PRIVATE)
+                                .edit().putBoolean(model.getKey(), model.isChecked()).apply();
+                        if (model.isChecked()) {
+                            holder.checkBox.setChecked(true);
+                        }
+                        else {
+                            holder.checkBox.setChecked(false);
+                        }
 
                     }
                 });
@@ -295,6 +305,10 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         if (adapter != null) adapter.stopListening();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 
     private FirebaseFirestore db;
     private CollectionReference ref_shopping;

@@ -1,6 +1,7 @@
 package christian.eilers.flibber.Home;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -148,7 +149,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                                     DateUtils.FORMAT_ABBREV_RELATIVE));
 
                 // NOTE PICTURE
-                if(thisNote.getImagePath() != null)
+                if(thisNote.getImagePath() != null && isValidContextForGlide(NoteActivity.this))
                     GlideApp.with(NoteActivity.this)
                             .load(storage.child(NOTES).child(groupID).child(thisNote.getImagePath()))
                             .dontAnimate()
@@ -168,6 +169,19 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                 progressBar.setVisibility(View.GONE);
             }
         });
+    }
+
+    public boolean isValidContextForGlide(final Context context) {
+        if (context == null) {
+            return false;
+        }
+        if (context instanceof Activity) {
+            final Activity activity = (Activity) context;
+            if (activity.isFinishing()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // Save the comment specified to the note in the database

@@ -182,7 +182,7 @@ public class HomeFragment extends Fragment {
 
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
         recView.setAdapter(adapter);
-        OverScrollDecoratorHelper.setUpOverScroll(recView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
+        //OverScrollDecoratorHelper.setUpOverScroll(recView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
     }
 
     @Override

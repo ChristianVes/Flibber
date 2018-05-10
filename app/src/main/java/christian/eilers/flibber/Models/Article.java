@@ -14,7 +14,7 @@ public class Article implements Serializable{
     private boolean isPrivate;
     private Date timestamp;
     @Exclude
-    public boolean isChecked = false; // Local Attribute (not added to the database)
+    private boolean isChecked; // Local Attribute (not added to the database)
 
     public Article(){}
 
@@ -23,6 +23,7 @@ public class Article implements Serializable{
         this.name = name;
         this.userID = userID;
         this.isPrivate = isPrivate;
+        isChecked = false;
     }
 
     public String getKey() {
@@ -55,6 +56,14 @@ public class Article implements Serializable{
 
     public void setPrivate(boolean aPrivate) {
         isPrivate = aPrivate;
+    }
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
     }
 
     @ServerTimestamp

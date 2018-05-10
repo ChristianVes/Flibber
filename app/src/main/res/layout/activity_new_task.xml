@@ -38,88 +38,171 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/input_title"
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@drawable/shape_rounded"
-                android:hint="Titel"
-                android:imeOptions="actionNext"
-                android:inputType="textCapSentences"
-                android:maxLength="20"
-                android:textSize="25sp"
-                android:textStyle="bold" />
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                app:cardBackgroundColor="@color/colorWhite50"
+                app:cardElevation="0dp"
+                app:cardUseCompatPadding="true">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/input_frequenz"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_toLeftOf="@+id/tage"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/shape_rounded"
-                    android:hint="Frequenz"
-                    android:imeOptions="actionNext"
-                    android:inputType="number"
-                    android:textSize="20sp" />
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/input_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:background="@android:color/transparent"
+                        android:hint="Titel"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapSentences"
+                        android:maxLength="20"
+                        android:textSize="22sp"
+                        android:textColor="@color/colorPrimaryDark"/>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/layerlist_topedge">
+
+                        <EditText
+                            android:id="@+id/input_frequenz"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:layout_alignParentLeft="true"
+                            android:layout_toLeftOf="@+id/tage"
+                            android:padding="10dp"
+                            android:hint="Frequenz"
+                            android:imeOptions="actionNext"
+                            android:inputType="number"
+                            android:textSize="22sp"
+                            android:textColor="@color/colorPrimaryDark"/>
+
+                        <TextView
+                            android:id="@+id/tage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="10dp"
+                            android:text="Tage"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:textSize="22sp"/>
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="@color/colorWhite50"
+                app:cardElevation="0dp"
+                app:cardUseCompatPadding="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:paddingTop="15dp"
+                        android:paddingBottom="15dp"
+                        android:background="@drawable/layerlist_bottomedge_white">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Feste Reihenfolge"
+                            android:textSize="22sp"
+                            android:layout_centerVertical="true"
+                            />
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/switch_order"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:checked="true"
+                            />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/layout_beteiligte"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dp"
+                        android:paddingTop="15dp"
+                        android:paddingRight="10dp"
+                        android:paddingBottom="15dp"
+                        android:background="?selectableItemBackground">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Beteiligte"
+                            android:textSize="22sp"
+                            android:layout_centerVertical="true"/>
+
+                        <TextView
+                            android:id="@+id/tv_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 Personen"
+                            android:textSize="22sp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentRight="true"/>
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <!--
+            <RelativeLayout
+                android:id="@+id/layout_beteiligte"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:background="@drawable/layerlist_topedge">
 
                 <TextView
-                    android:id="@+id/tage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:text="Tage"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:textSize="20sp"/>
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp">
+                    android:text="Beteiligte"
+                    android:textSize="22sp"
+                    android:layout_centerVertical="true"/>
 
                 <TextView
+                    android:id="@+id/tv_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="In fester Reihenfolge:"
-                    android:textSize="20sp"
+                    android:text="0 Personen"
+                    android:textSize="22sp"
                     android:layout_centerVertical="true"
-                    />
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/switch_order"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:checked="true"
-                    />
+                    android:layout_alignParentRight="true"/>
 
             </RelativeLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Beteiligte"
-                android:paddingLeft="10dp"
-                android:paddingTop="10dp"
-                android:textAppearance="@style/Toolbar.TitleText"/>
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recView_beteiligte"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp" >
-
-            </android.support.v7.widget.RecyclerView>
+            -->
 
         </LinearLayout>
 
