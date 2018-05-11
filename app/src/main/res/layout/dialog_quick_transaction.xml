@@ -26,6 +26,7 @@
             android:layout_marginTop="20dp"
             app:cardBackgroundColor="@color/grey300"
             app:cardElevation="0dp"
+            app:cardCornerRadius="5dp"
             app:cardUseCompatPadding="true">
 
             <LinearLayout

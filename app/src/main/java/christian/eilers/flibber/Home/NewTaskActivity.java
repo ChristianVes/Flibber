@@ -119,8 +119,7 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
 
         DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document();
 
-        TaskModel task = new TaskModel(title, frequency, selectedIDs,
-                hasOrder,
+        TaskModel task = new TaskModel(doc.getId(), title, frequency, selectedIDs, hasOrder,
                 new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(frequency)));
 
         progressBar.setVisibility(View.VISIBLE);

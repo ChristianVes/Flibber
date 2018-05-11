@@ -70,7 +70,8 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Home.Finance.TransactionActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
         <activity
             android:name=".Home.Finance.VerlaufActivity"
             android:screenOrientation="portrait" />

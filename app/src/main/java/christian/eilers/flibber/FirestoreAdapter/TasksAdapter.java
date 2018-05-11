@@ -136,7 +136,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(taskHolder.itemView.getContext(), TaskActivity.class);
-                i.putExtra(TASKID, getSnapshots().getSnapshot(position).getId());
+                i.putExtra(TASKID, model.getKey());
                 i.putExtra(USERS, users);
                 taskHolder.itemView.getContext().startActivity(i);
             }
@@ -150,7 +150,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
                 public void onClick(View view) {
                     taskHolder.progressBar.setVisibility(View.VISIBLE);
                     skippedNotification(model.getTitle(), model.getInvolvedIDs().get(1));
-                    skipUser(taskHolder, model, position);
+                    skipUser(taskHolder, model);
                 }
             });
         }
@@ -160,7 +160,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         taskHolder.btn_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                handleTaskDone(taskHolder, position, model);
+                handleTaskDone(taskHolder, model);
             }
         });
 
@@ -178,7 +178,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     }
 
     // Skip the current User and put him on the second Position in the involved User's List
-    private void skipUser(final TaskHolder taskHolder, final TaskModel model, final int position) {
+    private void skipUser(final TaskHolder taskHolder, final TaskModel model) {
         // Change the current's user position with the user after him
         ArrayList<String> newOrder = (ArrayList<String>) model.getInvolvedIDs().clone();
         newOrder.remove(userID);
@@ -188,7 +188,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         taskMap.put(INVOLVEDIDS, newOrder);
         // UPDATE the involved-List in the Database
         FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(TASKS)
-                .document(getSnapshots().getSnapshot(position).getId())
+                .document(model.getKey())
                 .update(taskMap)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -199,10 +199,8 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     }
 
     // Handle actions to be done when User has finished/taken care of a task
-    private void handleTaskDone(final TaskHolder taskHolder, final int position, final TaskModel model) {
+    private void handleTaskDone(final TaskHolder taskHolder, final TaskModel model) {
         taskHolder.progressBar.setVisibility(View.VISIBLE);
-        // Identify the ID of the current task
-        String taskID = getSnapshots().getSnapshot(position).getId();
         // Change order of the involved user's
         ArrayList<String> newOrder = (ArrayList<String>) model.getInvolvedIDs().clone();
         newOrder.remove(userID);
@@ -216,9 +214,9 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         final TaskEntry entry = new TaskEntry(userID);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        final DocumentReference docTask = db.collection(GROUPS).document(groupID).collection(TASKS).document(taskID);
+        final DocumentReference docTask = db.collection(GROUPS).document(groupID).collection(TASKS).document(model.getKey());
         final DocumentReference docEntry = db.collection(GROUPS).document(groupID).collection(TASKS)
-                .document(taskID).collection(ENTRIES).document();
+                .document(model.getKey()).collection(ENTRIES).document();
 
         WriteBatch batch = db.batch();
         batch.update(docTask, taskMap);

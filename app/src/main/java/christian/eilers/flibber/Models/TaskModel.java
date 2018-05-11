@@ -5,6 +5,7 @@ import java.util.Date;
 
 public class TaskModel {
 
+    private String key;
     private String title;
     private long frequenz;
     private ArrayList<String> involvedIDs;
@@ -13,12 +14,21 @@ public class TaskModel {
 
     public TaskModel() {}
 
-    public TaskModel(String title, long frequenz, ArrayList<String> involvedIDs, boolean ordered, Date timestamp) {
+    public TaskModel(String key, String title, long frequenz, ArrayList<String> involvedIDs, boolean ordered, Date timestamp) {
+        this.key = key;
         this.title = title;
         this.frequenz = frequenz;
         this.involvedIDs = involvedIDs;
         this.ordered = ordered;
         this.timestamp = timestamp;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getTitle() {
