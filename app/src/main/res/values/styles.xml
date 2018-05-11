@@ -33,4 +33,8 @@
         <item name="android:textColor">@color/colorPrimaryBlack</item>
     </style>
 
+    <style name="TransactionDialog" parent="@android:style/Theme.Translucent.NoTitleBar">
+        <item name="android:windowFullscreen">false</item>
+    </style>
+
 </resources>

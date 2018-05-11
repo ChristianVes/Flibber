@@ -1,6 +1,7 @@
 package christian.eilers.flibber.Home.Finance;
 
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -159,6 +160,13 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                     @Override
                     public void onClick(View view) {
                         if (userID.equals(model.getUserID())) return; // don't allow transaction with oneself
+
+                        final Dialog dialog = new QuickTransactionDialog(getContext(),
+                                R.style.TransactionDialog, model);
+                        // Show the Keyboard
+                        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                        dialog.show();
+                        /*
                         final MaterialDialog dialog = new MaterialDialog.Builder(getContext())
                                 .title("Überweisung an " + model.getName())
                                 .customView(R.layout.dialog_uberweisung, true)
@@ -236,11 +244,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                                     }
                                 })
                                 .show();
-                        // Show the Keyboard
-                        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-                        CurrencyEditText et_price = dialog.getCustomView().findViewById(R.id.input_price);
-                        et_price.setLocale(Locale.GERMANY);
-                        et_price.configureViewForLocale(Locale.GERMANY);
+                         */
                     }
                 });
 
