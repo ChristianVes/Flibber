@@ -74,11 +74,10 @@ public class TransactionDetailActivity extends AppCompatActivity {
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
         tv_description = findViewById(R.id.description);
-        tv_payer = findViewById(R.id.username);
+        tv_payer = findViewById(R.id.bezahler_name);
         tv_username_from = findViewById(R.id.username_from);
         tv_username_to = findViewById(R.id.username_to);
         tv_price = findViewById(R.id.price);
-        img_profile_payer = findViewById(R.id.profile_image);
         img_profile_from = findViewById(R.id.profile_image_from);
         img_profile_to = findViewById(R.id.profile_image_to);
         rec_beteiligte = findViewById(R.id.recView_beteiligte);
@@ -106,20 +105,8 @@ public class TransactionDetailActivity extends AppCompatActivity {
                 // PAYER
                 User payer = allUsers.get(thisPayment.getPayerID());
                 String[] names_payer = payer.getName().split(" ", 2);
-                tv_payer.setText(names_payer[0]);
+                tv_payer.setText(payer.getName());
                 tv_username_to.setText(names_payer[0]);
-                if (payer.getPicPath() != null) {
-                    GlideApp.with(TransactionDetailActivity.this)
-                            .load(storage.child(payer.getPicPath()))
-                            .placeholder(R.drawable.profile_placeholder)
-                            .dontAnimate()
-                            .into(img_profile_payer);
-                    GlideApp.with(TransactionDetailActivity.this)
-                            .load(storage.child(payer.getPicPath()))
-                            .placeholder(R.drawable.profile_placeholder)
-                            .dontAnimate()
-                            .into(img_profile_to);
-                }
 
                 // INVOLVED
                 final HashMap<String, User> involvedUsers = new HashMap<>();
@@ -285,7 +272,7 @@ public class TransactionDetailActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private TextView tv_description, tv_payer, tv_username_from, tv_username_to;
     private MoneyTextView tv_price;
-    private CircleImageView img_profile_payer, img_profile_from, img_profile_to;
+    private CircleImageView img_profile_from, img_profile_to;
     private RecyclerView rec_beteiligte;
     private ProgressBar progressBar;
     private LinearLayout layout_normal;

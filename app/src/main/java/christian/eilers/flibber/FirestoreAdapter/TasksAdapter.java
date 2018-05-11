@@ -110,26 +110,44 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         else taskHolder.tv_datum.setTextColor(
                 taskHolder.itemView.getContext().getResources().getColor(R.color.colorPrimary));
 
-        // USER-ORDER
-        // Next User: first from Involved-ArrayList
-        User nextUser = users.get(model.getInvolvedIDs().get(0));
-        // retrieve just the first Name of the User
-        String[] nextUser_names = nextUser.getName().split(" ", 2);
-        taskHolder.tv_order_first.setText(nextUser_names[0]);
-        // case: only one User involved
-        if (model.getInvolvedIDs().size() == 1) {
-            taskHolder.tv_order_second.setText(nextUser_names[0]);
-        }
-        // case: multiple User involved
-        else {
-            User secUser = users.get(model.getInvolvedIDs().get(1));
-            String[] secUser_names = secUser.getName().split(" ", 2);
-            taskHolder.tv_order_second.setText(secUser_names[0]);
-        }
-
         // User-Order Layout visibility
-        if (!model.isOrdered()) taskHolder.layout_order.setVisibility(View.GONE);
-        else taskHolder.layout_order.setVisibility(View.VISIBLE);
+        if (!model.isOrdered()) {
+            taskHolder.layout_order.setVisibility(View.GONE);
+            taskHolder.tv_placeholder.setVisibility(View.VISIBLE);
+        }
+        else {
+            taskHolder.tv_placeholder.setVisibility(View.GONE);
+            taskHolder.layout_order.setVisibility(View.VISIBLE);
+            // USER-ORDER
+            // Next User: first from Involved-ArrayList
+            User nextUser = users.get(model.getInvolvedIDs().get(0));
+            // retrieve just the first Name of the User
+            String[] nextUser_names = nextUser.getName().split(" ", 2);
+            taskHolder.tv_order_first.setText(nextUser_names[0]);
+            // case: only one User involved
+            if (model.getInvolvedIDs().size() == 1) {
+                taskHolder.tv_order_second.setText(nextUser_names[0]);
+            }
+            // case: multiple User involved
+            else {
+                User secUser = users.get(model.getInvolvedIDs().get(1));
+                String[] secUser_names = secUser.getName().split(" ", 2);
+                taskHolder.tv_order_second.setText(secUser_names[0]);
+            }
+            // PASS-Button -> Current User's turn && Ordered Task
+            if (nextUser.getUserID().equals(userID) && model.isOrdered() && model.getInvolvedIDs().size() > 1) {
+                taskHolder.btn_pass.setVisibility(View.VISIBLE);
+                taskHolder.btn_pass.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        taskHolder.progressBar.setVisibility(View.VISIBLE);
+                        skippedNotification(model.getTitle(), model.getInvolvedIDs().get(1));
+                        skipUser(taskHolder, model);
+                    }
+                });
+            }
+            else taskHolder.btn_pass.setVisibility(View.GONE);
+        }
 
         // Click-Listener for navigation to detailed view
         taskHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -141,20 +159,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
                 taskHolder.itemView.getContext().startActivity(i);
             }
         });
-
-        // PASS-Button -> Current User's turn && Ordered Task
-        if (nextUser.getUserID().equals(userID) && model.isOrdered() && model.getInvolvedIDs().size() > 1) {
-            taskHolder.btn_pass.setVisibility(View.VISIBLE);
-            taskHolder.btn_pass.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    taskHolder.progressBar.setVisibility(View.VISIBLE);
-                    skippedNotification(model.getTitle(), model.getInvolvedIDs().get(1));
-                    skipUser(taskHolder, model);
-                }
-            });
-        }
-        else taskHolder.btn_pass.setVisibility(View.GONE);
 
         // DONE-Listener
         taskHolder.btn_done.setOnClickListener(new View.OnClickListener() {
@@ -232,7 +236,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
 
     // Custom ViewHolder for a Task
     public class TaskHolder extends RecyclerView.ViewHolder {
-        TextView tv_title, tv_datum, tv_order_first, tv_order_second;
+        TextView tv_title, tv_datum, tv_order_first, tv_order_second, tv_placeholder;
         LinearLayout btn_done, btn_pass;
         LinearLayout layout_order;
         ProgressBar progressBar;
@@ -243,6 +247,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             tv_order_first = itemView.findViewById(R.id.order_first);
             tv_order_second = itemView.findViewById(R.id.order_second);
             tv_title = itemView.findViewById(R.id.taskName);
+            tv_placeholder = itemView.findViewById(R.id.placeholder);
             btn_done = itemView.findViewById(R.id.btn_done);
             btn_pass = itemView.findViewById(R.id.btn_pass);
             layout_order = itemView.findViewById(R.id.layout_order);

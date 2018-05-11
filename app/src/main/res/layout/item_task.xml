@@ -49,6 +49,19 @@
 
         </RelativeLayout>
 
+        <TextView
+            android:id="@+id/placeholder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="Flexible Reihenfolge"
+            android:textColor="@color/colorPrimary50"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
         <LinearLayout
             android:id="@+id/layout_order"
             android:layout_width="match_parent"
@@ -143,7 +156,8 @@
                 android:layout_weight="1"
                 android:background="@drawable/selector_task_skipped"
                 android:padding="10dp"
-                android:gravity="left">
+                android:gravity="left"
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="wrap_content"
