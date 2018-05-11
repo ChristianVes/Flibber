@@ -1,6 +1,6 @@
 # Headquarter
 ### Organisation deines Haushaltes - Pinnwand, Finanzen, Einkaufsliste und Aufgaben
-##### Einfacher, Schneller, Unkomplizierter - denn niemand will sich lange mit Haushaltsorganisation und Finanzverechnung beschäftigen
+##### Einfach, Schnell & Unkompliziert - denn niemand will sich lange mit Haushaltsorganisation und Finanzverechnung beschäftigen
 
 - Pinnwand für Mitteilungen von Terminen, Fragen, Ankündigungen, Bildern, ...
 - Schnelles Verrechnen der Finanzen innerhalb einer Gruppe
@@ -23,10 +23,5 @@
 - Synchronisation in Echtzeit über Google's Firebase Server/Datenbanken
 - Schnelle, lagfreie Navigation innerhalb der App (selbst bei älteren/langsameren Geräten)
 - Auf die wichtigste Funktionalitäten begrenzt, um ein übersichtliches Userinterface zu bewahren
-
-##### Keys
-- Speed & Usability
-- Stability (will become better over time)
-- Design (I give my best)
 
 [zum Google Play Store](https://play.google.com/store/apps/details?id=christian.eilers.flibber)
