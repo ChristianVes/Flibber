@@ -48,6 +48,7 @@
                 android:layout_marginRight="5dp"
                 app:cardBackgroundColor="@color/colorWhite50"
                 app:cardElevation="0dp"
+                app:cardCornerRadius="5dp"
                 app:cardUseCompatPadding="true">
 
                 <LinearLayout
@@ -111,6 +112,7 @@
                 android:layout_marginTop="20dp"
                 app:cardBackgroundColor="@color/colorWhite50"
                 app:cardElevation="0dp"
+                app:cardCornerRadius="5dp"
                 app:cardUseCompatPadding="true">
 
                 <LinearLayout

@@ -21,8 +21,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingLeft="8dp"
-            android:paddingTop="4dp"
-            android:paddingRight="4dp">
+            android:paddingTop="6dp"
+            android:paddingRight="6dp"
+            android:paddingBottom="3dp">
 
             <TextView
                 android:id="@+id/taskName"
@@ -54,7 +55,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingLeft="3dp"
-            android:paddingTop="3dp">
+            android:paddingBottom="3dp">
 
             <TextView
                 android:id="@+id/order_first"
@@ -97,52 +98,75 @@
 
         </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="5dp">
+            android:background="@drawable/layerlist_topedge"
+            android:layout_marginTop="5dp"
+            android:weightSum="2">
 
-            <ImageButton
+            <LinearLayout
                 android:id="@+id/btn_done"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_alignParentLeft="true"
-                android:paddingLeft="5dp"
-                android:paddingRight="40dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:background="?selectableItemBackground"
-                android:tint="@color/colorPrimary"
-                app:srcCompat="@drawable/ic_done"
-                android:contentDescription="TODO" />
+                android:padding="10dp"
+                android:gravity="left">
 
-            <ImageButton
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="center_vertical"
+                    app:srcCompat="@drawable/ic_done"
+                    android:tint="@color/colorPrimaryDark"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Erledigt"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="16sp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/btn_pass"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_toRightOf="@+id/btn_done"
-                android:paddingLeft="5dp"
-                android:paddingRight="40dp"
-                android:background="?selectableItemBackground"
-                app:srcCompat="@drawable/ic_skip"
-                android:tint="@color/colorPrimary"
-                android:visibility="gone"
-                android:contentDescription="TODO" />
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/selector_task_skipped"
+                android:padding="10dp"
+                android:gravity="left">
 
-            <ImageButton
-                android:id="@+id/btn_remind"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_alignParentRight="true"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:background="?selectableItemBackground"
-                app:srcCompat="@drawable/ic_notifications_active"
-                android:tint="@color/colorPrimary"
-                android:contentDescription="TODO"
-                android:visibility="gone"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="center_vertical"
+                    app:srcCompat="@drawable/ic_skip"
+                    android:tint="@color/colorPrimaryDark"/>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Weitergeben"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="16sp"/>
 
-        </RelativeLayout>
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 

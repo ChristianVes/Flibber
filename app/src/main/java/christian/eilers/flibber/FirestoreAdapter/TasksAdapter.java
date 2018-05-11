@@ -233,7 +233,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     // Custom ViewHolder for a Task
     public class TaskHolder extends RecyclerView.ViewHolder {
         TextView tv_title, tv_datum, tv_order_first, tv_order_second;
-        ImageButton btn_done, btn_pass;
+        LinearLayout btn_done, btn_pass;
         LinearLayout layout_order;
         ProgressBar progressBar;
 
