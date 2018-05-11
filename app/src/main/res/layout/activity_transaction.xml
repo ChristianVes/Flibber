@@ -36,128 +36,169 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="20dp"
             android:paddingBottom="20dp"
-            android:animateLayoutChanges="true"
             android:orientation="vertical">
 
-            <com.blackcat.currencyedittext.CurrencyEditText
-                android:id="@+id/input_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/shape_rounded"
-                android:imeOptions="actionNext"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="26sp" />
-
-            <RelativeLayout
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:animateLayoutChanges="true"
+                app:cardBackgroundColor="@color/colorWhite50"
+                app:cardElevation="0dp">
 
-                <EditText
-                    android:id="@+id/input_article"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_toLeftOf="@+id/btn_description"
-                    android:background="@drawable/shape_rounded"
-                    android:hint="Titel"
-                    android:imeOptions="actionNext"
-                    android:inputType="textCapSentences"
-                    android:lines="1"
-                    android:maxLength="20"
-                    android:textSize="25sp" />
+                    android:orientation="vertical">
 
-                <ImageButton
-                    android:id="@+id/btn_description"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:background="@android:color/transparent"
-                    android:clickable="false"
-                    android:contentDescription="TODO"
-                    android:padding="5dp"
-                    android:scaleType="fitEnd"
-                    android:tint="@color/colorPrimaryDark"
-                    app:srcCompat="@drawable/ic_keyboard_arrow_down" />
+                    <com.blackcat.currencyedittext.CurrencyEditText
+                        android:id="@+id/input_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:background="@android:color/transparent"
+                        android:imeOptions="actionNext"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="26sp" />
 
-            </RelativeLayout>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/layerlist_topedge">
 
-            <EditText
-                android:id="@+id/input_description"
+                        <EditText
+                            android:id="@+id/input_article"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="10dp"
+                            android:layout_toLeftOf="@+id/btn_description"
+                            android:background="@android:color/transparent"
+                            android:hint="Titel"
+                            android:imeOptions="actionNext"
+                            android:inputType="textCapSentences"
+                            android:lines="1"
+                            android:maxLength="20"
+                            android:textSize="25sp" />
+
+                        <ImageButton
+                            android:id="@+id/btn_description"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:background="@android:color/transparent"
+                            android:clickable="false"
+                            android:contentDescription="TODO"
+                            android:padding="5dp"
+                            android:scaleType="fitEnd"
+                            android:tint="@color/colorPrimaryDark"
+                            app:srcCompat="@drawable/ic_keyboard_arrow_down" />
+
+                    </RelativeLayout>
+
+                    <EditText
+                        android:id="@+id/input_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="15dp"
+                        android:paddingBottom="15dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:background="@drawable/layerlist_topedge"
+                        android:gravity="start"
+                        android:hint="Beschreibung [optional]"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:textSize="20sp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/shape_rounded"
-                android:gravity="start"
-                android:hint="Beschreibung [optional] \n\n"
-                android:inputType="textMultiLine|textCapSentences"
-                android:textSize="20sp"
-                android:visibility="gone" />
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="@color/colorWhite50"
+                app:cardElevation="0dp"
+                app:cardUseCompatPadding="true">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:text="Wer ist an Kosten beteiligt?"
-                android:textSize="20sp" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recView_beteiligte"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            </android.support.v7.widget.RecyclerView>
-
-            <RelativeLayout
-                android:id="@+id/layout_expand"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:animateLayoutChanges="true"
-                android:background="?android:selectableItemBackground"
-                android:clickable="true"
-                android:focusable="true">
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:text="Jemand anders hat bezahlt?"
-                    android:textSize="20sp" />
+                    android:orientation="vertical">
 
-                <ImageButton
-                    android:id="@+id/btn_bezahler"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:background="@android:color/transparent"
-                    android:clickable="false"
-                    android:contentDescription="TODO"
-                    android:padding="5dp"
-                    android:scaleType="fitEnd"
-                    android:tint="@color/colorPrimaryDark"
-                    app:srcCompat="@drawable/ic_keyboard_arrow_down" />
+                    <RelativeLayout
+                        android:id="@+id/layout_bezahler"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dp"
+                        android:paddingTop="15dp"
+                        android:paddingRight="10dp"
+                        android:paddingBottom="15dp"
+                        android:background="@drawable/selector_shopping">
 
-            </RelativeLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bezahlt von"
+                            android:textSize="22sp"
+                            android:layout_centerVertical="true"/>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recView_bezahler"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
+                        <TextView
+                            android:id="@+id/tv_bezahler"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textSize="22sp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentRight="true"/>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/layout_beteiligte"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dp"
+                        android:paddingTop="15dp"
+                        android:paddingRight="10dp"
+                        android:paddingBottom="15dp"
+                        android:background="?selectableItemBackground">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Beteiligte"
+                            android:textSize="22sp"
+                            android:layout_centerVertical="true"/>
+
+                        <TextView
+                            android:id="@+id/tv_beteiligte"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 Personen"
+                            android:textSize="22sp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentRight="true"/>
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
 
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
-
 
     <ProgressBar
         android:id="@+id/progressBar"

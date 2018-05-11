@@ -1,13 +1,12 @@
 package christian.eilers.flibber.Home.Finance;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -18,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
@@ -35,8 +35,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
-import christian.eilers.flibber.RecyclerAdapter.BeteiligteAdapter;
-import christian.eilers.flibber.RecyclerAdapter.BezahlerAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
@@ -60,12 +58,12 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         et_article = findViewById(R.id.input_article);
         et_description = findViewById(R.id.input_description);
         et_price = findViewById(R.id.input_price);
-        rec_beteiligte = findViewById(R.id.recView_beteiligte);
-        rec_bezahler = findViewById(R.id.recView_bezahler);
         progressBar = findViewById(R.id.progressBar);
-        layout_expand = findViewById(R.id.layout_expand);
-        btn_bezahler = findViewById(R.id.btn_bezahler);
         btn_description = findViewById(R.id.btn_description);
+        tv_beteiligte = findViewById(R.id.tv_beteiligte);
+        tv_bezahler = findViewById(R.id.tv_bezahler);
+        layout_beteiligte = findViewById(R.id.layout_beteiligte);
+        layout_bezahler = findViewById(R.id.layout_bezahler);
 
         et_price.requestFocus();
         et_price.setLocale(Locale.GERMANY);
@@ -74,20 +72,6 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         et_description.setOnFocusChangeListener(this);
         et_article.setOnFocusChangeListener(this);
         et_price.setOnFocusChangeListener(this);
-
-        layout_expand.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (rec_bezahler.getVisibility() == View.GONE) {
-                    rec_bezahler.setVisibility(View.VISIBLE);
-                    btn_bezahler.setImageResource(R.drawable.ic_keyboard_arrow_up);
-                }
-                else {
-                    rec_bezahler.setVisibility(View.GONE);
-                    btn_bezahler.setImageResource(R.drawable.ic_keyboard_arrow_down);
-                }
-            }
-        });
 
         btn_description.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,22 +106,47 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
             return;
         }
 
-        int spanCount = 4;
-        ArrayList<User> userList = new ArrayList<>(users.values());
+        setBezahler(userID);
+        final ArrayList<User> userList = new ArrayList<>(users.values());
+        selectedIDs = new ArrayList<>();
+        layout_beteiligte.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog dialog = new BeteiligteSelectionDialog(TransactionActivity.this,
+                        android.R.style.Theme_Translucent_NoTitleBar, userList);
+                dialog.show();
+            }
+        });
+        layout_bezahler.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog dialog = new BezahlerSelectionDialog(TransactionActivity.this,
+                        android.R.style.Theme_Translucent_NoTitleBar, userList);
+                dialog.show();
+            }
+        });
+    }
 
-        layoutManagerBeteiligte = new GridLayoutManager(this, spanCount);
-        layoutManagerBezahler = new GridLayoutManager(this, spanCount);
+    public void setBezahler(String bezahlerID) {
+        this.bezahlerID = bezahlerID;
+        if (userID.equals(bezahlerID))
+            tv_bezahler.setText("Mir");
+        else {
+            String[] names = users.get(bezahlerID).getName().split(" ", 2);
+            tv_bezahler.setText(names[0]);
+        }
+    }
 
-        rec_bezahler.setHasFixedSize(true);
-        rec_bezahler.setLayoutManager(layoutManagerBezahler);
+    public String getBezahler() { return bezahlerID; }
 
-        rec_beteiligte.setHasFixedSize(true);
-        rec_beteiligte.setLayoutManager(layoutManagerBeteiligte);
+    public void setBeteiligte(ArrayList<String> selectedIDs) {
+        this.selectedIDs = selectedIDs;
+        if (selectedIDs.size() == 1) tv_beteiligte.setText("1 Person");
+        else tv_beteiligte.setText(selectedIDs.size() + " Personen");
+    }
 
-        adapter_bezahler = new BezahlerAdapter(userList, userID);
-        adapter_beteiligte = new BeteiligteAdapter(userList);
-        rec_bezahler.setAdapter(adapter_bezahler);
-        rec_beteiligte.setAdapter(adapter_beteiligte);
+    public ArrayList<String> getSelectedIDs() {
+        return selectedIDs;
     }
 
     // Save the Payment in the database
@@ -153,8 +162,8 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
             Toast.makeText(TransactionActivity.this, "Keinen Titel eingegeben...", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (adapter_beteiligte.getInvolvedIDs().isEmpty()) {
-            Toast.makeText(TransactionActivity.this, "Keinen Beteiligten eingegeben...", Toast.LENGTH_SHORT).show();
+        if (selectedIDs.isEmpty()) {
+            Toast.makeText(TransactionActivity.this, "Keinen Beteiligten angegeben...", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -166,9 +175,9 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
                 doc.getId(),
                 title,
                 description,
-                adapter_bezahler.getBezahlerID(),
+                bezahlerID,
                 userID,
-                adapter_beteiligte.getInvolvedIDs(),
+                selectedIDs,
                 price
         );
 
@@ -254,19 +263,17 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         return true;
     }
 
-    private String userID, groupID;
+    private String userID, groupID, bezahlerID;
     private FirebaseFirestore db;
     private HashMap<String, User> users;
-    private BezahlerAdapter adapter_bezahler;
-    private BeteiligteAdapter adapter_beteiligte;
-    private GridLayoutManager layoutManagerBeteiligte, layoutManagerBezahler;
+    private ArrayList<String> selectedIDs;
 
     private Toolbar toolbar;
     private EditText et_article, et_description;
     private CurrencyEditText et_price;
-    private RecyclerView rec_bezahler, rec_beteiligte;
     private ProgressBar progressBar;
-    private RelativeLayout layout_expand;
-    private ImageButton btn_bezahler, btn_description;
+    private ImageButton btn_description;
+    private TextView tv_bezahler, tv_beteiligte;
+    private RelativeLayout layout_bezahler, layout_beteiligte;
 
 }
