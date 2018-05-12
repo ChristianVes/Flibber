@@ -18,9 +18,9 @@ import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.RecyclerAdapter.UserSelectionAdapter;
 
-public class BeteiligteSelectionDialog extends Dialog {
+public class InvolvedSelectionDialog extends Dialog {
 
-    public BeteiligteSelectionDialog(@NonNull Context context, int themeResId, ArrayList<User> userList) {
+    public InvolvedSelectionDialog(@NonNull Context context, int themeResId, ArrayList<User> userList) {
         super(context, themeResId);
         this.context = context;
         getWindow().setBackgroundDrawableResource(R.color.translucent_black);

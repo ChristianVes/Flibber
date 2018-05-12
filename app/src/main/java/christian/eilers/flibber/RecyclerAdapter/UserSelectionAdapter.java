@@ -32,7 +32,7 @@ public class UserSelectionAdapter extends RecyclerView.Adapter<UserSelectionAdap
 
     public UserSelectionAdapter(ArrayList<User> users, ArrayList<String> selectedIDs) {
         this.users = users;
-        involvedIDs = selectedIDs;
+        involvedIDs = (ArrayList<String>) selectedIDs.clone();
     }
 
     @NonNull

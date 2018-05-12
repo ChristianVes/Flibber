@@ -44,6 +44,7 @@ public class QuickTransactionDialog extends Dialog {
 
     public QuickTransactionDialog(@NonNull Context context, int themeResId, User user) {
         super(context, themeResId);
+        // set the background to a translucent black
         getWindow().setBackgroundDrawableResource(R.color.translucent_black);
         this.context = context;
         this.user = user;

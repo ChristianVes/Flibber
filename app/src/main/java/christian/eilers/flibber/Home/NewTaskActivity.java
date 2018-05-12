@@ -83,7 +83,7 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
                 @Override
                 public void onClick(View v) {
                     Dialog dialog = new UserSelectionDialog(NewTaskActivity.this,
-                            android.R.style.Theme_Translucent_NoTitleBar, userList);
+                            android.R.style.Theme_Translucent_NoTitleBar, userList, NewTaskActivity.this);
                     dialog.show();
                 }
             });

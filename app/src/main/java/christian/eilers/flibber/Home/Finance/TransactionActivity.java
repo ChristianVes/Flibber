@@ -112,7 +112,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         layout_beteiligte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new BeteiligteSelectionDialog(TransactionActivity.this,
+                final Dialog dialog = new InvolvedSelectionDialog(TransactionActivity.this,
                         android.R.style.Theme_Translucent_NoTitleBar, userList);
                 dialog.show();
             }
@@ -120,7 +120,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         layout_bezahler.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new BezahlerSelectionDialog(TransactionActivity.this,
+                final Dialog dialog = new PayerSelectionDialog(TransactionActivity.this,
                         android.R.style.Theme_Translucent_NoTitleBar, userList);
                 dialog.show();
             }

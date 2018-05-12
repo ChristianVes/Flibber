@@ -17,9 +17,9 @@ import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.RecyclerAdapter.PayerSelectionAdapter;
 
-public class BezahlerSelectionDialog extends Dialog {
+public class PayerSelectionDialog extends Dialog {
 
-    public BezahlerSelectionDialog(@NonNull Context context, int themeResId, ArrayList<User> userList) {
+    public PayerSelectionDialog(@NonNull Context context, int themeResId, ArrayList<User> userList) {
         super(context, themeResId);
         this.context = context;
         getWindow().setBackgroundDrawableResource(R.color.translucent_black);
