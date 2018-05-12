@@ -38,6 +38,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -50,6 +51,7 @@ import java.util.UUID;
 
 import christian.eilers.flibber.FirestoreAdapter.GroupAdapter;
 import christian.eilers.flibber.FirestoreAdapter.InvitationAdapter;
+import christian.eilers.flibber.Home.HomeActivity;
 import christian.eilers.flibber.Models.Group;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.Utils.GlideApp;
@@ -94,7 +96,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         recView_groups = findViewById(R.id.recView_groups);
         recView_invitations = findViewById(R.id.recView_invitations);
         tv_name = findViewById(R.id.name);
-        tv_email = findViewById(R.id.email);
         tv_invitations = findViewById(R.id.tv_invitations);
         placeholder = findViewById(R.id.placeholder);
         img_profile = findViewById(R.id.profile_image);
@@ -103,7 +104,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         btn_add = findViewById(R.id.btn_add);
 
         setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
-        //getSupportActionBar().setTitle(userName);
         btn_add.setOnClickListener(this);
         img_profile.setOnClickListener(this);
     }
@@ -123,12 +123,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         else return false;
     }
 
-    // Display the user information (name, email, picture)
+    // Display the user information (name & picture)
     private void loadUserInformation() {
         tv_name.setText(userName);
-        tv_email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
         if (picPath != null)
-            GlideApp.with(this)
+            GlideApp.with(ProfileActivity.this)
                     .load(storage.child(PROFILE).child(picPath))
                     .dontAnimate()
                     .placeholder(R.drawable.profile_placeholder)
@@ -144,7 +143,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 .build();
 
         adapter_group = new GroupAdapter(options) {
-            // Aktualisiere Platzhalter und ProgressBar
+            // Update placeholder and progressbar on data change
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
@@ -166,8 +165,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 .setQuery(invitesQuery, Group.class)
                 .build();
 
-        adapter_invitations = new InvitationAdapter(options) {
-            // Aktualisiere Platzhalter und ProgressBar
+        adapter_invitations = new InvitationAdapter(options, ProfileActivity.this) {
+            // Update placeholder and recycler view visibility
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
@@ -189,6 +188,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     // Save the new profile picture in the database
     private void saveProfileImage() {
         progressBar_img.setVisibility(View.VISIBLE);
+        // Generate a random String for the picture path
         final String newPicPath = UUID.randomUUID().toString().replaceAll("-","");
         storage.child(PROFILE).child(newPicPath).putFile(imageUri)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -221,7 +221,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     @Override
                     public void onSuccess(Void aVoid) {
                         // Get all groups the user is part of
-                        db.collection("users").document(userID).collection(GROUPS).get()
+                        db.collection(USERS).document(userID).collection(GROUPS).get()
                                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                     @Override
                                     public void onSuccess(QuerySnapshot documentSnapshots) {
@@ -253,6 +253,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        // Read out input for the group name
                         String groupname = dialog.getInputEditText().getText().toString().trim();
                         if(TextUtils.isEmpty(groupname)) {
                             Toast.makeText(ProfileActivity.this, "Keinen Gruppennamen eingegeben",
@@ -282,12 +283,31 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     Crashlytics.logException(task.getException());
                     return;
                 }
+                // Get current user's information
                 final String username = task.getResult().getString(NAME);
                 final String email = task.getResult().getString(EMAIL);
                 final String picPath = task.getResult().getString(PICPATH);
                 final String deviceToken = task.getResult().getString(DEVICETOKEN);
                 final User user = new User(username, email, userID, picPath, deviceToken);
-                db.collection(GROUPS).document(group.getKey()).collection(USERS).document(userID).set(user);
+                // Add the current user to the group
+                db.collection(GROUPS).document(group.getKey()).collection(USERS).document(userID).set(user)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                // save group & user data in the local storage
+                                LocalStorage.setGroupID(ProfileActivity.this, group.getKey());
+                                LocalStorage.setGroupName(ProfileActivity.this, group.getName());
+                                // Update device token reference of this user in this group
+                                HashMap<String, Object> map_devicetoken = new HashMap<>();
+                                map_devicetoken.put(DEVICETOKEN, deviceToken);
+                                FirebaseFirestore.getInstance().collection(GROUPS).document(group.getKey())
+                                        .collection(USERS).document(userID).update(map_devicetoken);
+                                // TODO: Hier auf eine Anleitungsseite weiterleiten
+                                Intent homeIntent = new Intent(ProfileActivity.this, HomeActivity.class);
+                                startActivity(homeIntent);
+                                finish();
+                            }
+                        });
             }
         });
     }
@@ -346,7 +366,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Zuschneiden des Bildes auf 1:1 Ratio
+        // cut the profile picture to 1:1 ratio
         if (resultCode != Activity.RESULT_CANCELED) {
             if (requestCode == REQUEST_CODE_GALLERY) {
                 CropImage.activity(data.getData())
@@ -356,7 +376,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             } else super.onActivityResult(requestCode, resultCode, data);
         }
 
-        // Zurückliefern des zugeschnitten Bildes
+        // then save the cut out profile picture
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == Activity.RESULT_OK) {
@@ -405,12 +425,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         if (adapter_invitations != null) adapter_invitations.stopListening();
     }
 
-    // TODO: Backstack
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
     private String userID, userName, picPath;
     private Uri imageUri;
     private FirebaseFirestore db;
@@ -419,7 +433,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private Toolbar toolbar;
     private RecyclerView recView_groups, recView_invitations;
-    private TextView tv_name, tv_email, tv_invitations, placeholder;
+    private TextView tv_name, tv_invitations, placeholder;
     private CircleImageView img_profile;
     private ProgressBar progressBar, progressBar_img;
     private ImageButton btn_add;

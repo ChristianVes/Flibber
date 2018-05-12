@@ -11,13 +11,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -44,6 +48,7 @@ import static christian.eilers.flibber.Utils.Strings.USERS;
 public class InvitationAdapter extends FirestoreRecyclerAdapter<Group, InvitationAdapter.InvitationHolder> {
 
     private Context context;
+    private ProfileActivity activity;
     private FirebaseFirestore db;
     private String userID;
 
@@ -53,8 +58,9 @@ public class InvitationAdapter extends FirestoreRecyclerAdapter<Group, Invitatio
      *
      * @param options
      */
-    public InvitationAdapter(@NonNull FirestoreRecyclerOptions<Group> options) {
+    public InvitationAdapter(@NonNull FirestoreRecyclerOptions<Group> options, ProfileActivity activity) {
         super(options);
+        this.activity = activity;
         db = FirebaseFirestore.getInstance();
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
@@ -93,9 +99,14 @@ public class InvitationAdapter extends FirestoreRecyclerAdapter<Group, Invitatio
                         }
                         // Add Group-Reference to the user
                         final Group group = document.toObject(Group.class);
-                        db.collection(USERS).document(userID).collection(GROUPS).document(group.getKey()).set(group);
-                        // User zur Gruppe hinzufügen
-                        addUserToGroup(groupID);
+                        db.collection(USERS).document(userID).collection(GROUPS).document(group.getKey()).set(group)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    // User zur Gruppe hinzufügen
+                                    addUserToGroup(group, context);
+                                }
+                            });
                     }
                 });
             }
@@ -103,25 +114,43 @@ public class InvitationAdapter extends FirestoreRecyclerAdapter<Group, Invitatio
     }
 
     // Add current User to the Group
-    public void addUserToGroup(final String groupID) {
+    public void addUserToGroup(final Group group, final Context context) {
         db.collection(USERS).document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (!task.isSuccessful()) {
+                    Crashlytics.logException(task.getException());
+                    return;
+                }
                 final String username = task.getResult().getString(NAME);
                 final String email = task.getResult().getString(EMAIL);
                 final String picPath = task.getResult().getString(PICPATH);
                 final String deviceToken = task.getResult().getString(DEVICETOKEN);
                 final User user = new User(username, email, userID, picPath, deviceToken);
-                db.collection(GROUPS).document(groupID).collection(USERS).document(userID).set(user);
-                deleteInvitation(groupID);
+                WriteBatch batch = db.batch();
+                DocumentReference ref_user = db.collection(GROUPS).document(group.getKey()).collection(USERS).document(userID);
+                DocumentReference ref_user_inv = db.collection(USERS).document(userID).collection(INVITATIONS).document(group.getKey());
+                DocumentReference ref_group_inv = db.collection(GROUPS).document(group.getKey()).collection(INVITATIONS).document(userID);
+                batch.set(ref_user, user);
+                batch.delete(ref_user_inv);
+                batch.delete(ref_group_inv);
+                batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        HashMap<String, Object> map_devicetoken = new HashMap<>();
+                        map_devicetoken.put(DEVICETOKEN, deviceToken);
+                        LocalStorage.setGroupID(context, group.getKey());
+                        LocalStorage.setGroupName(context, group.getName());
+                        FirebaseFirestore.getInstance().collection(GROUPS).document(group.getKey())
+                                .collection(USERS).document(userID).update(map_devicetoken);
+                        // TODO: Hier auf eine Anleitungsseite weiterleiten (gruppen Key bereits im local Storage)
+                        Intent homeIntent = new Intent(context, HomeActivity.class);
+                        context.startActivity(homeIntent);
+                        activity.finish();
+                    }
+                });
             }
         });
-    }
-
-    // Delete Invitation Documents
-    public void deleteInvitation(final String groupID) {
-        db.collection(USERS).document(userID).collection(INVITATIONS).document(groupID).delete();
-        db.collection(GROUPS).document(groupID).collection(INVITATIONS).document(userID).delete();
     }
 
     // Einmalige Zuweisung zum ViewHolder: GroupHolder
