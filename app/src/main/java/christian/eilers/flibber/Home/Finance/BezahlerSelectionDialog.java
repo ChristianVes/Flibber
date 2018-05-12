@@ -15,8 +15,7 @@ import java.util.ArrayList;
 
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
-import christian.eilers.flibber.RecyclerAdapter.BezahlerSelectionAdapter;
-import christian.eilers.flibber.RecyclerAdapter.UserSelectionAdapter;
+import christian.eilers.flibber.RecyclerAdapter.PayerSelectionAdapter;
 
 public class BezahlerSelectionDialog extends Dialog {
 
@@ -35,7 +34,7 @@ public class BezahlerSelectionDialog extends Dialog {
         recView = findViewById(R.id.recView);
         recView.setHasFixedSize(true);
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
-        final BezahlerSelectionAdapter adapter = new BezahlerSelectionAdapter(userList,
+        final PayerSelectionAdapter adapter = new PayerSelectionAdapter(userList,
                 ((TransactionActivity)context).getBezahler());
         recView.setAdapter(adapter);
 
@@ -43,7 +42,7 @@ public class BezahlerSelectionDialog extends Dialog {
             @Override
             public void onClick(View v) {
                 if (context instanceof Activity)
-                    ((TransactionActivity)context).setBezahler(adapter.getBezahlerID());
+                    ((TransactionActivity)context).setBezahler(adapter.getPayerID());
                 else
                     Toast.makeText(getContext(), "Fehler aufgetreten", Toast.LENGTH_SHORT).show();
                 dismiss();

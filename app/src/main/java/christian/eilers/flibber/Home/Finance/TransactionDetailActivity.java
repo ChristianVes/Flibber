@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-import christian.eilers.flibber.RecyclerAdapter.TaskBeteiligteAdapter;
+import christian.eilers.flibber.RecyclerAdapter.TaskInvolvedAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
@@ -138,7 +138,7 @@ public class TransactionDetailActivity extends AppCompatActivity {
                 rec_beteiligte.setHasFixedSize(true);
                 rec_beteiligte.setLayoutManager(new GridLayoutManager(TransactionDetailActivity.this, spanCount));
 
-                adapter_beteiligte = new TaskBeteiligteAdapter(involvedUserList);
+                adapter_beteiligte = new TaskInvolvedAdapter(involvedUserList);
                 rec_beteiligte.setAdapter(adapter_beteiligte);
 
                 if (involvedUserList.size() == 1) {
@@ -274,7 +274,7 @@ public class TransactionDetailActivity extends AppCompatActivity {
     private StorageReference storage;
     private Payment thisPayment;
     private HashMap<String, User> allUsers;
-    private TaskBeteiligteAdapter adapter_beteiligte;
+    private TaskInvolvedAdapter adapter_beteiligte;
 
     private Toolbar toolbar;
     private TextView tv_description, tv_payer, tv_username_from, tv_username_to;

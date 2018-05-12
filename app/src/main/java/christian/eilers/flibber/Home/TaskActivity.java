@@ -18,7 +18,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -41,7 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import christian.eilers.flibber.Home.Finance.DatePickerFragment;
-import christian.eilers.flibber.RecyclerAdapter.TaskBeteiligteAdapter;
+import christian.eilers.flibber.RecyclerAdapter.TaskInvolvedAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.TaskEntry;
 import christian.eilers.flibber.Models.TaskModel;
@@ -120,7 +119,7 @@ public class TaskActivity extends AppCompatActivity {
                 rec_involved.setHasFixedSize(true);
                 rec_involved.setLayoutManager(new GridLayoutManager(TaskActivity.this, spanCount));
 
-                adapter_beteiligte = new TaskBeteiligteAdapter(userList);
+                adapter_beteiligte = new TaskInvolvedAdapter(userList);
                 rec_involved.setAdapter(adapter_beteiligte);
 
                 loadEntries();
@@ -336,7 +335,7 @@ public class TaskActivity extends AppCompatActivity {
     private TaskModel thisTask;
     private HashMap<String, User> users;
     private HashMap<String, User> allUsers;
-    private TaskBeteiligteAdapter adapter_beteiligte;
+    private TaskInvolvedAdapter adapter_beteiligte;
     private FirestoreRecyclerAdapter adapter_entries;
     private Menu menu;
 }

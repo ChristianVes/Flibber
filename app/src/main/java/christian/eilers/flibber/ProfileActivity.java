@@ -142,7 +142,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 .setQuery(groupsQuery, Group.class)
                 .build();
 
-        adapter_group = new GroupAdapter(options) {
+        adapter_group = new GroupAdapter(options, ProfileActivity.this) {
             // Update placeholder and progressbar on data change
             @Override
             public void onDataChanged() {

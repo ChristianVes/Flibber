@@ -23,18 +23,18 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static christian.eilers.flibber.Utils.Strings.PROFILE;
 
-public class BezahlerSelectionAdapter extends RecyclerView.Adapter<BezahlerSelectionAdapter.ViewHolder> {
+public class PayerSelectionAdapter extends RecyclerView.Adapter<PayerSelectionAdapter.ViewHolder> {
 
-    private ArrayList<User> users;
+    private ArrayList<User> users;  // list containing all users
     private int selectedPosition;
     private FrameLayout selectedLayout;
-    private String bezahlerID;
+    private String payerID;
     private Context context;
     private StorageReference storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
 
-    public BezahlerSelectionAdapter(ArrayList<User> users, String bezahlerID) {
+    public PayerSelectionAdapter(ArrayList<User> users, String payerID) {
         this.users = users;
-        this.bezahlerID = bezahlerID;
+        this.payerID = payerID;
     }
 
     @NonNull
@@ -60,7 +60,7 @@ public class BezahlerSelectionAdapter extends RecyclerView.Adapter<BezahlerSelec
                     .into(holder.img_profile);
         else Glide.with(context).clear(holder.img_profile);
         // Select/Mark the current User as the payer
-        if (bezahlerID.equals(user.getUserID())) {
+        if (payerID.equals(user.getUserID())) {
             selectedPosition = position;
             selectedLayout = holder.frameLayout;
             int padding = selectedLayout.getPaddingTop(); // Benutzte ein beliebiges
@@ -79,7 +79,7 @@ public class BezahlerSelectionAdapter extends RecyclerView.Adapter<BezahlerSelec
         return users.size();
     }
 
-    public String getBezahlerID() {
+    public String getPayerID() {
         return users.get(selectedPosition).getUserID();
     }
 

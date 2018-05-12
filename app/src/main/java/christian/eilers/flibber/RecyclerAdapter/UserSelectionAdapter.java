@@ -25,8 +25,8 @@ import static christian.eilers.flibber.Utils.Strings.PROFILE;
 
 public class UserSelectionAdapter extends RecyclerView.Adapter<UserSelectionAdapter.ViewHolder> {
 
-    private ArrayList<User> users;
-    private ArrayList<String> involvedIDs;
+    private ArrayList<User> users;  // List containing all users
+    private ArrayList<String> involvedIDs;  // List containing all involved user IDs
     private Context context;
     private StorageReference storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
 
@@ -59,12 +59,12 @@ public class UserSelectionAdapter extends RecyclerView.Adapter<UserSelectionAdap
         else Glide.with(context).clear(holder.img_profile);
         // Show/Hide Ring around picture depending if selected
         if (involvedIDs.contains(user.getUserID())) {
-            int padding = holder.frameLayout.getPaddingTop(); // Benutzte ein beliebiges
+            int padding = holder.frameLayout.getPaddingTop(); // use random, same padding for all
             holder.frameLayout.setBackgroundResource(R.drawable.layerlist_circle);
             holder.frameLayout.setPadding(padding,padding,padding,padding);
         }
         else {
-            int padding = holder.frameLayout.getPaddingTop(); // Benutzte ein beliebiges
+            int padding = holder.frameLayout.getPaddingTop(); // use random, same padding for all
             holder.frameLayout.setBackgroundColor(Color.TRANSPARENT);
             holder.frameLayout.setPadding(padding,padding,padding,padding);
         }

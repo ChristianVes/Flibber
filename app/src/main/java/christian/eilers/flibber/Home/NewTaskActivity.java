@@ -31,7 +31,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-import christian.eilers.flibber.RecyclerAdapter.BeteiligteAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;

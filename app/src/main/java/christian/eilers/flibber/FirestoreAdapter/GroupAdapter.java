@@ -35,6 +35,7 @@ import static christian.eilers.flibber.Utils.Strings.USERS;
 public class GroupAdapter extends FirestoreRecyclerAdapter<Group, GroupAdapter.GroupHolder> {
 
     private Context context;
+    private ProfileActivity activity;
     private StorageReference storage;
     private String userID;
 
@@ -44,8 +45,9 @@ public class GroupAdapter extends FirestoreRecyclerAdapter<Group, GroupAdapter.G
      *
      * @param options
      */
-    public GroupAdapter(@NonNull FirestoreRecyclerOptions<Group> options) {
+    public GroupAdapter(@NonNull FirestoreRecyclerOptions<Group> options, ProfileActivity activity) {
         super(options);
+        this.activity = activity;
         storage = FirebaseStorage.getInstance().getReference().child(GROUPS);
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
@@ -53,7 +55,9 @@ public class GroupAdapter extends FirestoreRecyclerAdapter<Group, GroupAdapter.G
     // Bind data from the database to the UI-Object
     @Override
     public void onBindViewHolder(final GroupHolder holder, int position, final Group model) {
+        // Set group name
         holder.v_name.setText(model.getName());
+        // Set group image
         Glide.with(holder.itemView.getContext()).clear(holder.img_group);
         if (model.getPicPath() != null)
             GlideApp.with(holder.itemView.getContext())
@@ -61,19 +65,23 @@ public class GroupAdapter extends FirestoreRecyclerAdapter<Group, GroupAdapter.G
                     .dontAnimate()
                     .placeholder(R.drawable.placeholder_group)
                     .into(holder.img_group);
+        // Open group on click
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HashMap<String, Object> map_devicetoken = new HashMap<>();
-                map_devicetoken.put(DEVICETOKEN, FirebaseInstanceId.getInstance().getToken());
+                // save group data in local storage
                 LocalStorage.setGroupID(holder.itemView.getContext(), model.getKey());
                 LocalStorage.setGroupName(holder.itemView.getContext(), model.getName());
                 LocalStorage.setGroupPicPath(holder.itemView.getContext(), model.getPicPath());
+                // update device token stored in group reference
+                HashMap<String, Object> map_devicetoken = new HashMap<>();
+                map_devicetoken.put(DEVICETOKEN, FirebaseInstanceId.getInstance().getToken());
                 FirebaseFirestore.getInstance().collection(GROUPS).document(model.getKey())
                         .collection(USERS).document(userID).update(map_devicetoken);
+                // start @HomeActivity
                 Intent homeIntent = new Intent(context, HomeActivity.class);
                 context.startActivity(homeIntent);
-                ((ProfileActivity) context).finish();
+                activity.finish();
             }
         });
     }

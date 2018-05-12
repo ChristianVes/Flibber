@@ -21,13 +21,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static christian.eilers.flibber.Utils.Strings.*;
 
-public class TaskBeteiligteAdapter extends RecyclerView.Adapter<TaskBeteiligteAdapter.ViewHolder> {
+public class TaskInvolvedAdapter extends RecyclerView.Adapter<TaskInvolvedAdapter.ViewHolder> {
 
-    private ArrayList<User> users;
+    private ArrayList<User> users;  // List containing all users
     private Context context;
     private StorageReference storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
 
-    public TaskBeteiligteAdapter(ArrayList<User> users) {
+    public TaskInvolvedAdapter(ArrayList<User> users) {
         this.users = users;
     }
 
