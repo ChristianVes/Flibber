@@ -1,5 +1,7 @@
 package christian.eilers.flibber.FirestoreAdapter;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
@@ -35,6 +37,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import christian.eilers.flibber.Home.TaskActivity;
+import christian.eilers.flibber.Home.TaskFragment;
 import christian.eilers.flibber.Models.TaskEntry;
 import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
@@ -47,6 +50,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     private FirebaseFunctions functions;
     private String userID, groupID;
     private HashMap<String, User> users;
+    private TaskFragment fragment;
     private final int HIDE = 0;
     private final int SHOW = 1;
 
@@ -56,9 +60,10 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
      *
      * @param options
      */
-    public TasksAdapter(@NonNull FirestoreRecyclerOptions<TaskModel> options,
+    public TasksAdapter(@NonNull FirestoreRecyclerOptions<TaskModel> options, TaskFragment fragment,
                         String userID, String groupID, HashMap<String, User> users) {
         super(options);
+        this.fragment = fragment;
         this.userID = userID;
         this.groupID = groupID;
         this.users = users;
@@ -140,7 +145,8 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
                 taskHolder.btn_pass.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        taskHolder.progressBar.setVisibility(View.VISIBLE);
+                        // taskHolder.progressBar.setVisibility(View.VISIBLE);
+                        fragment.getProgressBar().setVisibility(View.VISIBLE);
                         skippedNotification(model.getTitle(), model.getInvolvedIDs().get(1));
                         skipUser(taskHolder, model);
                     }
@@ -197,14 +203,14 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        taskHolder.progressBar.setVisibility(View.VISIBLE);
+                        fragment.getProgressBar().setVisibility(View.GONE);
                     }
                 });
     }
 
     // Handle actions to be done when User has finished/taken care of a task
     private void handleTaskDone(final TaskHolder taskHolder, final TaskModel model) {
-        taskHolder.progressBar.setVisibility(View.VISIBLE);
+        fragment.getProgressBar().setVisibility(View.VISIBLE);
         // Change order of the involved user's
         ArrayList<String> newOrder = (ArrayList<String>) model.getInvolvedIDs().clone();
         newOrder.remove(userID);
@@ -229,7 +235,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             @Override
             public void onSuccess(Void aVoid) {
                 Toast.makeText(taskHolder.itemView.getContext(), model.getTitle() +" erledigt!", Toast.LENGTH_SHORT).show();
-                taskHolder.progressBar.setVisibility(View.GONE);
+                fragment.getProgressBar().setVisibility(View.GONE);
             }
         });
     }
@@ -239,7 +245,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         TextView tv_title, tv_datum, tv_order_first, tv_order_second, tv_placeholder;
         LinearLayout btn_done, btn_pass;
         LinearLayout layout_order;
-        ProgressBar progressBar;
 
         public TaskHolder(View itemView) {
             super(itemView);
@@ -251,7 +256,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             btn_done = itemView.findViewById(R.id.btn_done);
             btn_pass = itemView.findViewById(R.id.btn_pass);
             layout_order = itemView.findViewById(R.id.layout_order);
-            progressBar = itemView.findViewById(R.id.progressBar);
         }
     }
 

@@ -107,6 +107,13 @@ public class TransactionDetailActivity extends AppCompatActivity {
                 String[] names_payer = payer.getName().split(" ", 2);
                 tv_payer.setText(payer.getName());
                 tv_username_to.setText(names_payer[0]);
+                if (payer.getPicPath() != null) {
+                    GlideApp.with(TransactionDetailActivity.this)
+                            .load(payer.getPicPath())
+                            .placeholder(R.drawable.profile_placeholder)
+                            .dontAnimate()
+                            .into(img_profile_to);
+                }
 
                 // INVOLVED
                 final HashMap<String, User> involvedUsers = new HashMap<>();

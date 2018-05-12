@@ -1,9 +1,10 @@
 package christian.eilers.flibber.Models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class TaskModel {
+public class TaskModel implements Serializable {
 
     private String key;
     private String title;

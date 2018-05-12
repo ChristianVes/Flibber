@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -53,6 +54,7 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
         recView = mainView.findViewById(R.id.recView);
         fab = mainView.findViewById(R.id.fab);
         placeholder = mainView.findViewById(R.id.placeholder);
+        progressBar = mainView.findViewById(R.id.progressBar);
 
         fab.setOnClickListener(this);
     }
@@ -81,7 +83,7 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
                 .setQuery(query, TaskModel.class)
                 .build();
 
-        adapter = new TasksAdapter(options, userID, groupID, users) {
+        adapter = new TasksAdapter(options, TaskFragment.this, userID, groupID, users) {
             @Override
             public void onDataChanged() {
                 if (getItemCount() == 0) placeholder.setVisibility(View.VISIBLE);
@@ -93,7 +95,11 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
         recView.setAdapter(adapter);
         recView.setNestedScrollingEnabled(false);
-        }
+    }
+
+    public ProgressBar getProgressBar() {
+        return progressBar;
+    }
 
     @Override
     public void onClick(View view) {
@@ -122,6 +128,7 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
     private TasksAdapter adapter;
     private FloatingActionButton fab;
     private TextView placeholder;
+    private ProgressBar progressBar;
 
     private FirebaseFirestore db;
     private String userID, groupID;

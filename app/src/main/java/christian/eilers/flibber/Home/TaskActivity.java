@@ -3,6 +3,7 @@ package christian.eilers.flibber.Home;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -38,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import christian.eilers.flibber.Home.Finance.DatePickerFragment;
 import christian.eilers.flibber.RecyclerAdapter.TaskBeteiligteAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.TaskEntry;
@@ -213,7 +216,7 @@ public class TaskActivity extends AppCompatActivity {
         et_frequency.setVisibility(View.VISIBLE);
         et_frequency.setText(thisTask.getFrequenz() +"");
         // TODO: show soft Keyboard not working
-        showSoftKeyboard(et_frequency);
+        // showSoftKeyboard(et_frequency);
 
         menu.clear();
         getMenuInflater().inflate(R.menu.menu_new_task, menu);
@@ -276,6 +279,11 @@ public class TaskActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void datePicker() {
+        DialogFragment dateDialog = DatePickerFragment.newInstance(groupID, thisTask);
+        dateDialog.show(getSupportFragmentManager(), "datePicker");
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
@@ -289,6 +297,9 @@ public class TaskActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_remind:
                 remindNotification();
+                return true;
+            case R.id.action_date:
+                datePicker();
                 return true;
             case R.id.action_change:
                 showEditLayout();

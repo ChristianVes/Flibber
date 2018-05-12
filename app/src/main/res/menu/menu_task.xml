@@ -8,7 +8,10 @@
         app:showAsAction="never" />
         <!--android:icon="@drawable/ic_notifications_active_colored"-->
 
-
+    <item
+        android:id="@+id/action_date"
+        android:title="Datum ändern"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_change"

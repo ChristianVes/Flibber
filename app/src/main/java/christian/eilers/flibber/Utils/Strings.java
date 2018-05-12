@@ -39,6 +39,7 @@ public class Strings {
     public static final String USER = "user";
     public static final String NOTIFICATIONS = "NOTIFICATIONS";
     public static final String TASK_SKIPPED = "task_skipped";
+    public static final String TASK_DATE_CHANGED = "task_date_changed";
     public static final String FROMUSER = "fromUser";
     public static final String TYPE = "type";
     public static final String BALANCING = "balancing";

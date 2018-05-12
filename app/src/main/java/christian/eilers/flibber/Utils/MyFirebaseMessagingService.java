@@ -63,6 +63,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     String fromUser = remoteMessage.getData().get(FROMUSER);
                     taskSkippedNotification(taskName_skipped, fromUser);
                     break;
+                case TASK_DATE_CHANGED:
+                    if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(TASKS, true)) break;
+                    String taskName_date = remoteMessage.getData().get(NAME);
+                    String byUser = remoteMessage.getData().get(USER);
+                    taskDateChangedNotification(taskName_date, byUser);
+                    break;
                 case NOTES:
                     if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(NOTES, true)) break;
                     String username_notes = remoteMessage.getData().get(USER);
@@ -113,6 +119,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     String fromUser = remoteMessage.getData().get(FROMUSER);
                     title = taskName_skipped;
                     description = " wurde von " + fromUser + "an dich weitergegeben";
+                    showNotification(title, description, title, description);
+                    break;
+                case TASK_DATE_CHANGED:
+                    if (!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(TASKS, true))
+                        break;
+                    String taskName_date = remoteMessage.getData().get(NAME);
+                    String byUser = remoteMessage.getData().get(USER);
+                    title = taskName_date;
+                    description = byUser + " hat das Datum verändert";
                     showNotification(title, description, title, description);
                     break;
                 case NOTES:
@@ -383,6 +398,39 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(taskName)
                 .setContentText("wurde von " + fromUser + " an dich weitergegeben")
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setContentIntent(clickPendingIntent)
+                .setGroup(CHANNEL_ID_ALL);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID_TASKS, "Aufgaben",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        notificationManager.notify((int) System.currentTimeMillis(), builder.build());
+        summaryNotification();
+    }
+
+    private void taskDateChangedNotification(String taskName, String fromUser) {
+        // Intent for onClick-Event
+        Intent clickIntent = new Intent(this, HomeActivity.class);
+        clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent clickPendingIntent = PendingIntent.getActivity(this, 0, clickIntent, PendingIntent.FLAG_ONE_SHOT);
+
+        // Default Notification Sound
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        // Build the Notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID_TASKS)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(taskName)
+                .setContentText(fromUser + " hat das Datum verändert")
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(clickPendingIntent)
