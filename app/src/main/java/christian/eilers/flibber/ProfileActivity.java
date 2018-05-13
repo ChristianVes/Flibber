@@ -6,12 +6,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,9 +36,11 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
@@ -266,48 +270,54 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 }).show();
     }
 
-    // Create a new group with a given @groupname
+    // Create a new group, add this user to the group and open the @HomeActivity
     private void createGroup(final String groupname) {
-        final DocumentReference reference = db.collection(GROUPS).document();
-        final Group group = new Group(groupname, reference.getId(), null);
-        reference.set(group);
+        progressBar.setVisibility(View.VISIBLE);
 
-        // Add Group-Reference to the current user
-        db.collection(USERS).document(userID).collection(GROUPS).document(group.getKey()).set(group);
+        final DocumentReference ref_group = db.collection(GROUPS).document();
+        final DocumentReference ref_user = db.collection(USERS).document(userID);
+        final Group group = new Group(groupname, ref_group.getId(), null);
 
-        // Add user to the Group
-        db.collection(USERS).document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        // save the group in the group collection
+        ref_group.set(group).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Crashlytics.logException(task.getException());
-                    return;
-                }
-                // Get current user's information
-                final String username = task.getResult().getString(NAME);
-                final String email = task.getResult().getString(EMAIL);
-                final String picPath = task.getResult().getString(PICPATH);
-                final String deviceToken = task.getResult().getString(DEVICETOKEN);
-                final User user = new User(username, email, userID, picPath, deviceToken);
-                // Add the current user to the group
-                db.collection(GROUPS).document(group.getKey()).collection(USERS).document(userID).set(user)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+            public void onSuccess(Void aVoid) {
+
+                // get the user information
+                ref_user.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot snap_user) {
+
+                        // read out user information
+                        String username = snap_user.getString(NAME);
+                        String email = snap_user.getString(EMAIL);
+                        String picPath = snap_user.getString(PICPATH);
+                        String deviceToken = snap_user.getString(DEVICETOKEN);
+                        final User user = new User(username, email, userID, picPath, deviceToken);
+
+                        // Save user in this group's user collection
+                        ref_group.collection(USERS).document(userID).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                // save group & user data in the local storage
-                                LocalStorage.setGroupID(ProfileActivity.this, group.getKey());
-                                LocalStorage.setGroupName(ProfileActivity.this, group.getName());
-                                // Update device token reference of this user in this group
-                                HashMap<String, Object> map_devicetoken = new HashMap<>();
-                                map_devicetoken.put(DEVICETOKEN, deviceToken);
-                                FirebaseFirestore.getInstance().collection(GROUPS).document(group.getKey())
-                                        .collection(USERS).document(userID).update(map_devicetoken);
-                                // TODO: Hier auf eine Anleitungsseite weiterleiten
-                                Intent homeIntent = new Intent(ProfileActivity.this, HomeActivity.class);
-                                startActivity(homeIntent);
-                                finish();
+
+                                // save group in the user's group collection
+                                ref_user.collection(GROUPS).document(group.getKey()).set(group).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        progressBar.setVisibility(View.GONE);
+                                        // save group data in the local storage
+                                        LocalStorage.setGroupID(ProfileActivity.this, group.getKey());
+                                        LocalStorage.setGroupName(ProfileActivity.this, group.getName());
+                                        // open @HomeActivity
+                                        Intent homeIntent = new Intent(ProfileActivity.this, HomeActivity.class);
+                                        startActivity(homeIntent);
+                                        finish();
+                                    }
+                                });
                             }
                         });
+                    }
+                });
             }
         });
     }

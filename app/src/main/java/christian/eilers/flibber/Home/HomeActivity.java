@@ -137,11 +137,12 @@ public class HomeActivity extends AppCompatActivity {
         if (users.size() > 1) mView.setCurrentItem(2);
         else {
             mView.setCurrentItem(4);
-            startupDialog();
+            welcomeDialog();
         }
     }
 
-    private void startupDialog() {
+    // Show welcome dialog
+    private void welcomeDialog() {
         new MaterialDialog.Builder(HomeActivity.this)
                 .title("Willkommen")
                 .content("Lade als erstes deine Mitbewohner per E-Mail Addresse über das Feld \"Einladen\" " +

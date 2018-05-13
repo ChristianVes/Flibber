@@ -10,7 +10,6 @@ public class User implements Serializable {
     private String picPath;
     private String deviceToken;
     private long money = 0;
-    private boolean acceptedBalancing = false;
 
     public User() {}
 
@@ -70,11 +69,4 @@ public class User implements Serializable {
         this.deviceToken = deviceToken;
     }
 
-    public boolean hasAcceptedBalancing() {
-        return acceptedBalancing;
-    }
-
-    public void setAcceptedBalancing(boolean acceptedBalancing) {
-        this.acceptedBalancing = acceptedBalancing;
-    }
 }
