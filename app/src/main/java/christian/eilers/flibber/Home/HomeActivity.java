@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -132,7 +133,21 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
         mView.setAdapter(adapterViewPager);
-        mView.setCurrentItem(2);
+
+        if (users.size() > 1) mView.setCurrentItem(2);
+        else {
+            mView.setCurrentItem(4);
+            startupDialog();
+        }
+    }
+
+    private void startupDialog() {
+        new MaterialDialog.Builder(HomeActivity.this)
+                .title("Willkommen")
+                .content("Lade als erstes deine Mitbewohner per E-Mail Addresse über das Feld \"Einladen\" " +
+                        "in die Gruppe ein. Beachte, du kannst nur Personen einladen, die bereits registriert sind.")
+                .positiveText("Okay")
+                .show();
     }
 
     // Delete the recent Notifications from the SharedPreferences
