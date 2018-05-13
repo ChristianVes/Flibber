@@ -29,14 +29,13 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     private TaskModel thisTask;
     private boolean called = false;
 
+    // creates a new instance with the given objects
     public static DatePickerFragment newInstance(String groupID, TaskModel thisTask) {
         DatePickerFragment f = new DatePickerFragment();
-
         Bundle args = new Bundle();
         args.putString(GROUPID, groupID);
         args.putSerializable(TASKID, thisTask);
         f.setArguments(args);
-
         return f;
     }
 
@@ -58,8 +57,10 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        // avoid that the function is executed a second time
         if (called) return;
         called = true;
+        // Update the date/timestamp in the database
         Date date = new GregorianCalendar(year, month, dayOfMonth).getTime();
         HashMap<String, Object> changings = new HashMap<>();
         changings.put(TIMESTAMP, date);
@@ -68,6 +69,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document(thisTask.getKey());
         doc.update(changings);
 
+        // Call the corresponding function to notify the other users
         Map<String, Object> data = new HashMap<>();
         data.put("taskName", thisTask.getTitle());
         data.put("userName", username);

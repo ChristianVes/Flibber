@@ -60,8 +60,8 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         et_price = findViewById(R.id.input_price);
         progressBar = findViewById(R.id.progressBar);
         btn_description = findViewById(R.id.btn_description);
-        tv_beteiligte = findViewById(R.id.tv_beteiligte);
-        tv_bezahler = findViewById(R.id.tv_bezahler);
+        tv_involved = findViewById(R.id.tv_beteiligte);
+        tv_payer = findViewById(R.id.tv_bezahler);
         layout_beteiligte = findViewById(R.id.layout_beteiligte);
         layout_bezahler = findViewById(R.id.layout_bezahler);
 
@@ -87,8 +87,8 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
             }
         });
 
-        setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
-        getSupportActionBar().setDisplayShowTitleEnabled(false); // Titel der Actionbar ausblenden
+        setSupportActionBar(toolbar); // set toolbar as actionbar
+        getSupportActionBar().setDisplayShowTitleEnabled(false); // hide title of actionbar
     }
 
     // Initialize variables
@@ -106,43 +106,47 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
             return;
         }
 
-        setBezahler(userID);
+        setPayer(userID);
         final ArrayList<User> userList = new ArrayList<>(users.values());
         selectedIDs = new ArrayList<>();
         layout_beteiligte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new InvolvedSelectionDialog(TransactionActivity.this,
-                        android.R.style.Theme_Translucent_NoTitleBar, userList);
+                final Dialog dialog = new InvolvedSelectionDialog(
+                        TransactionActivity.this,
+                        android.R.style.Theme_Translucent_NoTitleBar,
+                        userList);
                 dialog.show();
             }
         });
         layout_bezahler.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new PayerSelectionDialog(TransactionActivity.this,
-                        android.R.style.Theme_Translucent_NoTitleBar, userList);
+                final Dialog dialog = new PayerSelectionDialog(
+                        TransactionActivity.this,
+                        android.R.style.Theme_Translucent_NoTitleBar,
+                        userList);
                 dialog.show();
             }
         });
     }
 
-    public void setBezahler(String bezahlerID) {
-        this.bezahlerID = bezahlerID;
-        if (userID.equals(bezahlerID))
-            tv_bezahler.setText("Mir");
+    public void setPayer(String payerID) {
+        this.payerID = payerID;
+        if (userID.equals(payerID))
+            tv_payer.setText("Mir");
         else {
-            String[] names = users.get(bezahlerID).getName().split(" ", 2);
-            tv_bezahler.setText(names[0]);
+            String[] names = users.get(payerID).getName().split(" ", 2);
+            tv_payer.setText(names[0]);
         }
     }
 
-    public String getBezahler() { return bezahlerID; }
+    public String getPayerID() { return payerID; }
 
-    public void setBeteiligte(ArrayList<String> selectedIDs) {
+    public void setInvolved(ArrayList<String> selectedIDs) {
         this.selectedIDs = selectedIDs;
-        if (selectedIDs.size() == 1) tv_beteiligte.setText("1 Person");
-        else tv_beteiligte.setText(selectedIDs.size() + " Personen");
+        if (selectedIDs.size() == 1) tv_involved.setText("1 Person");
+        else tv_involved.setText(selectedIDs.size() + " Personen");
     }
 
     public ArrayList<String> getSelectedIDs() {
@@ -175,7 +179,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
                 doc.getId(),
                 title,
                 description,
-                bezahlerID,
+                payerID,
                 userID,
                 selectedIDs,
                 price
@@ -197,28 +201,27 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
                 long partialPrice = Math.round((double) payment.getPrice() / payment.getInvolvedIDs().size());
                 long totalPriceRounded = partialPrice * payment.getInvolvedIDs().size();
 
-                // Read-Operations
+                // READ Operations
                 for (String involvedID : payment.getInvolvedIDs()) {
                     DocumentSnapshot snapshot = transaction.get(ref_users.document(involvedID));
-                    // aktueller Beteiligter ist ebenfalls Bezahler
+                    // check if this involved user is also the payer
                     if (involvedID.equals(payment.getPayerID())) {
                         map.put(involvedID, snapshot.getLong(MONEY) + totalPriceRounded - partialPrice);
                     }
-                    // aktueller Beteiligte ist nicht auch Bezahler
                     else map.put(involvedID, snapshot.getLong(MONEY) - partialPrice);
                 }
 
-                // Bezahler Geld verrechnen, falls er noch nicht in Involviert-Schleife gemacht
+                // Charge cost of the payer if not already done
                 if (!map.containsKey(payment.getPayerID())) {
                     DocumentSnapshot snapshot = transaction.get(ref_users.document(payment.getPayerID()));
                     map.put(payment.getPayerID(), snapshot.getLong(MONEY) + totalPriceRounded);
                 }
 
-                // Write-Operations
+                // WRITE Operations
                 for (String key : map.keySet()) {
                     transaction.update(ref_users.document(key), MONEY, map.get(key));
                 }
-                // Speichere Payment in der Finanzen-Collection
+                // Save the payment in the finance collection
                 transaction.set(ref_finances.document(payment.getKey()), payment);
 
                 return null;
@@ -235,12 +238,12 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
             public void onFailure(@NonNull Exception e) {
                 progressBar.setVisibility(View.GONE);
                 Crashlytics.logException(e);
-                Toast.makeText(TransactionActivity.this, "Fehler!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(TransactionActivity.this, "Fehler aufgetreten!", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    // Verberge Tastatur, wenn gegebene Views ihren Fokus verlieren
+    // Hide keyboard if given view looses focus
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
         if (et_article.hasFocus() || et_price.hasFocus() || et_description.hasFocus()) return;
@@ -263,7 +266,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
         return true;
     }
 
-    private String userID, groupID, bezahlerID;
+    private String userID, groupID, payerID;
     private FirebaseFirestore db;
     private HashMap<String, User> users;
     private ArrayList<String> selectedIDs;
@@ -273,7 +276,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
     private CurrencyEditText et_price;
     private ProgressBar progressBar;
     private ImageButton btn_description;
-    private TextView tv_bezahler, tv_beteiligte;
+    private TextView tv_payer, tv_involved;
     private RelativeLayout layout_bezahler, layout_beteiligte;
 
 }

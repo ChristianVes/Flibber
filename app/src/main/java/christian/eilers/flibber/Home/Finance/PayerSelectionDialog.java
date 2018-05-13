@@ -1,6 +1,5 @@
 package christian.eilers.flibber.Home.Finance;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -9,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -32,19 +30,18 @@ public class PayerSelectionDialog extends Dialog {
         setContentView(R.layout.dialog_userlist);
         btn = findViewById(R.id.btn);
         recView = findViewById(R.id.recView);
+
         recView.setHasFixedSize(true);
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
-        final PayerSelectionAdapter adapter = new PayerSelectionAdapter(userList,
-                ((TransactionActivity)context).getBezahler());
+        final PayerSelectionAdapter adapter = new PayerSelectionAdapter(
+                userList,
+                ((TransactionActivity)context).getPayerID());
         recView.setAdapter(adapter);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (context instanceof Activity)
-                    ((TransactionActivity)context).setBezahler(adapter.getPayerID());
-                else
-                    Toast.makeText(getContext(), "Fehler aufgetreten", Toast.LENGTH_SHORT).show();
+                ((TransactionActivity)context).setPayer(adapter.getPayerID());
                 dismiss();
             }
         });

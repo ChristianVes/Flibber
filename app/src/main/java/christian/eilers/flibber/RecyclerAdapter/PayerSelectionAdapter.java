@@ -51,7 +51,7 @@ public class PayerSelectionAdapter extends RecyclerView.Adapter<PayerSelectionAd
         final User user = users.get(position);
         // USERNAME
         holder.tv_username.setText(user.getName());
-        // User's PROFILE PICTURE
+        // users PROFILE PICTURE
         if (user.getPicPath() != null)
             GlideApp.with(context)
                     .load(storage.child(user.getPicPath()))
