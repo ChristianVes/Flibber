@@ -71,7 +71,7 @@
         <activity
             android:name=".Home.Finance.TransactionActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible|adjustResize"/>
+            android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity
             android:name=".Home.Finance.VerlaufActivity"
             android:screenOrientation="portrait" />
@@ -84,13 +84,23 @@
         <activity
             android:name=".Home.Finance.TransactionDetailActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".Home.Finance.VerlaufBalanceActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Home.Finance.BalanceActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ProfileActivity"
+        <activity
+            android:name=".Home.Finance.VerlaufBalanceActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Home.Finance.BalanceActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ProfileActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing"></activity>
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".Home.StockActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Home.StockAddActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustResize"></activity>
     </application>
 
 </manifest>

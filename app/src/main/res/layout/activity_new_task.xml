@@ -179,33 +179,6 @@
 
             </android.support.v7.widget.CardView>
 
-            <!--
-            <RelativeLayout
-                android:id="@+id/layout_beteiligte"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:background="@drawable/layerlist_topedge">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Beteiligte"
-                    android:textSize="22sp"
-                    android:layout_centerVertical="true"/>
-
-                <TextView
-                    android:id="@+id/tv_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 Personen"
-                    android:textSize="22sp"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"/>
-
-            </RelativeLayout>
-            -->
-
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>

@@ -101,7 +101,7 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
         String s_frequency = et_frequency.getText().toString().trim();
 
         if (TextUtils.isEmpty(title) || TextUtils.isEmpty(s_frequency)) {
-            Toast.makeText(this, "Eingaben unvollstädnig...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Eingaben unvollständig...", Toast.LENGTH_SHORT).show();
             return;
         }
         if (selectedIDs.isEmpty()) {

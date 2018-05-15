@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -75,6 +76,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         btn_save = mainView.findViewById(R.id.btn_save);
         btn_group = mainView.findViewById(R.id.btn_group);
         placeholder = mainView.findViewById(R.id.placeholder);
+        btn_stock = mainView.findViewById(R.id.btn_stock);
 
         et_article.setOnFocusChangeListener(this);
         et_article.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -87,6 +89,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
 
         btn_save.setOnClickListener(this);
         btn_group.setOnClickListener(this);
+        btn_stock.setOnClickListener(this);
 
         setHasOptionsMenu(true); // activate options menu for this fragment
     }
@@ -291,6 +294,10 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             if (forAll) btn_group.setColorFilter(getResources().getColor(R.color.colorAccent));
             else btn_group.setColorFilter(getResources().getColor(R.color.colorPrimary));
         }
+        else if (id == R.id.btn_stock) {
+            Intent i_stock = new Intent(getContext(), StockActivity.class);
+            startActivity(i_stock);
+        }
     }
 
     @Override
@@ -322,4 +329,5 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     private EditText et_article;
     private ImageButton btn_save, btn_group;
     private TextView placeholder;
+    private Button btn_stock;
 }

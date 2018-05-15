@@ -7,6 +7,7 @@ public class Strings {
 
     public static final String TASKID = "taskID";
     public static final String TASKS = "tasks";
+    public static final String STOCK = "stock";
     public static final String USERS = "users";
     public static final String GROUPS = "groups";
     public static final String ENTRIES = "entries";
