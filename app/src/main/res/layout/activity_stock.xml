@@ -20,7 +20,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:titleTextAppearance="@style/Toolbar.TitleText"/>
+            app:titleTextAppearance="@style/Toolbar.TitleText"
+            app:title="Kühlschrank"/>
 
     </android.support.design.widget.AppBarLayout>
 

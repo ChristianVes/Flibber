@@ -25,6 +25,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
@@ -76,7 +77,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         btn_save = mainView.findViewById(R.id.btn_save);
         btn_group = mainView.findViewById(R.id.btn_group);
         placeholder = mainView.findViewById(R.id.placeholder);
-        btn_stock = mainView.findViewById(R.id.btn_stock);
+        btn_stock = mainView.findViewById(R.id.toStock);
 
         et_article.setOnFocusChangeListener(this);
         et_article.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -294,7 +295,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             if (forAll) btn_group.setColorFilter(getResources().getColor(R.color.colorAccent));
             else btn_group.setColorFilter(getResources().getColor(R.color.colorPrimary));
         }
-        else if (id == R.id.btn_stock) {
+        else if (id == R.id.toStock) {
             Intent i_stock = new Intent(getContext(), StockActivity.class);
             startActivity(i_stock);
         }
@@ -329,5 +330,5 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     private EditText et_article;
     private ImageButton btn_save, btn_group;
     private TextView placeholder;
-    private Button btn_stock;
+    private RelativeLayout btn_stock;
 }

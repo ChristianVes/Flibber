@@ -4,26 +4,36 @@ import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 
+import christian.eilers.flibber.FirestoreAdapter.StockAdapter;
+import christian.eilers.flibber.FirestoreAdapter.TasksAdapter;
 import christian.eilers.flibber.MainActivity;
+import christian.eilers.flibber.Models.StockProduct;
+import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 
 import static christian.eilers.flibber.Utils.Strings.GROUPS;
+import static christian.eilers.flibber.Utils.Strings.STOCK;
+import static christian.eilers.flibber.Utils.Strings.TASKS;
+import static christian.eilers.flibber.Utils.Strings.TIMESTAMP;
 import static christian.eilers.flibber.Utils.Strings.USERS;
 
 public class StockActivity extends AppCompatActivity implements View.OnClickListener {
@@ -82,6 +92,28 @@ public class StockActivity extends AppCompatActivity implements View.OnClickList
     private void loadData() {
         isInitialized = true;
         fab.setOnClickListener(StockActivity.this);
+
+        final Query query = db.collection(GROUPS).document(groupID)
+                .collection(STOCK);
+                // TODO: orderBy(TIMESTAMP, Query.Direction.ASCENDING);
+
+        final FirestoreRecyclerOptions<StockProduct> options = new FirestoreRecyclerOptions.Builder<StockProduct>()
+                .setQuery(query, StockProduct.class)
+                .build();
+
+        adapter = new StockAdapter(options, StockActivity.this, userID, groupID, users) {
+            @Override
+            public void onDataChanged() {
+                if (getItemCount() == 0) tv_placeholder.setVisibility(View.VISIBLE);
+                else tv_placeholder.setVisibility(View.GONE);
+                super.onDataChanged();
+            }
+        };
+
+        recView.setLayoutManager(new LinearLayoutManager(this));
+        recView.setAdapter(adapter);
+        recView.setNestedScrollingEnabled(false);
+        adapter.startListening();
     }
 
     // produces a map of users for given snapshots
@@ -114,15 +146,16 @@ public class StockActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    // TODO: Adapter--
     @Override
     protected void onStart() {
         super.onStart();
+        if (adapter != null) adapter.startListening();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        if (adapter != null) adapter.stopListening();
     }
 
     private FloatingActionButton fab;
@@ -134,6 +167,7 @@ public class StockActivity extends AppCompatActivity implements View.OnClickList
     private FirebaseFirestore db;
     private String userID, groupID;
     private HashMap<String, User> users;
+    private StockAdapter adapter;
 
     private boolean isInitialized = false;
 }

@@ -16,21 +16,45 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/bottomLayout">
 
-        <Button
-            android:id="@+id/btn_stock"
+        <RelativeLayout
+            android:id="@+id/toStock"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@drawable/selector_button"
-            android:layout_alignParentTop="true"
-            android:text="Zum Vorratsschrank"/>
+            android:background="?android:selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Zum Kühlschrank"
+                android:textStyle="bold"
+                android:textSize="23sp"
+                android:textColor="@color/colorPrimaryDark"/>
+
+            <ImageButton
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="5dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@android:color/transparent"
+                android:scaleType="fitEnd"
+                android:clickable="false"
+                android:tint="@color/colorPrimaryDark"
+                app:srcCompat="@drawable/ic_right"
+                android:contentDescription="TODO" />
+
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/placeholder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Deine Einkaufsliste ist leer..."
-            android:layout_below="@+id/btn_stock"
+            android:layout_below="@+id/toStock"
             android:padding="15dp"
             android:textStyle="italic"
             android:visibility="gone"/>
@@ -39,7 +63,7 @@
             android:id="@+id/shoppingList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/btn_stock"
+            android:layout_below="@+id/toStock"
             android:overScrollMode="ifContentScrolls">
 
         </android.support.v7.widget.RecyclerView>
