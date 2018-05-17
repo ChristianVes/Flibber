@@ -121,12 +121,7 @@ public class StockAdapter extends FirestoreRecyclerAdapter<StockProduct, Recycle
                     for (String id : model.getInvolvedIDs()) {
                         batch.set(ref_users.document(id).collection(SHOPPING).document(article.getKey()), article);
                     }
-                    batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(activity, model.getName() + " zur Einkaufsliste hinzugefügt", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    batch.commit();
                 }
                 model.getPurchaserIDs().remove(count-1);
                 ref_stock.document(model.getKey()).set(model);

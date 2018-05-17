@@ -2,6 +2,7 @@ package christian.eilers.flibber.Home;
 
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,10 +28,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -42,6 +45,7 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import christian.eilers.flibber.MainActivity;
@@ -49,6 +53,7 @@ import christian.eilers.flibber.Models.Article;
 import christian.eilers.flibber.Models.StockProduct;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
+import christian.eilers.flibber.RecyclerAdapter.UserSelectionAdapter;
 import christian.eilers.flibber.Utils.LocalStorage;
 import static christian.eilers.flibber.Utils.Strings.*;
 
@@ -239,6 +244,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                 // Group-Icon-Visibility
                 if (model.isPrivate()) holder.img_group.setVisibility(View.GONE);
                 else holder.img_group.setVisibility(View.VISIBLE);
+
                 // Change Checkbox-State on Click
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -253,6 +259,18 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
                             holder.checkBox.setChecked(false);
                         }
 
+                    }
+                });
+
+                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        if (!model.getUserID().equals(userID)) return false;
+                        Dialog dialog = new UserSelectionDialog(getContext(),
+                                android.R.style.Theme_Translucent_NoTitleBar,
+                                model);
+                        dialog.show();
+                        return true;
                     }
                 });
             }
@@ -283,6 +301,70 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             tv_article = itemView.findViewById(R.id.article);
             checkBox = itemView.findViewById(R.id.checkbox);
             img_group = itemView.findViewById(R.id.img_group);
+        }
+    }
+
+    // Dialog to choose the involved users
+    private class UserSelectionDialog extends Dialog {
+
+        private Button btn;
+        private RecyclerView recView;
+        private Article article;
+
+        public UserSelectionDialog(@NonNull Context context, int themeResId, Article article) {
+            super(context, themeResId);
+            // set the background to a translucent black
+            getWindow().setBackgroundDrawableResource(R.color.translucent_black);
+            this.article = article;
+        }
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.dialog_userlist);
+            btn = findViewById(R.id.btn);
+            recView = findViewById(R.id.recView);
+
+            recView.setHasFixedSize(true);
+            recView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            final UserSelectionAdapter adapter = new UserSelectionAdapter(
+                    new ArrayList<>(users.values()),
+                    new ArrayList<String>());
+            recView.setAdapter(adapter);
+
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final ArrayList<String> involvedIDs = adapter.getInvolvedIDs();
+                    if (!involvedIDs.contains(userID)) {
+                        Toast.makeText(getContext(), "Du musst ausgewählt sein...", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (involvedIDs.size() == 1) article.setPrivate(true);
+                    else article.setPrivate(false);
+                    final CollectionReference ref_users = db.collection(GROUPS).document(groupID).collection(USERS);
+                    db.runTransaction(new Transaction.Function<Void>() {
+                        @Nullable
+                        @Override
+                        public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                            for (String id : users.keySet()) {
+                                if (involvedIDs.contains(id))
+                                    transaction.set(ref_users.document(id).collection(SHOPPING).document(article.getKey()), article);
+                                else
+                                    transaction.delete(ref_users.document(id).collection(SHOPPING).document(article.getKey()));
+                            }
+                            return null;
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getContext(), "Änderung fehlgeschlagen...", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    dismiss();
+                }
+            });
         }
     }
 
