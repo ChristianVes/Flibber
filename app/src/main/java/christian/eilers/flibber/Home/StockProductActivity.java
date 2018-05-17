@@ -7,6 +7,9 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -71,6 +74,7 @@ public class StockProductActivity extends AppCompatActivity {
         else return false;
     }
 
+    // load the StockProduct from database
     private void loadData() {
         progressBar.setVisibility(View.VISIBLE);
         db.collection(GROUPS).document(groupID).collection(STOCK).document(stockID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -97,6 +101,30 @@ public class StockProductActivity extends AppCompatActivity {
                 rec_involved.setAdapter(adapter_involved);
             }
         });
+    }
+
+    // delete this StockProduct and finish the activity
+    private void deleteStockProduct() {
+        db.collection(GROUPS).document(groupID).collection(STOCK).document(stockID).delete();
+        finish();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_stock_product, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                deleteStockProduct();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private Toolbar toolbar;

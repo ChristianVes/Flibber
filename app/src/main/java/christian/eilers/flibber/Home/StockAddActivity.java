@@ -50,6 +50,7 @@ public class StockAddActivity extends AppCompatActivity implements View.OnFocusC
         initializeVariables();
     }
 
+    // Initialize views
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
         et_name = findViewById(R.id.input_name);
@@ -86,6 +87,7 @@ public class StockAddActivity extends AppCompatActivity implements View.OnFocusC
             layout_involved.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // open dialog to selected involved users on click
                     Dialog dialog = new UserSelectionDialog(StockAddActivity.this,
                             android.R.style.Theme_Translucent_NoTitleBar);
                     dialog.show();
@@ -100,6 +102,7 @@ public class StockAddActivity extends AppCompatActivity implements View.OnFocusC
         else return false;
     }
 
+    // save the StockProduct to the database and finish the activity
     private void saveProduct() {
         String name = et_name.getText().toString().trim();
         long price = et_price.getRawValue();
@@ -135,6 +138,7 @@ public class StockAddActivity extends AppCompatActivity implements View.OnFocusC
         });
     }
 
+    // update the selected user's list and it's text view
     public void setInvolved(ArrayList<String> selectedIDs) {
         this.selectedIDs = selectedIDs;
         if (selectedIDs.size() == 1) tv_count.setText("1 Person");
@@ -143,6 +147,7 @@ public class StockAddActivity extends AppCompatActivity implements View.OnFocusC
 
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
+        // TODO: et_price.hasFocus() wieder einbauen und im xml enablen
         if (et_name.hasFocus()) return;
         if (!hasFocus) {
             InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);

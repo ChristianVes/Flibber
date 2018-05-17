@@ -47,6 +47,7 @@ public class StockActivity extends AppCompatActivity implements View.OnClickList
         initializeVariables();
     }
 
+    // Initialize views
     private void initializeViews() {
         fab = findViewById(R.id.fab);
         toolbar = findViewById(R.id.toolbar);
@@ -61,7 +62,6 @@ public class StockActivity extends AppCompatActivity implements View.OnClickList
         userID = LocalStorage.getUserID(StockActivity.this);
         groupID = LocalStorage.getGroupID(StockActivity.this);
         isInitialized = false;
-
         if (hasNulls()) {
             Intent main = new Intent(this, MainActivity.class);
             main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -72,6 +72,8 @@ public class StockActivity extends AppCompatActivity implements View.OnClickList
         }
 
         progressBar.setVisibility(View.VISIBLE);
+        // user list real time updated
+        // data loaded after first time retrieving users
         db.collection(GROUPS).document(groupID).collection(USERS).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
@@ -90,13 +92,15 @@ public class StockActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
+    // load & update the stock items
     private void loadData() {
         isInitialized = true;
+        // activate button because user-map is needed to open @StockAddActivity
         fab.setOnClickListener(StockActivity.this);
 
         final Query query = db.collection(GROUPS).document(groupID)
                 .collection(STOCK)
-                .orderBy(NAME, Query.Direction.ASCENDING);  // sort alphabetically
+                .orderBy(NAME, Query.Direction.ASCENDING);  // sort after name alphabetically
 
         final FirestoreRecyclerOptions<StockProduct> options = new FirestoreRecyclerOptions.Builder<StockProduct>()
                 .setQuery(query, StockProduct.class)

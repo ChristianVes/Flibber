@@ -161,6 +161,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             }
             batch.commit();
         }
+        // look for a StockProduct with same key and add the user to the purchaser list if it exists
         final CollectionReference ref_stock = db.collection(GROUPS).document(groupID).collection(STOCK);
         db.runTransaction(new Transaction.Function<Void>() {
             @Nullable
@@ -304,7 +305,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
-    // Dialog to choose the involved users
+    // Dialog to choose the involved users for the given (shopping) article
     private class UserSelectionDialog extends Dialog {
 
         private Button btn;
@@ -328,21 +329,27 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             recView.setHasFixedSize(true);
             recView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+            // create adapter for user selection with no user selected
+            // cannot select involved users because each user has it's own shopping list
             final UserSelectionAdapter adapter = new UserSelectionAdapter(
                     new ArrayList<>(users.values()),
                     new ArrayList<String>());
             recView.setAdapter(adapter);
 
+            // save article in selected users shopping list and delete the article for everyone else
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     final ArrayList<String> involvedIDs = adapter.getInvolvedIDs();
+                    // check if current user is involved
                     if (!involvedIDs.contains(userID)) {
                         Toast.makeText(getContext(), "Du musst ausgewählt sein...", Toast.LENGTH_SHORT).show();
                         return;
                     }
+                    // check if product is private
                     if (involvedIDs.size() == 1) article.setPrivate(true);
                     else article.setPrivate(false);
+                    // add/delete article in each users shopping list depending whether user is 'involved'
                     final CollectionReference ref_users = db.collection(GROUPS).document(groupID).collection(USERS);
                     db.runTransaction(new Transaction.Function<Void>() {
                         @Nullable
@@ -368,7 +375,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
-    // Initalize Toolbar and their Buttons
+    // initialize toolbar and their buttons
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);

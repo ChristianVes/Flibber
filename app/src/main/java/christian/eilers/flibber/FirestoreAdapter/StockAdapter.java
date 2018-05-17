@@ -89,6 +89,7 @@ public class StockAdapter extends FirestoreRecyclerAdapter<StockProduct, Recycle
         taskHolder.tv_name.setText(model.getName());
         taskHolder.tv_count.setText(model.getPurchaserIDs().size() + "");
 
+        // open detailed view on middle part clicked
         taskHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,6 +100,7 @@ public class StockAdapter extends FirestoreRecyclerAdapter<StockProduct, Recycle
             }
         });
 
+        // add the userID to the end of the purchaser's list
         taskHolder.btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,6 +109,8 @@ public class StockAdapter extends FirestoreRecyclerAdapter<StockProduct, Recycle
             }
         });
 
+        // remove the first userID of the purchaser's list
+        // add the product to the shopping list for all involved if count got from 1 to 0
         taskHolder.btn_remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
