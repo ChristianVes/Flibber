@@ -6,6 +6,7 @@ public class Strings {
     public static final long ONE_WEEK = 7L * 24 * 3600 * 1000; // Millisekunden // entspricht 10 Sekunden
 
     public static final String TASKID = "taskID";
+    public static final String STOCKID = "stockID";
     public static final String TASKS = "tasks";
     public static final String STOCK = "stock";
     public static final String USERS = "users";

@@ -103,7 +103,7 @@ public class TaskActivity extends AppCompatActivity {
                 thisTask = documentSnapshot.toObject(TaskModel.class);
                 // Task-Frequenz
                 tv_frequenz.setText(thisTask.getFrequenz() +"");
-                // Task Points (Aufwand)
+
                 setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
                 getSupportActionBar().setTitle(thisTask.getTitle()); // Titel des Tasks setzen
 

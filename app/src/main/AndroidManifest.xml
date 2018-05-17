@@ -100,7 +100,10 @@
         <activity
             android:name=".Home.StockAddActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible|adjustResize"></activity>
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name=".Home.StockProductActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

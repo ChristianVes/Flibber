@@ -143,7 +143,7 @@ public class StockAddActivity extends AppCompatActivity implements View.OnFocusC
 
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
-        if (et_name.hasFocus() || et_price.hasFocus()) return;
+        if (et_name.hasFocus()) return;
         if (!hasFocus) {
             InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);

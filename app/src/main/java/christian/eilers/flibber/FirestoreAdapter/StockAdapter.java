@@ -1,30 +1,39 @@
 package christian.eilers.flibber.FirestoreAdapter;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.HashMap;
 
 import christian.eilers.flibber.Home.StockActivity;
+import christian.eilers.flibber.Home.StockProductActivity;
+import christian.eilers.flibber.Models.Article;
 import christian.eilers.flibber.Models.StockProduct;
-import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
+
+import static christian.eilers.flibber.Utils.Strings.*;
 
 public class StockAdapter extends FirestoreRecyclerAdapter<StockProduct, RecyclerView.ViewHolder>{
 
     private String userID, groupID;
     private HashMap<String, User> users;
     private StockActivity activity;
+    private CollectionReference ref_stock, ref_users;
 
     private final int HIDE = 0;
     private final int SHOW = 1;
@@ -42,6 +51,8 @@ public class StockAdapter extends FirestoreRecyclerAdapter<StockProduct, Recycle
         this.userID = userID;
         this.groupID = groupID;
         this.users = users;
+        ref_users = FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(USERS);
+        ref_stock = FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(STOCK);
     }
 
     // Create normal/empty Viewholder depending on whether the user is involved in this task
@@ -74,20 +85,67 @@ public class StockAdapter extends FirestoreRecyclerAdapter<StockProduct, Recycle
         // specialize the ViewHolder as StockHolder to bind the data to the item
         final StockHolder taskHolder = (StockAdapter.StockHolder) holder;
 
+        // NAME & COUNT
         taskHolder.tv_name.setText(model.getName());
         taskHolder.tv_count.setText(model.getPurchaserIDs().size() + "");
+
+        taskHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(activity, StockProductActivity.class);
+                i.putExtra(STOCKID, model.getKey());
+                i.putExtra(USERS, users);
+                activity.startActivity(i);
+            }
+        });
+
+        taskHolder.btn_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                model.getPurchaserIDs().add(userID);
+                ref_stock.document(model.getKey()).set(model);
+            }
+        });
+
+        taskHolder.btn_remove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int count = model.getPurchaserIDs().size();
+                if (count == 0) return;
+                if (count == 1) {
+                    Article article = new Article(model.getKey(),
+                            model.getName(),
+                            userID,
+                            model.getInvolvedIDs().size() == 1);
+                    WriteBatch batch = FirebaseFirestore.getInstance().batch();
+                    for (String id : model.getInvolvedIDs()) {
+                        batch.set(ref_users.document(id).collection(SHOPPING).document(article.getKey()), article);
+                    }
+                    batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(activity, model.getName() + " zur Einkaufsliste hinzugefügt", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                model.getPurchaserIDs().remove(count-1);
+                ref_stock.document(model.getKey()).set(model);
+            }
+        });
 
     }
 
     // Custom ViewHolder for a Task
     public class StockHolder extends RecyclerView.ViewHolder {
-        // ImageButton btn_add, btn_remove;
+        ImageButton btn_add, btn_remove;
         TextView tv_name, tv_count;
 
         public StockHolder(View itemView) {
             super(itemView);
             tv_name = itemView.findViewById(R.id.name);
             tv_count = itemView.findViewById(R.id.count);
+            btn_add = itemView.findViewById(R.id.btn_add);
+            btn_remove = itemView.findViewById(R.id.btn_remove);
         }
     }
 

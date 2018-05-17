@@ -31,6 +31,7 @@ import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 
 import static christian.eilers.flibber.Utils.Strings.GROUPS;
+import static christian.eilers.flibber.Utils.Strings.NAME;
 import static christian.eilers.flibber.Utils.Strings.STOCK;
 import static christian.eilers.flibber.Utils.Strings.TASKS;
 import static christian.eilers.flibber.Utils.Strings.TIMESTAMP;
@@ -94,8 +95,8 @@ public class StockActivity extends AppCompatActivity implements View.OnClickList
         fab.setOnClickListener(StockActivity.this);
 
         final Query query = db.collection(GROUPS).document(groupID)
-                .collection(STOCK);
-                // TODO: orderBy(TIMESTAMP, Query.Direction.ASCENDING);
+                .collection(STOCK)
+                .orderBy(NAME, Query.Direction.ASCENDING);  // sort alphabetically
 
         final FirestoreRecyclerOptions<StockProduct> options = new FirestoreRecyclerOptions.Builder<StockProduct>()
                 .setQuery(query, StockProduct.class)

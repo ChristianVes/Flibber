@@ -13,16 +13,18 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
         android:background="?selectableItemBackground">
 
         <ImageButton
             android:id="@+id/btn_add"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:padding="10dp"
-            android:background="?selectableItemBackground"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/selector_stock_item"
             app:srcCompat="@drawable/ic_add_blank"/>
 
         <LinearLayout
@@ -63,12 +65,12 @@
 
         <ImageButton
             android:id="@+id/btn_remove"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:padding="10dp"
-            android:background="?selectableItemBackground"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/selector_stock_item"
             app:srcCompat="@drawable/ic_remove"/>
 
     </RelativeLayout>

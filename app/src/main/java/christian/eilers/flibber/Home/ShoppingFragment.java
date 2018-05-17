@@ -34,14 +34,19 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
 
 import java.util.HashMap;
 
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Article;
+import christian.eilers.flibber.Models.StockProduct;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
@@ -136,7 +141,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     }
 
     // Delete article from the database
-    private void deleteArticle(Article article) {
+    private void deleteArticle(final Article article) {
         // If private: only delete from current user's collection
         if (article.isPrivate()) ref_shopping.document(article.getKey()).delete();
         // Otherwise: delete for every user in the group
@@ -151,6 +156,22 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             }
             batch.commit();
         }
+        final CollectionReference ref_stock = db.collection(GROUPS).document(groupID).collection(STOCK);
+        db.runTransaction(new Transaction.Function<Void>() {
+            @Nullable
+            @Override
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                DocumentSnapshot snapshot = transaction.get(ref_stock.document(article.getKey()));
+                if (snapshot.exists()) {
+                    StockProduct product = snapshot.toObject(StockProduct.class);
+                    if (product.getInvolvedIDs().contains(userID)) {
+                        product.getPurchaserIDs().add(userID);
+                        transaction.set(ref_stock.document(article.getKey()), product);
+                    }
+                }
+                return null;
+            }
+        });
     }
 
     // Find all checked Articles and delete them
