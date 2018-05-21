@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -83,11 +84,15 @@ public class StockAdapter extends FirestoreRecyclerAdapter<StockProduct, Recycle
     protected void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position, @NonNull final StockProduct model) {
         if (holder.getItemViewType() == HIDE) return; // show nothing if user is not involved
         // specialize the ViewHolder as StockHolder to bind the data to the item
-        final StockHolder taskHolder = (StockAdapter.StockHolder) holder;
+        final StockHolder taskHolder = (StockHolder) holder;
 
         // NAME & COUNT
         taskHolder.tv_name.setText(model.getName());
         taskHolder.tv_count.setText(model.getPurchaserIDs().size() + "");
+        // Group Icon Visibility
+        if (model.getInvolvedIDs().size() > 1)
+            taskHolder.ic_group.setVisibility(View.VISIBLE);
+        else taskHolder.ic_group.setVisibility(View.GONE);
 
         // open detailed view on middle part clicked
         taskHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -137,6 +142,7 @@ public class StockAdapter extends FirestoreRecyclerAdapter<StockProduct, Recycle
     // Custom ViewHolder for a Task
     public class StockHolder extends RecyclerView.ViewHolder {
         ImageButton btn_add, btn_remove;
+        ImageView ic_group;
         TextView tv_name, tv_count;
 
         public StockHolder(View itemView) {
@@ -145,6 +151,7 @@ public class StockAdapter extends FirestoreRecyclerAdapter<StockProduct, Recycle
             tv_count = itemView.findViewById(R.id.count);
             btn_add = itemView.findViewById(R.id.btn_add);
             btn_remove = itemView.findViewById(R.id.btn_remove);
+            ic_group = itemView.findViewById(R.id.ic_group);
         }
     }
 

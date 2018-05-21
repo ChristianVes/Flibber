@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_toLeftOf="@+id/btn_remove"
+            android:layout_toLeftOf="@+id/ic_group"
             android:layout_toRightOf="@+id/btn_add">
 
             <TextView
@@ -40,7 +40,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="22sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:lines="1"
+                android:ellipsize="end"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -62,6 +64,19 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ic_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/btn_remove"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:paddingLeft="5dp"
+            app:srcCompat="@drawable/ic_group"
+            android:tint="@color/colorPrimaryDark"
+            android:visibility="gone"
+            android:contentDescription="TODO" />
 
         <ImageButton
             android:id="@+id/btn_remove"

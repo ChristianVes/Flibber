@@ -23,8 +23,8 @@ android {
         applicationId "christian.eilers.flibber"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 12
-        versionName "1.2.7"
+        versionCode 15
+        versionName "1.3.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

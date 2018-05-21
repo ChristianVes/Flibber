@@ -111,64 +111,54 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         groupID = LocalStorage.getGroupID(this);
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance().getReference();
-        noteID = getIntent().getStringExtra(NOTEID);
+        thisNote = (Note) getIntent().getSerializableExtra(NOTEID);
         users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
     }
 
     // check for null pointers
     private boolean hasNulls() {
-        if (noteID == null || users == null || userID == null || groupID == null) return true;
+        if (thisNote == null || users == null || userID == null || groupID == null) return true;
         else return false;
     }
 
-    // Lade den Inhalt der Notiz aus DB und zeige sie an
     private void loadNote() {
-        progressBar.setVisibility(View.VISIBLE);
-        db.collection(GROUPS).document(groupID).collection(NOTES).document(noteID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                thisNote = documentSnapshot.toObject(Note.class); // retrieve Note-Object
-                if(thisNote.getUserID().equals(userID)) btn_more.setVisibility(View.VISIBLE); // Option-Button nur für Ersteller sichtbar machen
+        if(thisNote.getUserID().equals(userID)) btn_more.setVisibility(View.VISIBLE); // Option-Button nur für Ersteller sichtbar machen
 
-                // TITEL & BESCHREIBUNG
-                if (thisNote.getTitle() != null && !TextUtils.isEmpty(thisNote.getTitle())) {
-                    tv_title.setVisibility(View.VISIBLE);
-                    tv_title.setText(thisNote.getTitle());
-                }
-                if (thisNote.getDescription() != null && !TextUtils.isEmpty(thisNote.getDescription())) {
-                    tv_description.setVisibility(View.VISIBLE);
-                    tv_description.setText(thisNote.getDescription());
-                }
+        // TITEL & BESCHREIBUNG
+        if (thisNote.getTitle() != null && !TextUtils.isEmpty(thisNote.getTitle())) {
+            tv_title.setVisibility(View.VISIBLE);
+            tv_title.setText(thisNote.getTitle());
+        }
+        if (thisNote.getDescription() != null && !TextUtils.isEmpty(thisNote.getDescription())) {
+            tv_description.setVisibility(View.VISIBLE);
+            tv_description.setText(thisNote.getDescription());
+        }
 
-                // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
-                if(thisNote.getTimestamp() != null)
-                    tv_datum.setText(
-                            DateUtils.getRelativeTimeSpanString(thisNote.getTimestamp().getTime(),
-                                    System.currentTimeMillis() + BUFFER,
-                                    DateUtils.MINUTE_IN_MILLIS,
-                                    DateUtils.FORMAT_ABBREV_RELATIVE));
+        // TIMESTAMP (Buffer um "in 0 Minuten"-Anzeige zu vermeiden)
+        if(thisNote.getTimestamp() != null)
+            tv_datum.setText(
+                    DateUtils.getRelativeTimeSpanString(thisNote.getTimestamp().getTime(),
+                            System.currentTimeMillis() + BUFFER,
+                            DateUtils.MINUTE_IN_MILLIS,
+                            DateUtils.FORMAT_ABBREV_RELATIVE));
 
-                // NOTE PICTURE
-                if(thisNote.getImagePath() != null && isValidContextForGlide(NoteActivity.this))
-                    GlideApp.with(NoteActivity.this)
-                            .load(storage.child(NOTES).child(groupID).child(thisNote.getImagePath()))
-                            .dontAnimate()
-                            .into(img_note);
+        // NOTE PICTURE
+        if(thisNote.getImagePath() != null && isValidContextForGlide(NoteActivity.this))
+            GlideApp.with(NoteActivity.this)
+                    .load(storage.child(NOTES).child(groupID).child(thisNote.getImagePath()))
+                    .dontAnimate()
+                    .into(img_note);
 
-                // USER-INFORMATION
-                final User user = users.get(thisNote.getUserID());
-                // USERNAME
-                tv_username.setText(user.getName());
-                // PROFILE PICTURE
-                if (user.getPicPath() != null)
-                    GlideApp.with(NoteActivity.this)
-                            .load(storage.child(PROFILE).child(user.getPicPath()))
-                            .dontAnimate()
-                            .into(img_profile);
-
-                progressBar.setVisibility(View.GONE);
-            }
-        });
+        // USER-INFORMATION
+        final User user = users.get(thisNote.getUserID());
+        // USERNAME
+        tv_username.setText(user.getName());
+        // PROFILE PICTURE
+        if (user.getPicPath() != null)
+            GlideApp.with(NoteActivity.this)
+                    .load(storage.child(PROFILE).child(user.getPicPath()))
+                    .dontAnimate()
+                    .into(img_profile);
     }
 
     public boolean isValidContextForGlide(final Context context) {
@@ -191,7 +181,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
 
         // save Comment in Database
         final Comment comment = new Comment(commentText, userID);
-        final DocumentReference ref_note = db.collection(GROUPS).document(groupID).collection(NOTES).document(noteID);
+        final DocumentReference ref_note = db.collection(GROUPS).document(groupID).collection(NOTES).document(thisNote.getKey());
         ref_note.collection(COMMENTS).document().set(comment);
 
         // Update the commentsCount to +1
@@ -213,11 +203,12 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
 
     // load and display the Comments
     private void loadData() {
+        // progressBar.setVisibility(View.VISIBLE);
         final Query commentsQuery = db.collection(GROUPS).document(groupID)
-                .collection(NOTES).document(noteID)
+                .collection(NOTES).document(thisNote.getKey())
                 .collection(COMMENTS).orderBy(TIMESTAMP);
 
-        FirestoreRecyclerOptions<Comment> options = new FirestoreRecyclerOptions.Builder<Comment>()
+        final FirestoreRecyclerOptions<Comment> options = new FirestoreRecyclerOptions.Builder<Comment>()
                 .setQuery(commentsQuery, Comment.class)
                 .build();
 
@@ -253,6 +244,12 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                     holder.comment_datum.setVisibility(View.GONE);
                 }
 
+            }
+
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                // progressBar.setVisibility(View.GONE);
             }
         };
 
@@ -306,7 +303,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    // Change visibility of layout-objects when user likes to modify the NOTE
+    // Change visibility of layout-objects when user likes to modify the note
     private void changeLayout() {
         bottomLayout.setVisibility(View.GONE);
         btn_more.setVisibility(View.GONE);
@@ -319,7 +316,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         btn_save.setVisibility(View.VISIBLE);
     }
 
-    // Update the modified NOTE
+    // Update the modified note
     private void updateNote() {
         final String title = et_title.getText().toString().trim();
         final String description = et_description.getText().toString().trim();
@@ -330,15 +327,8 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         map.put(DESCRIPTION, description); // new description
         map.put(TIMESTAMP, FieldValue.serverTimestamp()); // new Timestamp
 
-        progressBar.setVisibility(View.VISIBLE);
-        db.collection(GROUPS).document(groupID).collection(NOTES).document(noteID).update(map)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        updateLayout(title, description);
-                        progressBar.setVisibility(View.GONE);
-                    }
-                });
+        db.collection(GROUPS).document(groupID).collection(NOTES).document(thisNote.getKey()).update(map);
+        updateLayout(title, description);
     }
 
     // Update Layout after changing the Note
@@ -354,8 +344,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         if (!TextUtils.isEmpty(description)) tv_description.setVisibility(View.VISIBLE);
     }
 
-    // Lösche Notiz und lösche Kommentare via CloudFunction
-    // Beende diese Activity bei Löschbestätigung
+    // delete the note and call a cloud function that deletes all comments, then finish the activity
     private void deleteNote() {
         new MaterialDialog.Builder(NoteActivity.this)
                 .title("Notiz wirklich löschen?")
@@ -364,7 +353,7 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         if (thisNote.getImagePath() != null) storage.child(NOTES).child(groupID).child(thisNote.getImagePath()).delete();
-                        db.collection(GROUPS).document(groupID).collection(NOTES).document(noteID).delete();
+                        db.collection(GROUPS).document(groupID).collection(NOTES).document(thisNote.getKey()).delete();
                         finish();
                     }
                 })
@@ -410,5 +399,5 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
     private Note thisNote;
     private HashMap<String, User> users;
 
-    private String noteID, userID, groupID;
+    private String userID, groupID;
 }

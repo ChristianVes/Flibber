@@ -25,6 +25,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
 
+import christian.eilers.flibber.FirestoreAdapter.NoteAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Note;
 import christian.eilers.flibber.Models.User;
@@ -73,7 +74,6 @@ public class HomeFragment extends Fragment {
 
     // Initialize variables
     private void initializeVariables() {
-        storage = FirebaseStorage.getInstance().getReference();
         groupID = LocalStorage.getGroupID(getContext());
         users = ((HomeActivity) getActivity()).getUsers();
     }
@@ -84,7 +84,7 @@ public class HomeFragment extends Fragment {
         else return false;
     }
 
-    // Lädt Notizen aus der Datenbank in den RecyclerView und hält sie up-to-date über einen Listener
+    // load notes from database to the recyclerView including an update listener
     private void loadData() {
         Query notesQuery = FirebaseFirestore.getInstance()
                 .collection(GROUPS)
@@ -96,6 +96,17 @@ public class HomeFragment extends Fragment {
                 .setQuery(notesQuery, Note.class)
                 .build();
 
+        adapter = new NoteAdapter(options, users, groupID) {
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                if (getItemCount() == 0) placeholder.setVisibility(View.VISIBLE);
+                else placeholder.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
+            }
+        };
+
+        /*
         adapter = new FirestoreRecyclerAdapter<Note, HomeFragment.NotesHolder>(options) {
 
             // Aktualisiere Platzhalter und ProgressBar
@@ -165,7 +176,6 @@ public class HomeFragment extends Fragment {
                         i.putExtra(NOTEID, model.getKey());
                         i.putExtra(USERS, users);
                         startActivity(i);
-                        //getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                     }
                 });
 
@@ -179,10 +189,10 @@ public class HomeFragment extends Fragment {
                 return new HomeFragment.NotesHolder(view);
             }
         };
+         */
 
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
         recView.setAdapter(adapter);
-        //OverScrollDecoratorHelper.setUpOverScroll(recView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
     }
 
     @Override
@@ -197,33 +207,12 @@ public class HomeFragment extends Fragment {
         if(adapter != null) adapter.stopListening();
     }
 
-    // Custom ViewHolder for interacting with single items of the RecyclerView
-    public class NotesHolder extends RecyclerView.ViewHolder {
-        View itemView;
-        CircleImageView img_profile;
-        TextView tv_username, tv_title, tv_description, tv_datum, tv_comments;
-        ImageView img_note;
-
-        public NotesHolder(View itemView) {
-            super(itemView);
-            this.itemView = itemView;
-            img_profile = itemView.findViewById(R.id.profile_image);
-            tv_datum = itemView.findViewById(R.id.datum);
-            tv_description = itemView.findViewById(R.id.description);
-            tv_title = itemView.findViewById(R.id.title);
-            tv_username = itemView.findViewById(R.id.username);
-            tv_comments = itemView.findViewById(R.id.comment_count);
-            img_note = itemView.findViewById(R.id.image);
-        }
-    }
-
     private View mainView;
     private RecyclerView recView;
     private ProgressBar progressBar;
     private LinearLayout placeholder;
     private FirestoreRecyclerAdapter adapter;
     private FloatingActionButton fab;
-    private StorageReference storage;
 
     private String groupID;
     private HashMap<String, User> users;
