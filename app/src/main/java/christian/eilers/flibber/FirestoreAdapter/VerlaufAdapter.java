@@ -31,12 +31,6 @@ public class VerlaufAdapter extends FirestoreRecyclerAdapter<Payment, RecyclerVi
     private String userID;
     private HashMap<String, User> users;
 
-    /**
-     * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
-     * FirestoreRecyclerOptions} for configuration options.
-     *
-     * @param options
-     */
     public VerlaufAdapter(@NonNull FirestoreRecyclerOptions<Payment> options, String userID, HashMap<String, User> users) {
         super(options);
         this.userID = userID;
@@ -107,7 +101,7 @@ public class VerlaufAdapter extends FirestoreRecyclerAdapter<Payment, RecyclerVi
             @Override
             public void onClick(View view) {
                 Intent i_detailed = new Intent(transHolder.itemView.getContext(), TransactionDetailActivity.class);
-                i_detailed.putExtra(TRANSACTIONID, model.getKey());
+                i_detailed.putExtra(TRANSACTIONID, model);
                 i_detailed.putExtra(USERS, users);
                 transHolder.itemView.getContext().startActivity(i_detailed);
             }

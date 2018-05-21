@@ -198,13 +198,13 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
         noteRef.set(note).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                toNoteActivity(noteRef.getId());
+                toNoteActivity(note);
             }
         });
     }
 
     // Wechsel zur Home Activity
-    private void toNoteActivity(final String key) {
+    private void toNoteActivity(final Note note) {
         // Lade zuerst aktuelle Userliste (für Intent-Extra)
         db.collection(GROUPS).document(groupID).collection(USERS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -216,7 +216,7 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
                 }
                 progressBar.setVisibility(View.GONE);
                 Intent showNote = new Intent(NoteCreateActivity.this, NoteActivity.class);
-                showNote.putExtra(NOTEID, key);
+                showNote.putExtra(NOTEID, note);
                 showNote.putExtra(USERS, users);
                 startActivity(showNote);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);

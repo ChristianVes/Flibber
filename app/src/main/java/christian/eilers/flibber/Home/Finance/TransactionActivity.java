@@ -230,7 +230,6 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
             @Override
             public void onSuccess(Void aVoid) {
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(TransactionActivity.this, "Erfolgreich hinzugefügt!", Toast.LENGTH_SHORT).show();
                 finish();
             }
         }).addOnFailureListener(new OnFailureListener() {

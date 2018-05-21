@@ -60,9 +60,9 @@ public class TransactionDetailActivity extends AppCompatActivity {
         groupID = LocalStorage.getGroupID(this);
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance().getReference().child(PROFILE);
-        transactionID = getIntent().getStringExtra(TRANSACTIONID);
+        thisPayment = (Payment) getIntent().getSerializableExtra(TRANSACTIONID);
         allUsers = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
-        if(transactionID == null || allUsers == null || groupID == null || userID == null) {
+        if(thisPayment == null || allUsers == null || groupID == null || userID == null) {
             Intent main = new Intent(this, MainActivity.class);
             main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(main);
@@ -88,70 +88,60 @@ public class TransactionDetailActivity extends AppCompatActivity {
 
     // Load the task information from the database
     private void loadTransaction() {
-        progressBar.setVisibility(View.VISIBLE);
-        db.collection(GROUPS).document(groupID).collection(FINANCES).document(transactionID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                // get the current Payment
-                thisPayment = documentSnapshot.toObject(Payment.class);
-                // DESCRIPTION
-                if(thisPayment.getDescription().isEmpty()) tv_description.setVisibility(View.GONE);
-                else tv_description.setText(thisPayment.getDescription());
-                // PRICE
-                tv_price.setAmount(thisPayment.getPrice());
-                // TITLE
-                setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
-                getSupportActionBar().setTitle(thisPayment.getTitle()); // Titel des Tasks setzen
-                // PAYER
-                User payer = allUsers.get(thisPayment.getPayerID());
-                String[] names_payer = payer.getName().split(" ", 2);
-                tv_payer.setText(payer.getName());
-                tv_username_to.setText(names_payer[0]);
-                if (payer.getPicPath() != null) {
-                    GlideApp.with(TransactionDetailActivity.this)
-                            .load(payer.getPicPath())
-                            .placeholder(R.drawable.profile_placeholder)
-                            .dontAnimate()
-                            .into(img_profile_to);
-                }
+        // DESCRIPTION
+        if(thisPayment.getDescription().isEmpty()) tv_description.setVisibility(View.GONE);
+        else tv_description.setText(thisPayment.getDescription());
+        // PRICE
+        tv_price.setAmount(thisPayment.getPrice());
+        // TITLE
+        setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
+        getSupportActionBar().setTitle(thisPayment.getTitle()); // Titel des Tasks setzen
+        // PAYER
+        User payer = allUsers.get(thisPayment.getPayerID());
+        String[] names_payer = payer.getName().split(" ", 2);
+        tv_payer.setText(payer.getName());
+        tv_username_to.setText(names_payer[0]);
+        if (payer.getPicPath() != null) {
+            GlideApp.with(TransactionDetailActivity.this)
+                    .load(payer.getPicPath())
+                    .placeholder(R.drawable.profile_placeholder)
+                    .dontAnimate()
+                    .into(img_profile_to);
+        }
 
-                // INVOLVED
-                final HashMap<String, User> involvedUsers = new HashMap<>();
-                for (String key : allUsers.keySet()) {
-                    if (thisPayment.getInvolvedIDs().contains(key))
-                        involvedUsers.put(key, allUsers.get(key));
-                }
-                ArrayList<User> involvedUserList = new ArrayList<>(involvedUsers.values());
+        // INVOLVED
+        final HashMap<String, User> involvedUsers = new HashMap<>();
+        for (String key : allUsers.keySet()) {
+            if (thisPayment.getInvolvedIDs().contains(key))
+                involvedUsers.put(key, allUsers.get(key));
+        }
+        ArrayList<User> involvedUserList = new ArrayList<>(involvedUsers.values());
 
-                String[] names_from = involvedUserList.get(0).getName().split(" ", 2);
-                tv_username_from.setText(names_from[0]);
-                if (involvedUserList.get(0).getPicPath() != null) {
-                    GlideApp.with(TransactionDetailActivity.this)
-                            .load(storage.child(involvedUserList.get(0).getPicPath()))
-                            .placeholder(R.drawable.profile_placeholder)
-                            .dontAnimate()
-                            .into(img_profile_from);
-                }
+        String[] names_from = involvedUserList.get(0).getName().split(" ", 2);
+        tv_username_from.setText(names_from[0]);
+        if (involvedUserList.get(0).getPicPath() != null) {
+            GlideApp.with(TransactionDetailActivity.this)
+                    .load(storage.child(involvedUserList.get(0).getPicPath()))
+                    .placeholder(R.drawable.profile_placeholder)
+                    .dontAnimate()
+                    .into(img_profile_from);
+        }
 
-                int spanCount = 4;
+        int spanCount = 4;
 
-                rec_beteiligte.setHasFixedSize(true);
-                rec_beteiligte.setLayoutManager(new GridLayoutManager(TransactionDetailActivity.this, spanCount));
+        rec_beteiligte.setHasFixedSize(true);
+        rec_beteiligte.setLayoutManager(new GridLayoutManager(TransactionDetailActivity.this, spanCount));
 
-                adapter_beteiligte = new TaskInvolvedAdapter(involvedUserList);
-                rec_beteiligte.setAdapter(adapter_beteiligte);
+        adapter_beteiligte = new TaskInvolvedAdapter(involvedUserList);
+        rec_beteiligte.setAdapter(adapter_beteiligte);
 
-                if (involvedUserList.size() == 1) {
-                    layout_normal.setVisibility(View.GONE);
-                    layout_ueberweisung.setVisibility(View.VISIBLE);
-                } else {
-                    layout_normal.setVisibility(View.VISIBLE);
-                    layout_ueberweisung.setVisibility(View.GONE);
-                }
-
-                progressBar.setVisibility(View.GONE);
-            }
-        });
+        if (involvedUserList.size() == 1) {
+            layout_normal.setVisibility(View.GONE);
+            layout_ueberweisung.setVisibility(View.VISIBLE);
+        } else {
+            layout_normal.setVisibility(View.VISIBLE);
+            layout_ueberweisung.setVisibility(View.GONE);
+        }
     }
 
     // Delete the Payment (-> Recalculate Costs)
@@ -193,7 +183,7 @@ public class TransactionDetailActivity extends AppCompatActivity {
             @Nullable
             @Override
             public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                final DocumentSnapshot snap_payment = transaction.get(ref_finances.document(transactionID));
+                final DocumentSnapshot snap_payment = transaction.get(ref_finances.document(thisPayment.getKey()));
                 final Payment payment = snap_payment.toObject(Payment.class);
                 // Return if payment is already deleted
                 if (payment.isDeleted()) return null;
@@ -227,7 +217,7 @@ public class TransactionDetailActivity extends AppCompatActivity {
                 // Set Payment as DELETED (-> is not showing anymore)
                 HashMap<String, Object> mapDeleted = new HashMap<>();
                 mapDeleted.put("deleted", true);
-                transaction.update(ref_finances.document(transactionID), mapDeleted);
+                transaction.update(ref_finances.document(thisPayment.getKey()), mapDeleted);
 
                 return null;
             }
@@ -269,7 +259,7 @@ public class TransactionDetailActivity extends AppCompatActivity {
         }
     }
 
-    private String userID, groupID, transactionID;
+    private String userID, groupID;
     private FirebaseFirestore db;
     private StorageReference storage;
     private Payment thisPayment;

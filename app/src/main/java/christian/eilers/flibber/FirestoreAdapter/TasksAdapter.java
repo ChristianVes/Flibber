@@ -1,32 +1,21 @@
 package christian.eilers.flibber.FirestoreAdapter;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.functions.FirebaseFunctions;
 
@@ -43,7 +32,13 @@ import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
 
-import static christian.eilers.flibber.Utils.Strings.*;
+import static christian.eilers.flibber.Utils.Strings.ENTRIES;
+import static christian.eilers.flibber.Utils.Strings.GROUPS;
+import static christian.eilers.flibber.Utils.Strings.INVOLVEDIDS;
+import static christian.eilers.flibber.Utils.Strings.TASKID;
+import static christian.eilers.flibber.Utils.Strings.TASKS;
+import static christian.eilers.flibber.Utils.Strings.TIMESTAMP;
+import static christian.eilers.flibber.Utils.Strings.USERS;
 
 public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerView.ViewHolder>{
 
@@ -55,12 +50,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     private final int HIDE = 0;
     private final int SHOW = 1;
 
-    /**
-     * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
-     * FirestoreRecyclerOptions} for configuration options.
-     *
-     * @param options
-     */
     public TasksAdapter(@NonNull FirestoreRecyclerOptions<TaskModel> options, TaskFragment fragment,
                         String userID, String groupID, HashMap<String, User> users) {
         super(options);
@@ -159,7 +148,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(taskHolder.itemView.getContext(), TaskActivity.class);
-                i.putExtra(TASKID, model.getKey());
+                i.putExtra(TASKID, model);
                 i.putExtra(USERS, users);
                 taskHolder.itemView.getContext().startActivity(i);
             }

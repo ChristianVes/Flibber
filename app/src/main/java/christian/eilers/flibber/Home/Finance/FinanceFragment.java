@@ -1,43 +1,30 @@
 package christian.eilers.flibber.Home.Finance;
 
 
-import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.blackcat.currencyedittext.CurrencyEditText;
-import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -54,8 +41,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 
+import christian.eilers.flibber.FirestoreAdapter.BalanceAdapter;
 import christian.eilers.flibber.FirestoreAdapter.VerlaufAdapter;
 import christian.eilers.flibber.Home.HomeActivity;
 import christian.eilers.flibber.MainActivity;
@@ -64,7 +51,6 @@ import christian.eilers.flibber.Models.Offset;
 import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
-import christian.eilers.flibber.Utils.GlideApp;
 import christian.eilers.flibber.Utils.LocalStorage;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -85,7 +71,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             getActivity().finish();
         } else {
-            loadBilanz();
+            loadBalance();
             loadVerlauf();
         }
 
@@ -122,7 +108,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
     }
 
     // Load user's finance-balance
-    private void loadBilanz() {
+    private void loadBalance() {
         Query query = db.collection(GROUPS).document(groupID)
                 .collection(USERS).orderBy(MONEY, Query.Direction.DESCENDING); // order by money-value
 
@@ -130,6 +116,9 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                 .setQuery(query, User.class)
                 .build();
 
+        adapterBilanz = new BalanceAdapter(options);
+
+        /*
         adapterBilanz = new FirestoreRecyclerAdapter<User, UserHolder>(options) {
             @NonNull
             @Override
@@ -193,25 +182,11 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                 });
             }
         };
+         */
 
         recBilanz.setLayoutManager(new LinearLayoutManager(getContext()));
         recBilanz.setAdapter(adapterBilanz);
 
-    }
-
-    // Custom Viewholder for the User's
-    public class UserHolder extends RecyclerView.ViewHolder {
-
-        CircleImageView img_profile;
-        TextView tv_username;
-        MoneyTextView tv_money;
-
-        public UserHolder(View itemView) {
-            super(itemView);
-            img_profile = itemView.findViewById(R.id.profile_image);
-            tv_username = itemView.findViewById(R.id.username);
-            tv_money = itemView.findViewById(R.id.money);
-        }
     }
 
     // Load the last transactions/payments

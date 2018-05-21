@@ -93,7 +93,7 @@ public class VerlaufAllAdapter extends FirestoreRecyclerAdapter<Payment, Verlauf
             public void onClick(View view) {
                 if (model.isDeleted()) return;
                 Intent i_detailed = new Intent(holder.itemView.getContext(), TransactionDetailActivity.class);
-                i_detailed.putExtra(TRANSACTIONID, model.getKey());
+                i_detailed.putExtra(TRANSACTIONID, model);
                 i_detailed.putExtra(USERS, users);
                 holder.itemView.getContext().startActivity(i_detailed);
             }

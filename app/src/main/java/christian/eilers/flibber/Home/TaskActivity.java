@@ -1,11 +1,10 @@
 package christian.eilers.flibber.Home;
 
-import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,7 +17,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -30,7 +28,6 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.functions.FirebaseFunctions;
@@ -40,14 +37,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 import christian.eilers.flibber.Home.Finance.DatePickerFragment;
-import christian.eilers.flibber.RecyclerAdapter.TaskInvolvedAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.TaskEntry;
 import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
+import christian.eilers.flibber.RecyclerAdapter.TaskInvolvedAdapter;
 import christian.eilers.flibber.Utils.LocalStorage;
-import static christian.eilers.flibber.Utils.Strings.*;
+
+import static christian.eilers.flibber.Utils.Strings.ENTRIES;
+import static christian.eilers.flibber.Utils.Strings.GROUPS;
+import static christian.eilers.flibber.Utils.Strings.TASKID;
+import static christian.eilers.flibber.Utils.Strings.TASKS;
+import static christian.eilers.flibber.Utils.Strings.TIMESTAMP;
+import static christian.eilers.flibber.Utils.Strings.USERS;
 
 public class TaskActivity extends AppCompatActivity {
 
@@ -71,13 +74,13 @@ public class TaskActivity extends AppCompatActivity {
         groupID = LocalStorage.getGroupID(this);
         db = FirebaseFirestore.getInstance();
         functions = FirebaseFunctions.getInstance();
-        taskID = getIntent().getStringExtra(TASKID);
+        thisTask = (TaskModel) getIntent().getSerializableExtra(TASKID);
         allUsers = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
     }
 
     // check for null pointers
     private boolean hasNulls() {
-        if (taskID == null || allUsers == null || userID == null || groupID == null) return true;
+        if (thisTask == null || allUsers == null || userID == null || groupID == null) return true;
         else return false;
     }
 
@@ -95,41 +98,33 @@ public class TaskActivity extends AppCompatActivity {
 
     // Load the task information from the database
     private void loadTask() {
-        progressBar.setVisibility(View.VISIBLE);
-        db.collection(GROUPS).document(groupID).collection(TASKS).document(taskID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                // get the current Task
-                thisTask = documentSnapshot.toObject(TaskModel.class);
-                // Task-Frequenz
-                tv_frequenz.setText(thisTask.getFrequenz() +"");
+        // Task-Frequenz
+        tv_frequenz.setText(thisTask.getFrequenz() +"");
 
-                setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
-                getSupportActionBar().setTitle(thisTask.getTitle()); // Titel des Tasks setzen
+        setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
+        getSupportActionBar().setTitle(thisTask.getTitle()); // Titel des Tasks setzen
 
-                users = new HashMap<>();
-                for (String key : allUsers.keySet()) {
-                    if (thisTask.getInvolvedIDs().contains(key))
-                        users.put(key, allUsers.get(key));
-                }
-                ArrayList<User> userList = new ArrayList<>(users.values());
+        users = new HashMap<>();
+        for (String key : allUsers.keySet()) {
+            if (thisTask.getInvolvedIDs().contains(key))
+                users.put(key, allUsers.get(key));
+        }
+        ArrayList<User> userList = new ArrayList<>(users.values());
 
-                int spanCount = 4;
+        int spanCount = 4;
 
-                rec_involved.setHasFixedSize(true);
-                rec_involved.setLayoutManager(new GridLayoutManager(TaskActivity.this, spanCount));
+        rec_involved.setHasFixedSize(true);
+        rec_involved.setLayoutManager(new GridLayoutManager(TaskActivity.this, spanCount));
 
-                adapter_beteiligte = new TaskInvolvedAdapter(userList);
-                rec_involved.setAdapter(adapter_beteiligte);
+        adapter_beteiligte = new TaskInvolvedAdapter(userList);
+        rec_involved.setAdapter(adapter_beteiligte);
 
-                loadEntries();
-            }
-        });
+        loadEntries();
     }
 
     private void loadEntries() {
         final Query entryQuery = db.collection(GROUPS).document(groupID)
-                .collection(TASKS).document(taskID)
+                .collection(TASKS).document(thisTask.getKey())
                 .collection(ENTRIES).orderBy(TIMESTAMP, Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<TaskEntry> options = new FirestoreRecyclerOptions.Builder<TaskEntry>()
@@ -194,7 +189,7 @@ public class TaskActivity extends AppCompatActivity {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        db.collection(GROUPS).document(groupID).collection(TASKS).document(taskID).delete();
+                        db.collection(GROUPS).document(groupID).collection(TASKS).document(thisTask.getKey()).delete();
                         finish();
                     }
                 })
@@ -202,20 +197,11 @@ public class TaskActivity extends AppCompatActivity {
                 .show();
     }
 
-    public void showSoftKeyboard(View view) {
-        if (view.requestFocus()) {
-            InputMethodManager imm = (InputMethodManager)
-                    getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
-        }
-    }
-
     private void showEditLayout() {
         tv_frequenz.setVisibility(View.GONE);
         et_frequency.setVisibility(View.VISIBLE);
         et_frequency.setText(thisTask.getFrequenz() +"");
-        // TODO: show soft Keyboard not working
-        // showSoftKeyboard(et_frequency);
+        // TODO: Show Soft Keyboard not working
 
         menu.clear();
         getMenuInflater().inflate(R.menu.menu_new_task, menu);
@@ -249,7 +235,7 @@ public class TaskActivity extends AppCompatActivity {
         changings.put("frequenz", frequency);
 
         progressBar.setVisibility(View.VISIBLE);
-        DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document(taskID);
+        DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document(thisTask.getKey());
         doc.update(changings).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -329,7 +315,7 @@ public class TaskActivity extends AppCompatActivity {
     private EditText et_frequency;
     private ProgressBar progressBar;
 
-    private String userID, groupID, taskID;
+    private String userID, groupID;
     private FirebaseFirestore db;
     private FirebaseFunctions functions;
     private TaskModel thisTask;
