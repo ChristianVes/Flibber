@@ -32,51 +32,44 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_toLeftOf="@+id/ic_group"
+            android:layout_toLeftOf="@+id/btn_remove"
             android:layout_toRightOf="@+id/btn_add">
 
-            <TextView
-                android:id="@+id/name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:lines="1"
-                android:ellipsize="end"/>
-
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Anzahl: "
-                    android:textSize="18sp" />
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:lines="1"
+                    android:ellipsize="end"/>
 
-                <TextView
-                    android:id="@+id/count"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="18sp" />
+                <ImageView
+                    android:id="@+id/ic_group"
+                    android:layout_width="22dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="15dp"
+                    android:paddingTop="3dp"
+                    android:layout_marginLeft="15dp"
+                    app:srcCompat="@drawable/ic_group"
+                    android:tint="@color/colorPrimary"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
-        </LinearLayout>
+            <TextView
+                android:id="@+id/count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="italic"
+                android:textSize="16sp" />
 
-        <ImageView
-            android:id="@+id/ic_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/btn_remove"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="5dp"
-            android:paddingLeft="5dp"
-            app:srcCompat="@drawable/ic_group"
-            android:tint="@color/colorPrimaryDark"
-            android:visibility="gone"
-            android:contentDescription="TODO" />
+        </LinearLayout>
 
         <ImageButton
             android:id="@+id/btn_remove"

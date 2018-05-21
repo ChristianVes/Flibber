@@ -102,8 +102,6 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
         btn_send.setOnClickListener(this);
         btn_more.setOnClickListener(this);
         btn_save.setOnClickListener(this);
-
-        OverScrollDecoratorHelper.setUpOverScroll(scrollView);
     }
 
     private void initializeVariables() {
@@ -203,7 +201,6 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
 
     // load and display the Comments
     private void loadData() {
-        // progressBar.setVisibility(View.VISIBLE);
         final Query commentsQuery = db.collection(GROUPS).document(groupID)
                 .collection(NOTES).document(thisNote.getKey())
                 .collection(COMMENTS).orderBy(TIMESTAMP);
@@ -249,7 +246,6 @@ public class NoteActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
-                // progressBar.setVisibility(View.GONE);
             }
         };
 

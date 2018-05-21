@@ -88,7 +88,13 @@ public class StockAdapter extends FirestoreRecyclerAdapter<StockProduct, Recycle
 
         // NAME & COUNT
         taskHolder.tv_name.setText(model.getName());
-        taskHolder.tv_count.setText(model.getPurchaserIDs().size() + "");
+        if (model.getPurchaserIDs().size() == 0)
+            taskHolder.tv_count.setText("Nicht vorhanden");
+        else if (model.getPurchaserIDs().size() == 1)
+            taskHolder.tv_count.setText("Vorhanden");
+        else
+            taskHolder.tv_count.setText(model.getPurchaserIDs().size() +" vorhanden");
+
         // Group Icon Visibility
         if (model.getInvolvedIDs().size() > 1)
             taskHolder.ic_group.setVisibility(View.VISIBLE);
@@ -99,7 +105,7 @@ public class StockAdapter extends FirestoreRecyclerAdapter<StockProduct, Recycle
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(activity, StockProductActivity.class);
-                i.putExtra(STOCKID, model.getKey());
+                i.putExtra(STOCKID, model);
                 i.putExtra(USERS, users);
                 activity.startActivity(i);
             }

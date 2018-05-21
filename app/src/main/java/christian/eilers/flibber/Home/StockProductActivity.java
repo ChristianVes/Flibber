@@ -64,48 +64,40 @@ public class StockProductActivity extends AppCompatActivity {
         userID = LocalStorage.getUserID(this);
         groupID = LocalStorage.getGroupID(this);
         db = FirebaseFirestore.getInstance();
-        stockID = getIntent().getStringExtra(STOCKID);
+        thisProduct = (StockProduct) getIntent().getSerializableExtra(STOCKID);
         users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
     }
 
     // check for null pointers
     private boolean hasNulls() {
-        if (stockID == null || users == null || userID == null || groupID == null) return true;
+        if (thisProduct == null || users == null || userID == null || groupID == null) return true;
         else return false;
     }
 
     // load the StockProduct from database
     private void loadData() {
-        progressBar.setVisibility(View.VISIBLE);
-        db.collection(GROUPS).document(groupID).collection(STOCK).document(stockID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                progressBar.setVisibility(View.GONE);
-                thisProduct = documentSnapshot.toObject(StockProduct.class);
-                // PRICE
-                tv_price.setAmount(thisProduct.getPrice());
-                // NAME as toolbar title
-                setSupportActionBar(toolbar);
-                getSupportActionBar().setTitle(thisProduct.getName());
+        // PRICE
+        tv_price.setAmount(thisProduct.getPrice());
+        // NAME as toolbar title
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(thisProduct.getName());
 
-                HashMap<String, User> map_involved = new HashMap<>();
-                for (String key : users.keySet()) {
-                    if (thisProduct.getInvolvedIDs().contains(key))
-                        map_involved.put(key, users.get(key));
-                }
-                int spanCount = 4;
-                rec_involved.setHasFixedSize(true);
-                rec_involved.setLayoutManager(new GridLayoutManager(StockProductActivity.this, spanCount));
+        HashMap<String, User> map_involved = new HashMap<>();
+        for (String key : users.keySet()) {
+            if (thisProduct.getInvolvedIDs().contains(key))
+                map_involved.put(key, users.get(key));
+        }
+        int spanCount = 4;
+        rec_involved.setHasFixedSize(true);
+        rec_involved.setLayoutManager(new GridLayoutManager(StockProductActivity.this, spanCount));
 
-                TaskInvolvedAdapter adapter_involved = new TaskInvolvedAdapter(new ArrayList<>(map_involved.values()));
-                rec_involved.setAdapter(adapter_involved);
-            }
-        });
+        TaskInvolvedAdapter adapter_involved = new TaskInvolvedAdapter(new ArrayList<>(map_involved.values()));
+        rec_involved.setAdapter(adapter_involved);
     }
 
     // delete this StockProduct and finish the activity
     private void deleteStockProduct() {
-        db.collection(GROUPS).document(groupID).collection(STOCK).document(stockID).delete();
+        db.collection(GROUPS).document(groupID).collection(STOCK).document(thisProduct.getKey()).delete();
         finish();
     }
 
@@ -133,7 +125,7 @@ public class StockProductActivity extends AppCompatActivity {
     private RecyclerView rec_involved, rec_verlauf;
     private ProgressBar progressBar;
 
-    private String userID, groupID, stockID;
+    private String userID, groupID;
     private StockProduct thisProduct;
     private FirebaseFirestore db;
     private HashMap<String, User> users;
