@@ -147,7 +147,7 @@
                         android:paddingTop="15dp"
                         android:paddingRight="10dp"
                         android:paddingBottom="15dp"
-                        android:background="@drawable/selector_shopping">
+                        android:background="@drawable/selector_bottomedge">
 
                         <TextView
                             android:layout_width="wrap_content"
