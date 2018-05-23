@@ -1,6 +1,9 @@
 package christian.eilers.flibber.Models;
 
+import com.google.firebase.firestore.ServerTimestamp;
+
 import java.io.Serializable;
+import java.util.Date;
 
 public class User implements Serializable {
 
@@ -10,6 +13,7 @@ public class User implements Serializable {
     private String picPath;
     private String deviceToken;
     private long money = 0;
+    @ServerTimestamp private Date timestamp;
 
     public User() {}
 
@@ -67,6 +71,14 @@ public class User implements Serializable {
 
     public void setDeviceToken(String deviceToken) {
         this.deviceToken = deviceToken;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
 
 }

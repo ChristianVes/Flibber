@@ -32,7 +32,7 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
             case 1:
                 return new ShoppingFragment();
             case 2:
-                return new HomeFragment();
+                return new HomeFragment2();
             case 3:
                 return new FinanceFragment();
             case 4:
