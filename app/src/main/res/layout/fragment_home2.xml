@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
+            android:layout_marginBottom="10dp"
             app:cardBackgroundColor="@color/colorWhite50"
             app:cardCornerRadius="5dp"
             app:cardElevation="0dp"
@@ -46,6 +47,7 @@
                         android:id="@+id/label_notes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="?selectableItemBackground"
                         android:layout_alignParentLeft="true"
                         android:layout_toLeftOf="@+id/btn_note"
                         android:padding="10dp"
@@ -61,7 +63,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:background="?selectableItemBackground"
+                        android:background="@drawable/selector_stock_item"
                         android:clickable="false"
                         android:contentDescription="TODO"
                         android:padding="5dp"
@@ -85,6 +87,7 @@
                     android:id="@+id/recNotes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:overScrollMode="never"
                     android:nestedScrollingEnabled="false">
 
                 </android.support.v7.widget.RecyclerView>
@@ -98,7 +101,6 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:layout_marginTop="10dp"
             app:cardBackgroundColor="@color/colorWhite50"
             app:cardCornerRadius="5dp"
             app:cardElevation="0dp"
@@ -109,15 +111,39 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?selectableItemBackground"
-                    android:padding="10dp"
-                    android:text="Aufgaben"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/label_tasks"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?selectableItemBackground"
+                        android:layout_alignParentLeft="true"
+                        android:layout_toLeftOf="@+id/btn_task"
+                        android:padding="10dp"
+                        android:text="Agenda"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/btn_task"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/selector_stock_item"
+                        android:clickable="false"
+                        android:contentDescription="TODO"
+                        android:padding="5dp"
+                        android:scaleType="fitEnd"
+                        android:tint="@color/colorPrimaryDark"
+                        app:srcCompat="@drawable/ic_add_blank" />
+
+                </RelativeLayout>
 
                 <TextView
                     android:id="@+id/placeholder_tasks"
@@ -133,6 +159,7 @@
                     android:id="@+id/recTasks"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:overScrollMode="never"
                     android:nestedScrollingEnabled="false">
 
                 </android.support.v7.widget.RecyclerView>
@@ -141,74 +168,57 @@
 
         </android.support.v7.widget.CardView>
 
+
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="gone"
             app:cardBackgroundColor="@color/colorWhite50"
             app:cardCornerRadius="5dp"
             app:cardElevation="0dp"
             app:cardUseCompatPadding="true">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <RelativeLayout
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/label_events"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/layerlist_bottomedge_white"
-                    android:padding="10dp">
+                    android:padding="10dp"
+                    android:text="Benachrichtigungen"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="Einkaufsliste"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:text="4 Artikel"
-                        android:textSize="22sp" />
-
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/placeholder_events"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10dp">
+                    android:paddingLeft="10dp"
+                    android:paddingBottom="10dp"
+                    android:text="Keine neuen Benachrichtigungen..."
+                    android:textStyle="italic"
+                    android:visibility="gone" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="Finanzeinträge"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recEvents"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:overScrollMode="never"
+                    android:nestedScrollingEnabled="false">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:text="Keine Neuen"
-                        android:textSize="22sp" />
-
-                </RelativeLayout>
+                </android.support.v7.widget.RecyclerView>
 
             </LinearLayout>
 
-
         </android.support.v7.widget.CardView>
+
 
     </LinearLayout>
 

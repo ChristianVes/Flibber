@@ -1,65 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="@color/colorWhite50"
-    app:cardElevation="0dp"
-    app:cardCornerRadius="5dp"
-    app:cardUseCompatPadding="true">
+    android:background="?selectableItemBackground"
+    android:orientation="horizontal"
+    android:padding="5dp">
 
-    <LinearLayout
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_image"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_gravity="center"
+        android:src="@drawable/profile_placeholder"
+        app:civ_border_color="@color/colorPrimary"
+        app:civ_border_width="1dp" />
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="?selectableItemBackground"
-        android:padding="5dp">
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profile_image"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_gravity="center"
-            android:src="@drawable/profile_placeholder"
-            app:civ_border_color="@color/colorPrimary"
-            app:civ_border_width="1dp" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp">
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:layout_toLeftOf="@+id/money"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="..."
+            android:textSize="23sp" />
 
-            <TextView
-                android:id="@+id/username"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/money"
-                android:layout_marginRight="20dp"
-                android:textSize="23sp"
-                android:text="..."
-                android:lines="1"
-                android:ellipsize="end"/>
+        <org.fabiomsr.moneytextview.MoneyTextView
+            android:id="@+id/money"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            app:baseTextColor="@color/colorPrimary"
+            app:baseTextSize="23sp"
+            app:format="###0,00"
+            app:symbol="€"
+            app:symbolGravity="end" />
 
-            <org.fabiomsr.moneytextview.MoneyTextView
-                android:id="@+id/money"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                app:symbol="€"
-                app:symbolGravity="end"
-                app:format="###0,00"
-                app:baseTextColor="@color/colorPrimary"
-                app:baseTextSize="23sp"/>
-
-        </RelativeLayout>
+    </RelativeLayout>
 
 
-    </LinearLayout>
-
-</android.support.v7.widget.CardView>
+</LinearLayout>

@@ -102,8 +102,6 @@ public class NoteAdapter2 extends FirestoreRecyclerAdapter<Note, NoteAdapter2.No
                 holder.itemView.getContext().startActivity(i);
             }
         });
-
-        holder.tv_comments.setText(model.getCommentsCount()+"");
     }
 
     @NonNull
@@ -117,7 +115,7 @@ public class NoteAdapter2 extends FirestoreRecyclerAdapter<Note, NoteAdapter2.No
     public class NotesHolder extends RecyclerView.ViewHolder {
         View itemView;
         CircleImageView img_profile;
-        TextView tv_username, tv_title, tv_description, tv_datum, tv_comments;
+        TextView tv_username, tv_title, tv_description, tv_datum;
         ImageView img_note;
 
         public NotesHolder(View itemView) {
@@ -128,7 +126,6 @@ public class NoteAdapter2 extends FirestoreRecyclerAdapter<Note, NoteAdapter2.No
             tv_description = itemView.findViewById(R.id.description);
             tv_title = itemView.findViewById(R.id.title);
             tv_username = itemView.findViewById(R.id.username);
-            tv_comments = itemView.findViewById(R.id.comment_count);
             img_note = itemView.findViewById(R.id.image);
         }
     }

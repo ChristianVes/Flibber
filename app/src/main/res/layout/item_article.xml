@@ -1,95 +1,76 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp"
-    android:layout_marginTop="5dp"
-    android:layout_marginBottom="5dp"
-    app:cardBackgroundColor="@color/colorWhite50"
-    app:cardElevation="1dp"
-    app:cardCornerRadius="15dp">
+    android:padding="5dp"
+    android:background="@drawable/selector_transparent">
 
-    <RelativeLayout
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="5dp"
+        android:buttonTint="@color/colorPrimaryDark"
+        android:clickable="false"
+        tools:targetApi="lollipop" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:paddingTop="3dp"
-        android:paddingBottom="2dp"
-        android:background="?selectableItemBackground">
+        android:layout_toRightOf="@+id/checkbox"
+        android:orientation="vertical">
 
-        <CheckBox
-            android:id="@+id/checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="5dp"
-            android:buttonTint="@color/colorPrimaryDark"
-            android:clickable="false"
-            tools:targetApi="lollipop" />
-
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/checkbox"
-            android:orientation="vertical"
-            android:layout_marginRight="5dp">
+            android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/colorPrimaryDark" />
 
-                <TextView
-                    android:id="@+id/username"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:text="..."/>
+            <TextView
+                android:id="@+id/datum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_alignParentRight="true"/>
 
-                <TextView
-                    android:id="@+id/datum"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:layout_alignParentRight="true"/>
+        </RelativeLayout>
 
-            </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/article"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/img_group"
+                android:layout_alignParentLeft="true"
+                android:textSize="25sp"
+                android:textColor="@color/colorPrimaryBlack"/>
 
-                <TextView
-                    android:id="@+id/article"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@+id/img_group"
-                    android:layout_alignParentLeft="true"
-                    android:textSize="25sp"
-                    android:textColor="@color/colorPrimaryBlack"/>
+            <ImageView
+                android:id="@+id/img_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/ic_group"
+                android:tint="@color/colorPrimaryDark"
+                android:visibility="gone"
+                android:contentDescription="TODO" />
 
-                <ImageView
-                    android:id="@+id/img_group"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    app:srcCompat="@drawable/ic_group"
-                    android:tint="@color/colorPrimaryDark"
-                    android:visibility="gone"
-                    android:contentDescription="TODO" />
+        </RelativeLayout>
 
-            </RelativeLayout>
+    </LinearLayout>
 
-        </LinearLayout>
-
-    </RelativeLayout>
-
-</android.support.v7.widget.CardView>
+</RelativeLayout>

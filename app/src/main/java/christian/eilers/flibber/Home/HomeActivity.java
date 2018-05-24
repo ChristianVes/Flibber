@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -12,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -50,9 +52,39 @@ public class HomeActivity extends AppCompatActivity {
 
         mView = findViewById(R.id.container);
         bottomNavigationView = findViewById(R.id.bnve);
+        appbar = findViewById(R.id.appbar);
         toolbar = findViewById(R.id.toolbar);
         progressBar = findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.VISIBLE);
+        logo = findViewById(R.id.logo);
+
+        // get all users from the current group
+        // initialize fragments at the first time
+        usersQuery = FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(USERS);
+        usersQuery.addSnapshotListener(HomeActivity.this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                if (e != null) {
+                    Intent main = new Intent(HomeActivity.this, MainActivity.class);
+                    main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(main);
+                    finish();
+                    return;
+                }
+                retrieveUsers(documentSnapshots);
+                if (!isInitialized) initializeViews();
+                isInitialized = true;
+            }
+        });
+    }
+
+    // initialize the fragments & setup the listener for the @bottomNavigationView
+    private void initializeViews() {
+        // change visibilities
+        progressBar.setVisibility(View.GONE);
+        logo.setVisibility(View.GONE);
+        appbar.setVisibility(View.VISIBLE);
+        bottomNavigationView.setVisibility(View.VISIBLE);
+
         setSupportActionBar(toolbar);
 
         // adjust checked item in @bottomNavigationView when view page changes
@@ -71,36 +103,10 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
         mView.setOffscreenPageLimit(5);
-
         // initialize bottomNavigationView
         setBottomNavigationBar(bottomNavigationView);
-
-        // get all users from the current group
-        // initialize fragments at the first time
-        usersQuery = FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(USERS);
-        usersQuery.addSnapshotListener(HomeActivity.this, new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                if (e != null) {
-                    Intent main = new Intent(HomeActivity.this, MainActivity.class);
-                    main.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(main);
-                    finish();
-                    return;
-                }
-                retrieveUsers(documentSnapshots);
-                progressBar.setVisibility(View.GONE);
-                if (isInitialized) return;
-                initializeFragments();
-                isInitialized = true;
-            }
-        });
-
         bottomNavigationView.setupWithViewPager(mView);
-    }
 
-    // initialize the fragments & setup the listener for the @bottomNavigationView
-    private void initializeFragments() {
         adapterViewPager = new HomePagerAdapter(getSupportFragmentManager());
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -190,9 +196,12 @@ public class HomeActivity extends AppCompatActivity {
 
     private BottomNavigationViewEx bottomNavigationView;
     private Toolbar toolbar;
+    private AppBarLayout appbar;
     private FragmentPagerAdapter adapterViewPager;
     private ViewPager mView;
     private ProgressBar progressBar;
+    private ImageView logo;
+
     private Query usersQuery;
     private String groupID, groupName;
     private HashMap<String, User> users;

@@ -34,6 +34,7 @@ import christian.eilers.flibber.Utils.LocalStorage;
 import static christian.eilers.flibber.Utils.Strings.GROUPS;
 import static christian.eilers.flibber.Utils.Strings.NOTES;
 import static christian.eilers.flibber.Utils.Strings.ONE_DAY;
+import static christian.eilers.flibber.Utils.Strings.ONE_WEEK;
 import static christian.eilers.flibber.Utils.Strings.TASKS;
 import static christian.eilers.flibber.Utils.Strings.TIMESTAMP;
 import static christian.eilers.flibber.Utils.Strings.USERS;
@@ -64,14 +65,18 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
         recView_notes = mainView.findViewById(R.id.recNotes);
         recView_tasks = mainView.findViewById(R.id.recTasks);
         tv_notes = mainView.findViewById(R.id.label_notes);
+        tv_tasks = mainView.findViewById(R.id.label_tasks);
         placeholder_notes = mainView.findViewById(R.id.placeholder_notes);
         placeholder_tasks = mainView.findViewById(R.id.placeholder_tasks);
         btn_note = mainView.findViewById(R.id.btn_note);
+        btn_tasks = mainView.findViewById(R.id.btn_task);
         progressBar = mainView.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
 
         btn_note.setOnClickListener(this);
+        btn_tasks.setOnClickListener(this);
         tv_notes.setOnClickListener(this);
+        tv_tasks.setOnClickListener(this);
     }
 
     // Initialize variables
@@ -99,7 +104,7 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
         else
             notesQuery = db.collection(GROUPS).document(groupID).collection(NOTES)
                     .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
-                    .whereGreaterThan(TIMESTAMP, new Date(System.currentTimeMillis() - ONE_DAY));
+                    .whereGreaterThan(TIMESTAMP, new Date(System.currentTimeMillis() - ONE_WEEK));
 
         FirestoreRecyclerOptions<Note> options = new FirestoreRecyclerOptions.Builder<Note>()
                 .setQuery(notesQuery, Note.class)
@@ -154,8 +159,18 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
             case R.id.btn_note:
                 Intent intent_newNote = new Intent(getContext(), NoteCreateActivity.class);
                 getActivity().startActivity(intent_newNote);
+                break;
             case R.id.label_notes:
-                //TODO: to All-Notes Activity
+                Intent intent_more = new Intent(getContext(), NotesVerlaufActivity.class);
+                intent_more.putExtra(USERS, ((HomeActivity) getActivity()).getUsers());
+                getActivity().startActivity(intent_more);
+                break;
+            case R.id.btn_task:
+                //TODO
+                break;
+            case R.id.label_tasks:
+                //TODO
+                break;
         }
     }
 
@@ -177,13 +192,12 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
             FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(USERS).document(userID)
                     .update(timestamp);
         }
-
     }
 
     private View mainView;
     private RecyclerView recView_notes, recView_tasks;
-    private TextView tv_notes, placeholder_notes, placeholder_tasks;
-    private ImageButton btn_note;
+    private TextView tv_notes, tv_tasks, placeholder_notes, placeholder_tasks;
+    private ImageButton btn_note, btn_tasks;
     private ProgressBar progressBar;
 
     private FirestoreRecyclerAdapter adapter_notes, adapter_tasks;

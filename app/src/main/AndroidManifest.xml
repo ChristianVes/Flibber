@@ -104,6 +104,9 @@
         <activity
             android:name=".Home.StockProductActivity"
             android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".Home.NotesVerlaufActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

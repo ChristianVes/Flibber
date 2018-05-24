@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -119,6 +120,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         adapterBilanz = new BalanceAdapter(options);
 
         recBilanz.setLayoutManager(new LinearLayoutManager(getContext()));
+        recBilanz.addItemDecoration(new DividerItemDecoration(recBilanz.getContext(), DividerItemDecoration.VERTICAL));
         recBilanz.setAdapter(adapterBilanz);
 
     }
@@ -138,6 +140,7 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         adapterVerlauf = new VerlaufAdapter(options, userID, users);
 
         recVerlauf.setLayoutManager(new LinearLayoutManager(getContext()));
+        recVerlauf.addItemDecoration(new DividerItemDecoration(recVerlauf.getContext(), DividerItemDecoration.VERTICAL));
         recVerlauf.setAdapter(adapterVerlauf);
     }
 
