@@ -15,15 +15,13 @@
         android:layout_alignParentLeft="true"
         android:layout_toLeftOf="@+id/btn_note"
         android:textStyle="bold"
-        android:textSize="22sp"
-        android:textColor="@color/colorPrimaryDark"/>
+        android:textSize="20sp"/>
 
     <TextView
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:textSize="16sp"
-        android:textColor="@color/colorPrimaryDark"/>
+        android:textSize="16sp"/>
 
 </RelativeLayout>

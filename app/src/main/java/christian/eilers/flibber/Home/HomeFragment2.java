@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -132,7 +133,12 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
-                if (getItemCount() == 0) placeholder_tasks.setVisibility(View.VISIBLE);
+
+                int count = 0;
+                for (int i = 0; i < getItemCount(); i++) {
+                    if (getItemViewType(i) == 1) count++;
+                }
+                if (count == 0) placeholder_tasks.setVisibility(View.VISIBLE);
                 else placeholder_tasks.setVisibility(View.GONE);
                 progressBar.setVisibility(View.INVISIBLE);
             }
