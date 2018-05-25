@@ -1,15 +1,16 @@
 package christian.eilers.flibber.Home;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,7 +18,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,8 +27,10 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.functions.FirebaseFunctions;
 
@@ -47,6 +49,7 @@ import christian.eilers.flibber.Utils.LocalStorage;
 
 import static christian.eilers.flibber.Utils.Strings.ENTRIES;
 import static christian.eilers.flibber.Utils.Strings.GROUPS;
+import static christian.eilers.flibber.Utils.Strings.INVOLVEDIDS;
 import static christian.eilers.flibber.Utils.Strings.TASKID;
 import static christian.eilers.flibber.Utils.Strings.TASKS;
 import static christian.eilers.flibber.Utils.Strings.TIMESTAMP;
@@ -75,51 +78,67 @@ public class TaskActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         functions = FirebaseFunctions.getInstance();
         thisTask = (TaskModel) getIntent().getSerializableExtra(TASKID);
-        allUsers = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
+        users = (HashMap<String, User>) getIntent().getSerializableExtra(USERS);
     }
 
     // check for null pointers
     private boolean hasNulls() {
-        if (thisTask == null || allUsers == null || userID == null || groupID == null) return true;
+        if (thisTask == null || users == null || userID == null || groupID == null) return true;
         else return false;
     }
 
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
-        tv_frequenz = findViewById(R.id.frequenz);
-        label_verlauf = findViewById(R.id.label_verlauf);
-        rec_involved = findViewById(R.id.recView_beteiligte);
-        rec_verlauf = findViewById(R.id.recVerlauf);
-        et_frequency = findViewById(R.id.input_frequenz);
+        tv_frequency = findViewById(R.id.tv_frequency);
+        tv_ordered = findViewById(R.id.tv_order);
+        placeholder = findViewById(R.id.placeholder);
+        rec_involved = findViewById(R.id.recView_involved);
+        rec_verlauf = findViewById(R.id.recView_verlauf);
         progressBar = findViewById(R.id.progressBar);
 
         rec_verlauf.setLayoutManager(new LinearLayoutManager(this));
+        rec_verlauf.addItemDecoration(new DividerItemDecoration(rec_verlauf.getContext(), DividerItemDecoration.VERTICAL));
+        rec_involved.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        rec_involved.setHasFixedSize(true);
     }
 
     // Load the task information from the database
     private void loadTask() {
-        // Task-Frequenz
-        tv_frequenz.setText(thisTask.getFrequenz() +"");
-
+        // Frequency
+        if (thisTask.getFrequenz() == 1) tv_frequency.setText("Täglich");
+        else tv_frequency.setText(thisTask.getFrequenz() +" Tage");
+        // Order
+        if (thisTask.isOrdered()) tv_ordered.setText("Ja");
+        else tv_ordered.setText("Nein");
+        // Title
         setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
         getSupportActionBar().setTitle(thisTask.getTitle()); // Titel des Tasks setzen
 
-        users = new HashMap<>();
-        for (String key : allUsers.keySet()) {
-            if (thisTask.getInvolvedIDs().contains(key))
-                users.put(key, allUsers.get(key));
-        }
-        ArrayList<User> userList = new ArrayList<>(users.values());
+        // Involved users
+        ArrayList<User> userList = new ArrayList<>();
+        for (String key : thisTask.getInvolvedIDs()) userList.add(users.get(key));
 
-        int spanCount = 4;
-
-        rec_involved.setHasFixedSize(true);
-        rec_involved.setLayoutManager(new GridLayoutManager(TaskActivity.this, spanCount));
-
-        adapter_beteiligte = new TaskInvolvedAdapter(userList);
-        rec_involved.setAdapter(adapter_beteiligte);
+        adapter_involved = new TaskInvolvedAdapter(userList);
+        rec_involved.setAdapter(adapter_involved);
 
         loadEntries();
+
+        // Listener for this task
+        db.collection(GROUPS).document(groupID).collection(TASKS).document(thisTask.getKey()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (e != null || !documentSnapshot.exists()) return;
+                thisTask = documentSnapshot.toObject(TaskModel.class);
+                // Frequency
+                if (thisTask.getFrequenz() == 1) tv_frequency.setText("Täglich");
+                else tv_frequency.setText(thisTask.getFrequenz() +" Tage");
+                // Involved users
+                ArrayList<User> userList = new ArrayList<>();
+                for (String key : thisTask.getInvolvedIDs()) userList.add(users.get(key));
+                adapter_involved = new TaskInvolvedAdapter(userList);
+                rec_involved.setAdapter(adapter_involved);
+            }
+        });
     }
 
     private void loadEntries() {
@@ -159,8 +178,8 @@ public class TaskActivity extends AppCompatActivity {
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
-                if (adapter_entries.getItemCount() > 0) label_verlauf.setVisibility(View.VISIBLE);
-                else label_verlauf.setVisibility(View.GONE);
+                if (getItemCount() == 0) placeholder.setVisibility(View.VISIBLE);
+                else placeholder.setVisibility(View.GONE);
             }
         };
 
@@ -197,32 +216,7 @@ public class TaskActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void showEditLayout() {
-        tv_frequenz.setVisibility(View.GONE);
-        et_frequency.setVisibility(View.VISIBLE);
-        et_frequency.setText(thisTask.getFrequenz() +"");
-        // TODO: Show Soft Keyboard not working
-
-        menu.clear();
-        getMenuInflater().inflate(R.menu.menu_new_task, menu);
-        MenuItem item_save = menu.findItem(R.id.action_save);
-        item_save.getActionView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveChanging();
-            }
-        });
-    }
-
-    private void showNormalLayout(long frequency) {
-        et_frequency.setVisibility(View.GONE);
-        tv_frequenz.setVisibility(View.VISIBLE);
-        tv_frequenz.setText(frequency +"");
-
-        menu.clear();
-        getMenuInflater().inflate(R.menu.menu_task, menu);
-    }
-
+    /*
     private void saveChanging() {
         String s_frequency = et_frequency.getText().toString().trim();
         if (TextUtils.isEmpty(s_frequency)) {
@@ -244,6 +238,8 @@ public class TaskActivity extends AppCompatActivity {
             }
         });
     }
+     */
+
 
     // Notifiy the first User in the Involved User's List of the current Task
     private void remindNotification() {
@@ -264,6 +260,35 @@ public class TaskActivity extends AppCompatActivity {
                 .show();
     }
 
+    // Skip the current User and put him on the second Position in the involved User's List
+    private void skip() {
+        // check state to avoid null pointer (should never be the case)
+        if (thisTask.getInvolvedIDs().size() == 1 || !thisTask.isOrdered() || !thisTask.getInvolvedIDs().get(0).equals(userID)) {
+            Toast.makeText(this, "Nicht möglich!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        menu.findItem(R.id.action_skip).setVisible(false);
+        // Notify the second user
+        Map<String, Object> data = new HashMap<>();
+        data.put("taskName", thisTask.getTitle());
+        data.put("groupID", groupID);
+        data.put("userID", thisTask.getInvolvedIDs().get(1));
+
+        // Calls the Http Function which makes the Notification
+        functions.getHttpsCallable("taskSkipped").call(data);
+
+        // Change the current's user position with the user after him
+        ArrayList<String> newOrder = (ArrayList<String>) thisTask.getInvolvedIDs().clone();
+        newOrder.remove(userID);
+        newOrder.add(1, userID);
+
+        HashMap<String, Object> taskMap = new HashMap<>();
+        taskMap.put(INVOLVEDIDS, newOrder);
+        // UPDATE the involved-List in the Database
+        FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(TASKS)
+                .document(thisTask.getKey()).update(taskMap);
+    }
+
     private void datePicker() {
         DialogFragment dateDialog = DatePickerFragment.newInstance(groupID, thisTask);
         dateDialog.show(getSupportFragmentManager(), "datePicker");
@@ -274,12 +299,19 @@ public class TaskActivity extends AppCompatActivity {
         this.menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_task, menu);
+        // Skip - Visibility
+        if (thisTask.isOrdered() && thisTask.getInvolvedIDs().get(0).equals(userID) && thisTask.getInvolvedIDs().size() > 1)
+            menu.findItem(R.id.action_skip).setVisible(true);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_skip:
+                skip();
+                menu.findItem(R.id.action_skip).setVisible(false);
+                return true;
             case R.id.action_remind:
                 remindNotification();
                 return true;
@@ -287,7 +319,7 @@ public class TaskActivity extends AppCompatActivity {
                 datePicker();
                 return true;
             case R.id.action_change:
-                showEditLayout();
+                // showEditLayout();
                 return true;
             case R.id.action_delete:
                 deleteTask();
@@ -310,9 +342,8 @@ public class TaskActivity extends AppCompatActivity {
     }
 
     private Toolbar toolbar;
-    private TextView tv_frequenz, label_verlauf;
+    private TextView tv_frequency, tv_ordered, placeholder;
     private RecyclerView rec_involved, rec_verlauf;
-    private EditText et_frequency;
     private ProgressBar progressBar;
 
     private String userID, groupID;
@@ -320,8 +351,7 @@ public class TaskActivity extends AppCompatActivity {
     private FirebaseFunctions functions;
     private TaskModel thisTask;
     private HashMap<String, User> users;
-    private HashMap<String, User> allUsers;
-    private TaskInvolvedAdapter adapter_beteiligte;
+    private TaskInvolvedAdapter adapter_involved;
     private FirestoreRecyclerAdapter adapter_entries;
     private Menu menu;
 }

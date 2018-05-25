@@ -127,20 +127,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
                 String[] secUser_names = secUser.getName().split(" ", 2);
                 taskHolder.tv_order_second.setText(secUser_names[0]);
             }
-            // SKIP Button visible if current user is up
-            if (nextUser.getUserID().equals(userID) && model.getInvolvedIDs().size() > 1) {
-                taskHolder.btn_pass.setVisibility(View.VISIBLE);
-                taskHolder.btn_pass.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // Notify next user in turn that the current user skipped the task
-                        skippedNotification(model.getTitle(), model.getInvolvedIDs().get(1));
-                        // skip this task
-                        skipUser(taskHolder, model);
-                    }
-                });
-            }
-            else taskHolder.btn_pass.setVisibility(View.GONE);
         }
 
         // OnClick Listener for navigation to detailed view
@@ -176,7 +162,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     }
 
     // Skip the current User and put him on the second Position in the involved User's List
-    private void skipUser(final TaskHolder taskHolder, final TaskModel model) {
+    private void skipUser(final TaskModel model) {
         fragment.getProgressBar().setVisibility(View.VISIBLE);
         // Change the current's user position with the user after him
         ArrayList<String> newOrder = (ArrayList<String>) model.getInvolvedIDs().clone();

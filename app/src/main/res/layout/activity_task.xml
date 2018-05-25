@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -33,88 +34,118 @@
             android:orientation="vertical"
             android:padding="10dp">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:text="Frequenz:"
-                    android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/frequenz"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@+id/Tage"
-                    android:text="..."
-                    android:textSize="20sp"
-                    android:visibility="visible"/>
-
-                <EditText
-                    android:id="@+id/input_frequenz"
-                    android:layout_width="wrap_content"
-                    android:minWidth="50dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_toLeftOf="@+id/Tage"
-                    android:gravity="right"
-                    android:imeOptions="actionDone"
-                    android:inputType="number"
-                    android:textSize="20sp"
-                    android:visibility="gone"/>
-
-                <TextView
-                    android:id="@+id/Tage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginLeft="5dp"
-                    android:text="Tage"
-                    android:textSize="20sp" />
-
-            </RelativeLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="10dp"
-                android:paddingBottom="5dp"
-                android:text="Beteiligte"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="22sp"
-                android:textStyle="bold"/>
-
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/recView_beteiligte"
+                android:id="@+id/recView_involved"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true">
+                android:nestedScrollingEnabled="true"
+                android:scrollbars="horizontal"
+                android:overScrollMode="ifContentScrolls">
 
             </android.support.v7.widget.RecyclerView>
 
-            <TextView
-                android:id="@+id/label_verlauf"
-                android:layout_width="wrap_content"
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:paddingTop="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                app:cardBackgroundColor="@color/colorWhite50"
+                app:cardElevation="0dp"
+                app:cardCornerRadius="5dp"
+                app:cardUseCompatPadding="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:background="@drawable/selector_bottomedge">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Frequenz"
+                            android:textSize="20sp"
+                            android:layout_centerVertical="true"/>
+
+                        <TextView
+                            android:id="@+id/tv_frequency"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentRight="true"/>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Feste Reihenfolge"
+                            android:textSize="20sp"
+                            android:layout_centerVertical="true"/>
+
+                        <TextView
+                            android:id="@+id/tv_order"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentRight="true"/>
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:paddingLeft="10dp"
                 android:text="Verlauf"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
+                android:gravity="center_vertical"
+                style="@style/Toolbar.TitleText" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recVerlauf"
+            <TextView
+                android:id="@+id/placeholder"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:text="Noch keine Einträge..."
+                android:paddingLeft="10dp"
+                android:paddingTop="5dp"
+                android:textStyle="italic"
+                android:visibility="gone"/>
 
-            </android.support.v7.widget.RecyclerView>
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp"
+                app:cardBackgroundColor="@color/colorWhite50"
+                app:cardCornerRadius="5dp"
+                app:cardElevation="0dp"
+                app:cardUseCompatPadding="true">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recView_verlauf"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never">
+
+                </android.support.v7.widget.RecyclerView>
+
+            </android.support.v7.widget.CardView>
 
         </LinearLayout>
 
