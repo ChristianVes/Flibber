@@ -1,6 +1,7 @@
 package christian.eilers.flibber.FirestoreAdapter;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -31,10 +32,12 @@ import christian.eilers.flibber.Models.TaskEntry;
 import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
+import christian.eilers.flibber.Utils.LocalStorage;
 
 import static christian.eilers.flibber.Utils.Strings.ENTRIES;
 import static christian.eilers.flibber.Utils.Strings.GROUPS;
 import static christian.eilers.flibber.Utils.Strings.INVOLVEDIDS;
+import static christian.eilers.flibber.Utils.Strings.ONE_DAY;
 import static christian.eilers.flibber.Utils.Strings.TASKID;
 import static christian.eilers.flibber.Utils.Strings.TASKS;
 import static christian.eilers.flibber.Utils.Strings.TIMESTAMP;
@@ -50,20 +53,19 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     private final int HIDE = 0;
     private final int SHOW = 1;
 
-    public TasksAdapter(@NonNull FirestoreRecyclerOptions<TaskModel> options, TaskFragment fragment,
-                        String userID, String groupID, HashMap<String, User> users) {
+    public TasksAdapter(@NonNull FirestoreRecyclerOptions<TaskModel> options, TaskFragment fragment, HashMap<String, User> users) {
         super(options);
         this.fragment = fragment;
-        this.userID = userID;
-        this.groupID = groupID;
         this.users = users;
-        functions = FirebaseFunctions.getInstance();
     }
 
     // Create normal/empty Viewholder depending on whether the user is involved in this task
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        functions = FirebaseFunctions.getInstance();
+        userID = LocalStorage.getUserID(parent.getContext());
+        groupID = LocalStorage.getGroupID(parent.getContext());
         switch (viewType) {
             case SHOW: {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);
@@ -94,18 +96,26 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         taskHolder.tv_title.setText(model.getTitle());
 
         // DATE
+        // Relative time span
         taskHolder.tv_datum.setText(DateUtils.getRelativeTimeSpanString(model.getTimestamp().getTime(),
                 System.currentTimeMillis(),
                 DateUtils.DAY_IN_MILLIS,
                 DateUtils.FORMAT_ABBREV_RELATIVE));
-        // accent color if task is due
-        if (System.currentTimeMillis() > model.getTimestamp().getTime())
+        // text color and typeface (bold/normal) depending on time span
+        /*
+        if (System.currentTimeMillis() + 0.5 * ONE_DAY > model.getTimestamp().getTime()) {
             taskHolder.tv_datum.setTextColor(
                     taskHolder.itemView.getContext().getResources().getColor(R.color.colorAccent));
-        else taskHolder.tv_datum.setTextColor(
-                taskHolder.itemView.getContext().getResources().getColor(R.color.colorPrimary));
+            taskHolder.tv_datum.setTypeface(null, Typeface.BOLD);
+        }
+        else {
+            taskHolder.tv_datum.setTextColor(
+                    taskHolder.itemView.getContext().getResources().getColor(R.color.colorPrimary));
+            taskHolder.tv_datum.setTypeface(null, Typeface.NORMAL);
+        }
+         */
 
-        // User-Order Layout visibility
+        // USER-ORDER Layout
         if (!model.isOrdered()) {
             taskHolder.layout_order.setVisibility(View.GONE);
             taskHolder.tv_placeholder.setVisibility(View.VISIBLE);
@@ -150,39 +160,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
 
     }
 
-    // Notifiy the first User in the Involved User's List of the current Task
-    private void skippedNotification(String taskName, String toUserID) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("taskName", taskName);
-        data.put("groupID", groupID);
-        data.put("userID", toUserID);
-
-        // Calls the Http Function which makes the Notification
-        functions.getHttpsCallable("taskSkipped").call(data);
-    }
-
-    // Skip the current User and put him on the second Position in the involved User's List
-    private void skipUser(final TaskModel model) {
-        fragment.getProgressBar().setVisibility(View.VISIBLE);
-        // Change the current's user position with the user after him
-        ArrayList<String> newOrder = (ArrayList<String>) model.getInvolvedIDs().clone();
-        newOrder.remove(userID);
-        newOrder.add(1, userID);
-
-        HashMap<String, Object> taskMap = new HashMap<>();
-        taskMap.put(INVOLVEDIDS, newOrder);
-        // UPDATE the involved-List in the Database
-        FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(TASKS)
-                .document(model.getKey())
-                .update(taskMap)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        fragment.getProgressBar().setVisibility(View.GONE);
-                    }
-                });
-    }
-
     // Handle actions to be done when User has finished/taken care of a task
     private void handleTaskDone(final TaskHolder taskHolder, final TaskModel model) {
         fragment.getProgressBar().setVisibility(View.VISIBLE);
@@ -209,7 +186,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(taskHolder.itemView.getContext(), model.getTitle() +" erledigt!", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(taskHolder.itemView.getContext(), model.getTitle() +" erledigt!", Toast.LENGTH_SHORT).show();
                 fragment.getProgressBar().setVisibility(View.GONE);
             }
         });
@@ -218,7 +195,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     // Custom ViewHolder for a Task
     public class TaskHolder extends RecyclerView.ViewHolder {
         TextView tv_title, tv_datum, tv_order_first, tv_order_second, tv_placeholder;
-        LinearLayout btn_done, btn_pass;
+        LinearLayout btn_done;
         LinearLayout layout_order;
 
         public TaskHolder(View itemView) {
@@ -229,7 +206,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
             tv_title = itemView.findViewById(R.id.taskName);
             tv_placeholder = itemView.findViewById(R.id.placeholder);
             btn_done = itemView.findViewById(R.id.btn_done);
-            btn_pass = itemView.findViewById(R.id.btn_pass);
             layout_order = itemView.findViewById(R.id.layout_order);
         }
     }

@@ -73,14 +73,12 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
         placeholder_tasks = mainView.findViewById(R.id.placeholder_tasks);
         btn_note = mainView.findViewById(R.id.btn_note);
         btn_tasks = mainView.findViewById(R.id.btn_task);
-        btn_profile = mainView.findViewById(R.id.btn_profile);
         btn_settings = mainView.findViewById(R.id.btn_settings);
         progressBar = mainView.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
 
         btn_note.setOnClickListener(this);
         btn_tasks.setOnClickListener(this);
-        btn_profile.setOnClickListener(this);
         btn_settings.setOnClickListener(this);
         tv_notes.setOnClickListener(this);
         tv_tasks.setOnClickListener(this);
@@ -178,17 +176,6 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
             case R.id.label_tasks:
                 ((HomeActivity) getActivity()).setTabPosition(3);
                 break;
-            case R.id.btn_profile:
-                // Lösche WG Key und wechsel zur Profil Activity
-                LocalStorage.setGroupID(getContext(), null);
-                LocalStorage.setGroupPicPath(getContext(), null);
-                LocalStorage.setGroupName(getContext(), null);
-
-                Intent profileIntent = new Intent(getContext(), ProfileActivity.class);
-                profileIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(profileIntent);
-                getActivity().finish();
-                break;
             case R.id.btn_settings:
                 Intent intent_settings = new Intent(getContext(), SettingsActivity.class);
                 getActivity().startActivity(intent_settings);
@@ -218,7 +205,7 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
     private View mainView;
     private RecyclerView recView_notes, recView_tasks;
     private TextView tv_notes, tv_tasks, placeholder_notes, placeholder_tasks, tv_groupname;
-    private ImageButton btn_note, btn_tasks, btn_profile, btn_settings;
+    private ImageButton btn_note, btn_tasks, btn_settings;
     private ProgressBar progressBar;
 
     private FirestoreRecyclerAdapter adapter_notes, adapter_tasks;

@@ -22,14 +22,13 @@
             android:layout_height="match_parent"
             android:paddingLeft="8dp"
             android:paddingTop="6dp"
-            android:paddingRight="6dp"
+            android:paddingRight="10dp"
             android:paddingBottom="3dp">
 
             <TextView
                 android:id="@+id/taskName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_toLeftOf="@+id/datum"
                 android:layout_alignParentLeft="true"
                 android:layout_marginRight="5dp"
@@ -42,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:layout_gravity="center_vertical"
+                android:layout_alignBottom="@id/taskName"
                 android:textColor="@color/colorPrimary"
                 android:textSize="16sp"
                 />
@@ -111,21 +110,20 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@drawable/layerlist_topedge"
-            android:layout_marginTop="5dp"
-            android:weightSum="2">
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:id="@+id/btn_done"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_alignParentRight="true"
                 android:background="?selectableItemBackground"
-                android:padding="10dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="10dp"
+                android:paddingRight="20dp"
+                android:paddingLeft="20dp"
                 android:gravity="left">
 
                 <ImageView
@@ -143,44 +141,14 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="Erledigt"
+                    android:textStyle="bold"
                     android:textColor="@color/colorPrimaryDark"
                     android:layout_gravity="center_vertical"
                     android:textSize="16sp"/>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/btn_pass"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/selector_task_skipped"
-                android:padding="10dp"
-                android:gravity="left"
-                android:visibility="gone">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitCenter"
-                    android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_skip"
-                    android:tint="@color/colorPrimaryDark"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Weitergeben"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:layout_gravity="center_vertical"
-                    android:textSize="16sp"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
+        </RelativeLayout>
 
     </LinearLayout>
 
