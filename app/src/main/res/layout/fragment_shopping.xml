@@ -51,7 +51,7 @@
                     android:background="@drawable/selector_stock_item"
                     android:scaleType="fitEnd"
                     android:clickable="false"
-                    android:tint="@color/colorPrimaryDark"
+                    android:tint="@color/colorPrimaryBlack"
                     app:srcCompat="@drawable/ic_shopping_done"
                     android:contentDescription="TODO" />
 

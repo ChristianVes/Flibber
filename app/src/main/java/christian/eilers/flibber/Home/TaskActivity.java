@@ -11,6 +11,8 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,6 +29,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -216,30 +219,38 @@ public class TaskActivity extends AppCompatActivity {
                 .show();
     }
 
-    /*
-    private void saveChanging() {
-        String s_frequency = et_frequency.getText().toString().trim();
-        if (TextUtils.isEmpty(s_frequency)) {
-            Toast.makeText(this, "Frequenz eingeben...", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        final long frequency = Long.valueOf(s_frequency);
+    private void changeFrequency() {
+        new MaterialDialog.Builder(this)
+                .title("Frequenz ändern")
+                .inputType(InputType.TYPE_CLASS_NUMBER)
+                .input("Frequenz in Tagen", null, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
 
-        HashMap<String, Object> changings = new HashMap<>();
-        changings.put("frequenz", frequency);
+                    }
+                })
+                .positiveText("Speichern")
+                .negativeText("Abbrechen")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull final MaterialDialog dialog, @NonNull DialogAction which) {
+                        final String s_frequency = dialog.getInputEditText().getText().toString().trim();
+                        if(TextUtils.isEmpty(s_frequency)) {
+                            dialog.dismiss();
+                            return;
+                        }
+                        final long frequency = Long.valueOf(s_frequency);
 
-        progressBar.setVisibility(View.VISIBLE);
-        DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document(thisTask.getKey());
-        doc.update(changings).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                progressBar.setVisibility(View.GONE);
-                showNormalLayout(frequency);
-            }
-        });
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("frequenz", frequency);
+
+                        DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document(thisTask.getKey());
+                        doc.update(map);
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
-     */
-
 
     // Notifiy the first User in the Involved User's List of the current Task
     private void remindNotification() {
@@ -319,7 +330,7 @@ public class TaskActivity extends AppCompatActivity {
                 datePicker();
                 return true;
             case R.id.action_change:
-                // showEditLayout();
+                changeFrequency();
                 return true;
             case R.id.action_delete:
                 deleteTask();

@@ -122,7 +122,6 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         recBilanz.setLayoutManager(new LinearLayoutManager(getContext()));
         recBilanz.addItemDecoration(new DividerItemDecoration(recBilanz.getContext(), DividerItemDecoration.VERTICAL));
         recBilanz.setAdapter(adapterBilanz);
-
     }
 
     // Load the last transactions/payments

@@ -3,6 +3,7 @@ package christian.eilers.flibber.Home.Finance;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -98,10 +99,11 @@ public class BalanceActivity extends AppCompatActivity {
                         return 1;
                     }
                 });
+                BalanceUserAdapter adapter = new BalanceUserAdapter(list_users);
                 // Display user and their balance in a recyclerView
                 recView.setHasFixedSize(true);
                 recView.setLayoutManager(new LinearLayoutManager(BalanceActivity.this));
-                BalanceUserAdapter adapter = new BalanceUserAdapter(list_users);
+                recView.addItemDecoration(new DividerItemDecoration(recView.getContext(), DividerItemDecoration.VERTICAL));
                 recView.setAdapter(adapter);
                 progressBar.setVisibility(View.GONE);
             }
@@ -119,9 +121,10 @@ public class BalanceActivity extends AppCompatActivity {
                 for (QueryDocumentSnapshot snap : queryDocumentSnapshots) {
                     list_offsets.add(snap.toObject(Offset.class));
                 }
+                BalanceOffsetAdapter adapter = new BalanceOffsetAdapter(users, list_offsets);
                 recView_offsets.setHasFixedSize(true);
                 recView_offsets.setLayoutManager(new LinearLayoutManager(BalanceActivity.this));
-                BalanceOffsetAdapter adapter = new BalanceOffsetAdapter(users, list_offsets);
+                recView_offsets.addItemDecoration(new DividerItemDecoration(recView_offsets.getContext(), DividerItemDecoration.VERTICAL));
                 recView_offsets.setAdapter(adapter);
             }
         });
