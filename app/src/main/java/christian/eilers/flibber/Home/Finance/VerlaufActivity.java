@@ -74,7 +74,6 @@ public class VerlaufActivity extends AppCompatActivity {
         adapter_all = new VerlaufAllAdapter(recyclerOptions, userID, users);
 
         recView.setLayoutManager(new LinearLayoutManager(this));
-        recView.addItemDecoration(new DividerItemDecoration(recView.getContext(), DividerItemDecoration.VERTICAL));
         recView.setAdapter(adapter);
     }
 

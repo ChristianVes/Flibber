@@ -140,7 +140,6 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         adapterVerlauf = new VerlaufAdapter(options, userID, users);
 
         recVerlauf.setLayoutManager(new LinearLayoutManager(getContext()));
-        recVerlauf.addItemDecoration(new DividerItemDecoration(recVerlauf.getContext(), DividerItemDecoration.VERTICAL));
         recVerlauf.setAdapter(adapterVerlauf);
     }
 

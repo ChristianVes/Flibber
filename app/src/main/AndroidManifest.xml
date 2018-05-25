@@ -103,10 +103,11 @@
             android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity
             android:name=".Home.StockProductActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Home.NotesVerlaufActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
+        <activity android:name=".Home.SettingsActivity"></activity>
     </application>
 
 </manifest>
