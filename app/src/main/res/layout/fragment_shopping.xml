@@ -11,43 +11,43 @@
     tools:context="christian.eilers.flibber.Home.Finance.FinanceFragment"
     android:focusable="true">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:layout_above="@+id/bottomLayout">
 
         <RelativeLayout
-            android:id="@+id/toStock"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?android:selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true">
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="10dp">
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="10dp"
-                android:paddingRight="10dp"
-                android:paddingBottom="10dp"
-                android:paddingLeft="15dp"
-                android:text="Zum Vorratsschrank"
-                android:textStyle="bold"
-                android:textSize="23sp"
-                android:textColor="@color/colorPrimaryDark"/>
+                android:layout_height="40dp"
+                android:paddingLeft="10dp"
+                android:gravity="center_vertical"
+                android:text="Einkaufsliste"
+                style="@style/Toolbar.TitleText"/>
 
             <ImageButton
+                android:id="@+id/btn_shopping"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:padding="5dp"
+                android:paddingBottom="10dp"
+                android:paddingTop="5dp"
+                android:paddingRight="10dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:background="@android:color/transparent"
+                android:background="@drawable/selector_stock_item"
                 android:scaleType="fitEnd"
                 android:clickable="false"
                 android:tint="@color/colorPrimaryDark"
-                app:srcCompat="@drawable/ic_right"
+                app:srcCompat="@drawable/ic_shopping_done"
                 android:contentDescription="TODO" />
 
         </RelativeLayout>
@@ -57,7 +57,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Deine Einkaufsliste ist leer..."
-            android:layout_below="@+id/toStock"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:paddingTop="5dp"
@@ -70,7 +69,6 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:layout_marginBottom="10dp"
-            android:layout_below="@+id/toStock"
             app:cardBackgroundColor="@color/colorWhite50"
             app:cardCornerRadius="5dp"
             app:cardElevation="0dp"
@@ -84,9 +82,39 @@
 
         </android.support.v7.widget.CardView>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="15dp"
+                android:text="Vorratsschrank"
+                style="@style/Toolbar.TitleText"/>
 
-    </RelativeLayout>
+            <ImageButton
+                android:id="@+id/btn_stock"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="5dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@android:color/transparent"
+                android:scaleType="fitEnd"
+                android:clickable="false"
+                android:tint="@color/colorPrimaryDark"
+                app:srcCompat="@drawable/ic_add_blank"
+                android:contentDescription="TODO" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/bottomLayout"

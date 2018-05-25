@@ -52,8 +52,6 @@ public class HomeActivity extends AppCompatActivity {
 
         mView = findViewById(R.id.container);
         bottomNavigationView = findViewById(R.id.bnve);
-        appbar = findViewById(R.id.appbar);
-        toolbar = findViewById(R.id.toolbar);
         progressBar = findViewById(R.id.progressBar);
         logo = findViewById(R.id.logo);
 
@@ -82,10 +80,6 @@ public class HomeActivity extends AppCompatActivity {
         // change visibilities
         progressBar.setVisibility(View.GONE);
         logo.setVisibility(View.GONE);
-        appbar.setVisibility(View.VISIBLE);
-        bottomNavigationView.setVisibility(View.VISIBLE);
-
-        setSupportActionBar(toolbar);
 
         // adjust checked item in @bottomNavigationView when view page changes
         mView.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -115,19 +109,15 @@ public class HomeActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.ic_home:
                         mView.setCurrentItem(0);
-                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(0));
                         break;
                     case R.id.ic_finanzen:
                         mView.setCurrentItem(1);
-                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(1));
                         break;
                     case R.id.ic_einkaufsliste:
                         mView.setCurrentItem(2);
-                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(2));
                         break;
                     case R.id.ic_putzplan:
                         mView.setCurrentItem(3);
-                        getSupportActionBar().setTitle(adapterViewPager.getPageTitle(3));
                         break;
                 }
                 return false;
@@ -135,6 +125,7 @@ public class HomeActivity extends AppCompatActivity {
         });
         mView.setAdapter(adapterViewPager);
         mView.setCurrentItem(0);
+        bottomNavigationView.setVisibility(View.VISIBLE);
         if (users.size() == 1) {
             welcomeDialog();
             // TODO: switch to Settings Activity, Welcome Dialog anpassen / verschieben
@@ -180,7 +171,6 @@ public class HomeActivity extends AppCompatActivity {
         bottomView.enableAnimation(false);
         bottomView.enableShiftingMode(false);
         bottomView.enableItemShiftingMode(false);
-        //bottomView.setIconSize(26, 26);
         bottomView.setCurrentItem(0);
     }
 
@@ -188,9 +178,11 @@ public class HomeActivity extends AppCompatActivity {
         return users;
     }
 
+    public void setTabPosition(int pos) {
+        mView.setCurrentItem(pos);
+    }
+
     private BottomNavigationViewEx bottomNavigationView;
-    private Toolbar toolbar;
-    private AppBarLayout appbar;
     private FragmentPagerAdapter adapterViewPager;
     private ViewPager mView;
     private ProgressBar progressBar;

@@ -18,10 +18,57 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:id="@+id/progressBar"
             android:layout_width="match_parent"
-            android:layout_height="15dp"
+            android:layout_height="10dp"
             android:layout_gravity="center"
             android:visibility="invisible"
             android:indeterminate="true" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp">
+
+            <ImageButton
+                android:id="@+id/btn_profile"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="5dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/selector_stock_item"
+                android:scaleType="fitEnd"
+                android:tint="@color/colorPrimaryDark"
+                app:srcCompat="@drawable/ic_profile"
+                android:contentDescription="TODO" />
+
+            <TextView
+                android:id="@+id/group_name"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_toRightOf="@+id/btn_profile"
+                android:layout_toLeftOf="@id/btn_settings"
+                android:padding="5dp"
+                android:gravity="center"
+                style="@style/Toolbar.TitleText" />
+
+            <ImageButton
+                android:id="@+id/btn_settings"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="5dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/selector_stock_item"
+                android:scaleType="fitEnd"
+                android:tint="@color/colorPrimaryDark"
+                app:srcCompat="@drawable/ic_settings"
+                android:contentDescription="TODO" />
+
+        </RelativeLayout>
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
@@ -41,7 +88,8 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:paddingRight="5dp">
 
                     <TextView
                         android:id="@+id/label_notes"
@@ -113,7 +161,8 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:paddingRight="5dp">
 
                     <TextView
                         android:id="@+id/label_tasks"

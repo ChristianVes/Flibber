@@ -28,6 +28,7 @@ import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Note;
 import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
+import christian.eilers.flibber.ProfileActivity;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 
@@ -53,6 +54,7 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             getActivity().finish();
         } else {
+            tv_groupname.setText("Headquarter");
             loadNotes();
             loadTasks();
         }
@@ -66,15 +68,20 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
         recView_tasks = mainView.findViewById(R.id.recTasks);
         tv_notes = mainView.findViewById(R.id.label_notes);
         tv_tasks = mainView.findViewById(R.id.label_tasks);
+        tv_groupname = mainView.findViewById(R.id.group_name);
         placeholder_notes = mainView.findViewById(R.id.placeholder_notes);
         placeholder_tasks = mainView.findViewById(R.id.placeholder_tasks);
         btn_note = mainView.findViewById(R.id.btn_note);
         btn_tasks = mainView.findViewById(R.id.btn_task);
+        btn_profile = mainView.findViewById(R.id.btn_profile);
+        btn_settings = mainView.findViewById(R.id.btn_settings);
         progressBar = mainView.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
 
         btn_note.setOnClickListener(this);
         btn_tasks.setOnClickListener(this);
+        btn_profile.setOnClickListener(this);
+        btn_settings.setOnClickListener(this);
         tv_notes.setOnClickListener(this);
         tv_tasks.setOnClickListener(this);
     }
@@ -84,12 +91,13 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
         db = FirebaseFirestore.getInstance();
         userID = LocalStorage.getUserID(getContext());
         groupID = LocalStorage.getGroupID(getContext());
+        groupname = LocalStorage.getGroupName(getContext());
         users = ((HomeActivity) getActivity()).getUsers();
     }
 
     // check for null pointers
     private boolean hasNulls() {
-        if (users == null || userID == null || groupID == null) return true;
+        if (users == null || userID == null || groupID == null || groupname == null) return true;
         else return false;
     }
 
@@ -169,8 +177,22 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
                 //TODO
                 break;
             case R.id.label_tasks:
-                //TODO
+                ((HomeActivity) getActivity()).setTabPosition(3);
                 break;
+            case R.id.btn_profile:
+                // Lösche WG Key und wechsel zur Profil Activity
+                LocalStorage.setGroupID(getContext(), null);
+                LocalStorage.setGroupPicPath(getContext(), null);
+                LocalStorage.setGroupName(getContext(), null);
+
+                Intent profileIntent = new Intent(getContext(), ProfileActivity.class);
+                profileIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(profileIntent);
+                getActivity().finish();
+                break;
+            case R.id.btn_settings:
+                Intent intent_settings = new Intent(getContext(), SettingsActivity.class);
+                getActivity().startActivity(intent_settings);
         }
     }
 
@@ -196,12 +218,12 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
 
     private View mainView;
     private RecyclerView recView_notes, recView_tasks;
-    private TextView tv_notes, tv_tasks, placeholder_notes, placeholder_tasks;
-    private ImageButton btn_note, btn_tasks;
+    private TextView tv_notes, tv_tasks, placeholder_notes, placeholder_tasks, tv_groupname;
+    private ImageButton btn_note, btn_tasks, btn_profile, btn_settings;
     private ProgressBar progressBar;
 
     private FirestoreRecyclerAdapter adapter_notes, adapter_tasks;
     private FirebaseFirestore db;
-    private String userID, groupID;
+    private String userID, groupID, groupname;
     private HashMap<String, User> users;
 }

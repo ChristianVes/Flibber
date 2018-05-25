@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -85,21 +86,20 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         recVerlauf = mainView.findViewById(R.id.recVerlauf);
         fab = mainView.findViewById(R.id.fab);
         btn_verlauf = mainView.findViewById(R.id.zumVerlauf);
+        btn_exchange = mainView.findViewById(R.id.btn_exchange);
         progressBar = mainView.findViewById(R.id.progressBar);
 
         fab.setOnClickListener(this);
         btn_verlauf.setOnClickListener(this);
+        btn_exchange.setOnClickListener(this);
     }
 
     // Initialize variables
     private void initializeVariables() {
         db = FirebaseFirestore.getInstance();
-        storage = FirebaseStorage.getInstance().getReference();
         userID = LocalStorage.getUserID(getContext());
         groupID = LocalStorage.getGroupID(getContext());
         users = ((HomeActivity) getActivity()).getUsers();
-
-        setHasOptionsMenu(true);
     }
 
     // check for null pointers
@@ -137,7 +137,22 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                 .build();
 
         users = ((HomeActivity) getActivity()).getUsers();
-        adapterVerlauf = new VerlaufAdapter(options, userID, users);
+        adapterVerlauf = new VerlaufAdapter(options, userID, users) {
+            @NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                switch (viewType) {
+                    case SHOW: {
+                        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_transaction, parent, false);
+                        return new TransactionHolder(view);
+                    }
+                    default: {
+                        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_empty, parent, false);
+                        return new EmptyHolder(view);
+                    }
+                }
+            }
+        };
 
         recVerlauf.setLayoutManager(new LinearLayoutManager(getContext()));
         recVerlauf.setAdapter(adapterVerlauf);
@@ -265,23 +280,9 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                 intentVerlauf.putExtra(USERS, ((HomeActivity) getActivity()).getUsers());
                 getActivity().startActivity(intentVerlauf);
                 break;
-        }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_finance, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_kassensturz:
+            case R.id.btn_exchange:
                 balancingDialog();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+                break;
         }
     }
 
@@ -299,7 +300,6 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         if(adapterVerlauf != null) adapterVerlauf.stopListening();
     }
 
-    private StorageReference storage;
     private FirebaseFirestore db;
     private String groupID;
     private String userID;
@@ -310,5 +310,6 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
     private FirestoreRecyclerAdapter adapterBilanz, adapterVerlauf;
     private FloatingActionButton fab;
     private RelativeLayout btn_verlauf;
+    private ImageButton btn_exchange;
     private ProgressBar progressBar;
 }

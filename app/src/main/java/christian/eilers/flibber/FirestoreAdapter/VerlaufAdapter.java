@@ -26,8 +26,8 @@ import static christian.eilers.flibber.Utils.Strings.*;
 
 public class VerlaufAdapter extends FirestoreRecyclerAdapter<Payment, RecyclerView.ViewHolder>{
 
-    private final int HIDE = 0;
-    private final int SHOW = 1;
+    public final int HIDE = 0;
+    public final int SHOW = 1;
     private String userID;
     private HashMap<String, User> users;
 
@@ -43,7 +43,7 @@ public class VerlaufAdapter extends FirestoreRecyclerAdapter<Payment, RecyclerVi
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case SHOW: {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_transaction, parent, false);
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_transaction2, parent, false);
                 return new TransactionHolder(view);
             }
             default: {

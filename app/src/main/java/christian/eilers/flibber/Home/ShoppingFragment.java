@@ -87,8 +87,8 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         et_article = mainView.findViewById(R.id.input_shopping);
         btn_save = mainView.findViewById(R.id.btn_save);
         btn_group = mainView.findViewById(R.id.btn_group);
+        btn_shopping = mainView.findViewById(R.id.btn_shopping);
         placeholder = mainView.findViewById(R.id.placeholder);
-        btn_stock = mainView.findViewById(R.id.toStock);
 
         et_article.setOnFocusChangeListener(this);
         et_article.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -101,9 +101,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
 
         btn_save.setOnClickListener(this);
         btn_group.setOnClickListener(this);
-        btn_stock.setOnClickListener(this);
-
-        setHasOptionsMenu(true); // activate options menu for this fragment
+        btn_shopping.setOnClickListener(this);
     }
 
     // Initialize Variables
@@ -377,15 +375,6 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
-    // initialize toolbar and their buttons
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        menu.clear();
-        inflater.inflate(R.menu.menu_shopping, menu);
-        menu.findItem(R.id.action_finish).getActionView().setOnClickListener(this);
-    }
-
     // Hide Keyboard on click outside
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
@@ -398,18 +387,14 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onClick(View view) {
         int id = view.getId();
-        if (id == R.id.btn_save) saveArticle();
-        else if (id == R.id.action_finish) {
+        if (id == R.id.btn_save)
+            saveArticle();
+        else if (id == R.id.btn_shopping)
             findCheckedArticles();
-        }
         else if (id == R.id.btn_group) {
             forAll = !forAll;
             if (forAll) btn_group.setColorFilter(getResources().getColor(R.color.colorAccent));
             else btn_group.setColorFilter(getResources().getColor(R.color.colorPrimary));
-        }
-        else if (id == R.id.toStock) {
-            Intent i_stock = new Intent(getContext(), StockActivity.class);
-            startActivity(i_stock);
         }
     }
 
@@ -440,7 +425,6 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     private View mainView;
     private RecyclerView recView;
     private EditText et_article;
-    private ImageButton btn_save, btn_group;
+    private ImageButton btn_save, btn_group, btn_shopping;
     private TextView placeholder;
-    private RelativeLayout btn_stock;
 }

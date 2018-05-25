@@ -81,7 +81,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     private void initializeViews() {
         btn_profile = findViewById(R.id.btn_profile);
-        btn_home = findViewById(R.id.btn_group);
+        btn_home = findViewById(R.id.btn_home);
         btn_invite = findViewById(R.id.btn_invite);
         btn_leave = findViewById(R.id.btn_leave);
         img_group = findViewById(R.id.group_image);
