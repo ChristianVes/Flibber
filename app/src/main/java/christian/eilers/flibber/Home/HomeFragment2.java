@@ -107,12 +107,12 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
         if (users.get(userID).getTimestamp() != null)
             notesQuery = db.collection(GROUPS).document(groupID).collection(NOTES)
                     .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
-                    .whereGreaterThan(TIMESTAMP, new Date(users.get(userID).getTimestamp().getTime() - ONE_DAY));
+                    .whereGreaterThan(TIMESTAMP, new Date(users.get(userID).getTimestamp().getTime() - 2 * ONE_DAY));
 
         else
             notesQuery = db.collection(GROUPS).document(groupID).collection(NOTES)
                     .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
-                    .whereGreaterThan(TIMESTAMP, new Date(System.currentTimeMillis() - ONE_WEEK));
+                    .whereGreaterThan(TIMESTAMP, new Date(System.currentTimeMillis() - 2 * ONE_DAY));
 
         FirestoreRecyclerOptions<Note> options = new FirestoreRecyclerOptions.Builder<Note>()
                 .setQuery(notesQuery, Note.class)
@@ -135,19 +135,18 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
     private void loadTasks() {
         final Query query = db.collection(GROUPS).document(groupID)
                 .collection(TASKS)
-                .whereLessThan(TIMESTAMP, new Date(System.currentTimeMillis() + ONE_DAY))
+                .whereLessThan(TIMESTAMP, new Date(System.currentTimeMillis() + 2 * ONE_DAY))
                 .orderBy(TIMESTAMP, Query.Direction.ASCENDING);
 
         final FirestoreRecyclerOptions<TaskModel> options = new FirestoreRecyclerOptions.Builder<TaskModel>()
                 .setQuery(query, TaskModel.class)
                 .build();
 
-        adapter_tasks = new TasksAdapter2(options, userID) {
+        adapter_tasks = new TasksAdapter2(options, users) {
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
-
-                int count = 0;
+                int count = 0; // number of visibile items
                 for (int i = 0; i < getItemCount(); i++) {
                     if (getItemViewType(i) == 1) count++;
                 }
