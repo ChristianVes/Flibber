@@ -11,7 +11,7 @@ import christian.eilers.flibber.Home.SettingsFragment;
 import christian.eilers.flibber.Home.ShoppingFragment;
 
 public class HomePagerAdapter extends FragmentPagerAdapter {
-    private static int NUM_ITEMS = 5;
+    private static int NUM_ITEMS = 4;
 
     public HomePagerAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);
@@ -28,15 +28,13 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new TaskFragment();
-            case 1:
-                return new ShoppingFragment();
-            case 2:
                 return new HomeFragment2();
-            case 3:
+            case 1:
                 return new FinanceFragment();
-            case 4:
-                return new SettingsFragment();
+            case 2:
+                return new ShoppingFragment();
+            case 3:
+                return new TaskFragment();
             default:
                 return null;
         }
@@ -47,15 +45,13 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Aufgaben";
-            case 1:
-                return "Einkaufsliste";
-            case 2:
                 return "Pinnwand";
-            case 3:
+            case 1:
                 return "Finanzen";
-            case 4:
-                return "Einstellungen";
+            case 2:
+                return "Einkaufen";
+            case 3:
+                return "Agenda";
             default:
                 return null;
         }

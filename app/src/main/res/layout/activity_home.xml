@@ -59,8 +59,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:visibility="gone"
-        app:itemBackground="@drawable/selector_navigationview_items"
+        android:visibility="visible"
+        android:background="@drawable/layerlist_topedge"
+        app:itemTextColor="@drawable/selector_navigationview_color"
         app:itemIconTint="@drawable/selector_navigationview_color"
         app:menu="@menu/bottom_navigation_menu" />
 

@@ -2,31 +2,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/ic_putzplan"
-        android:icon="@drawable/ic_layers"
-        android:enabled="true"
-        android:title=""
-        />
-
-    <item
-        android:id="@+id/ic_einkaufsliste"
-        android:icon="@drawable/ic_einkaufsliste"
-        android:title=""
-        />
-    <item
         android:id="@+id/ic_home"
         android:icon="@drawable/ic_home"
-        android:title=""
+        android:title="Pinnwand"
         />
     <item
         android:id="@+id/ic_finanzen"
         android:icon="@drawable/ic_finanzen"
-        android:title=""
+        android:title="Finanzen"
         />
     <item
-        android:id="@+id/ic_settings"
-        android:icon="@drawable/ic_settings"
-        android:title=""
+        android:id="@+id/ic_einkaufsliste"
+        android:icon="@drawable/ic_einkaufsliste"
+        android:title="Einkaufen"
+        />
+    <item
+        android:id="@+id/ic_putzplan"
+        android:icon="@drawable/ic_layers"
+        android:enabled="true"
+        android:title="Agenda"
         />
 
 </menu>

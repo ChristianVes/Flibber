@@ -102,7 +102,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onPageScrollStateChanged(int state) {
             }
         });
-        mView.setOffscreenPageLimit(5);
+        mView.setOffscreenPageLimit(4);
         // initialize bottomNavigationView
         setBottomNavigationBar(bottomNavigationView);
         bottomNavigationView.setupWithViewPager(mView);
@@ -113,37 +113,31 @@ public class HomeActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 item.setChecked(true);
                 switch (item.getItemId()) {
-                    case R.id.ic_putzplan:
+                    case R.id.ic_home:
                         mView.setCurrentItem(0);
                         getSupportActionBar().setTitle(adapterViewPager.getPageTitle(0));
                         break;
-                    case R.id.ic_einkaufsliste:
+                    case R.id.ic_finanzen:
                         mView.setCurrentItem(1);
                         getSupportActionBar().setTitle(adapterViewPager.getPageTitle(1));
                         break;
-                    case R.id.ic_home:
+                    case R.id.ic_einkaufsliste:
                         mView.setCurrentItem(2);
                         getSupportActionBar().setTitle(adapterViewPager.getPageTitle(2));
                         break;
-                    case R.id.ic_finanzen:
+                    case R.id.ic_putzplan:
                         mView.setCurrentItem(3);
                         getSupportActionBar().setTitle(adapterViewPager.getPageTitle(3));
                         break;
-                    case R.id.ic_settings:
-                        mView.setCurrentItem(4);
-                        getSupportActionBar().setTitle(groupName);
-                        break;
                 }
-
                 return false;
             }
         });
         mView.setAdapter(adapterViewPager);
-
-        if (users.size() > 1) mView.setCurrentItem(2);
-        else {
-            mView.setCurrentItem(4);
+        mView.setCurrentItem(0);
+        if (users.size() == 1) {
             welcomeDialog();
+            // TODO: switch to Settings Activity, Welcome Dialog anpassen / verschieben
         }
     }
 
@@ -186,8 +180,8 @@ public class HomeActivity extends AppCompatActivity {
         bottomView.enableAnimation(false);
         bottomView.enableShiftingMode(false);
         bottomView.enableItemShiftingMode(false);
-        bottomView.setIconSize(32, 32);
-        bottomView.setCurrentItem(2);
+        //bottomView.setIconSize(26, 26);
+        bottomView.setCurrentItem(0);
     }
 
     public HashMap<String, User> getUsers() {
