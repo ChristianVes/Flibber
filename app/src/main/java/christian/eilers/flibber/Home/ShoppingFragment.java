@@ -84,10 +84,13 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     // Initialize Layout
     private void initializeViews() {
         recView = mainView.findViewById(R.id.shoppingList);
+        recView_stock = mainView.findViewById(R.id.recView_stock);
         et_article = mainView.findViewById(R.id.input_shopping);
         btn_save = mainView.findViewById(R.id.btn_save);
         btn_group = mainView.findViewById(R.id.btn_group);
         btn_shopping = mainView.findViewById(R.id.btn_shopping);
+        btn_stock = mainView.findViewById(R.id.btn_stock);
+        placeholder_stock = mainView.findViewById(R.id.placeholder_stock);
         placeholder = mainView.findViewById(R.id.placeholder);
 
         et_article.setOnFocusChangeListener(this);
@@ -102,6 +105,7 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         btn_save.setOnClickListener(this);
         btn_group.setOnClickListener(this);
         btn_shopping.setOnClickListener(this);
+        btn_stock.setOnClickListener(this);
     }
 
     // Initialize Variables
@@ -396,6 +400,9 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             if (forAll) btn_group.setColorFilter(getResources().getColor(R.color.colorAccent));
             else btn_group.setColorFilter(getResources().getColor(R.color.colorPrimary));
         }
+        else if (id == R.id.btn_stock) {
+            //TODO
+        }
     }
 
     @Override
@@ -410,11 +417,6 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         if (adapter != null) adapter.stopListening();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
     private FirebaseFirestore db;
     private CollectionReference ref_shopping;
     private FirestoreRecyclerAdapter adapter;
@@ -423,8 +425,8 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     private boolean forAll = false;
 
     private View mainView;
-    private RecyclerView recView;
+    private RecyclerView recView, recView_stock;
     private EditText et_article;
-    private ImageButton btn_save, btn_group, btn_shopping;
-    private TextView placeholder;
+    private ImageButton btn_save, btn_group, btn_shopping, btn_stock;
+    private TextView placeholder, placeholder_stock;
 }

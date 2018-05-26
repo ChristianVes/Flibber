@@ -180,7 +180,7 @@ public class TaskCreateActivity extends AppCompatActivity implements View.OnFocu
 
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
-        if (et_frequency.hasFocus() || et_name.hasFocus()) return;
+        if (et_frequency.hasFocus() || et_description.hasFocus() || et_name.hasFocus()) return;
         if (!hasFocus) {
             InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);

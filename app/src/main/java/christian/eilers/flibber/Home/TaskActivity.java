@@ -91,6 +91,7 @@ public class TaskActivity extends AppCompatActivity {
 
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
+        tv_description = findViewById(R.id.description);
         tv_frequency = findViewById(R.id.tv_frequency);
         tv_ordered = findViewById(R.id.tv_order);
         placeholder = findViewById(R.id.placeholder);
@@ -106,6 +107,10 @@ public class TaskActivity extends AppCompatActivity {
 
     // Load the task information from the database
     private void loadTask() {
+        if (thisTask.getDescription() != null && !thisTask.getDescription().isEmpty()) {
+            tv_description.setText(thisTask.getDescription());
+            tv_description.setVisibility(View.VISIBLE);
+        }
         // Frequency
         if (thisTask.getFrequenz() == 1) tv_frequency.setText("Täglich");
         else tv_frequency.setText(thisTask.getFrequenz() +" Tage");
@@ -381,7 +386,7 @@ public class TaskActivity extends AppCompatActivity {
     }
 
     private Toolbar toolbar;
-    private TextView tv_frequency, tv_ordered, placeholder;
+    private TextView tv_frequency, tv_description, tv_ordered, placeholder;
     private RecyclerView rec_involved, rec_verlauf;
     private ProgressBar progressBar;
 

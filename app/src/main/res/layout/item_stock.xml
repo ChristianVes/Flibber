@@ -1,86 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="5dp"
-    app:cardBackgroundColor="@color/colorWhite50"
-    app:cardElevation="0dp"
-    app:cardCornerRadius="5dp"
-    app:cardUseCompatPadding="true">
+    android:background="?android:attr/selectableItemBackground"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <ImageButton
+        android:id="@+id/btn_add"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/selector_stock_item"
+        app:srcCompat="@drawable/ic_add_blank" />
+
+    <LinearLayout
+        android:id="@+id/middleLayout"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:background="?selectableItemBackground">
-
-        <ImageButton
-            android:id="@+id/btn_add"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/selector_stock_item"
-            app:srcCompat="@drawable/ic_add_blank"/>
+        android:layout_toLeftOf="@+id/btn_remove"
+        android:layout_toRightOf="@+id/btn_add"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/middleLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_toLeftOf="@+id/btn_remove"
-            android:layout_toRightOf="@+id/btn_add">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:lines="1"
-                    android:ellipsize="end"/>
-
-                <ImageView
-                    android:id="@+id/ic_group"
-                    android:layout_width="22dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="15dp"
-                    android:paddingTop="3dp"
-                    android:layout_marginLeft="15dp"
-                    app:srcCompat="@drawable/ic_group"
-                    android:tint="@color/colorPrimary"
-                    android:visibility="gone" />
-
-            </LinearLayout>
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/count"
-                android:layout_width="match_parent"
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="italic"
-                android:textSize="16sp" />
+                android:ellipsize="end"
+                android:lines="1"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/ic_group"
+                android:layout_width="22dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:paddingTop="3dp"
+                android:tint="@color/colorPrimary"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_group" />
 
         </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/btn_remove"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:background="@drawable/selector_stock_item"
-            app:srcCompat="@drawable/ic_remove"/>
+        <TextView
+            android:id="@+id/count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="italic" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
-</android.support.v7.widget.CardView>
+    <ImageButton
+        android:id="@+id/btn_remove"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/selector_stock_item"
+        app:srcCompat="@drawable/ic_remove" />
+
+</RelativeLayout>
