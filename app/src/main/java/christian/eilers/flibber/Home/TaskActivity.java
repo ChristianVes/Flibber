@@ -319,7 +319,7 @@ public class TaskActivity extends AppCompatActivity {
         final DocumentReference doc_task = FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(TASKS).document(thisTask.getKey());
         final DocumentReference doc_not = db.collection(GROUPS).document(groupID).collection(USERS).document(toUserID).collection(NOTIFICATIONS).document();
 
-        final String not_description = "hat \"" + thisTask.getTitle() + "\" an dich weitergegeben";
+        final String not_description = "\"" + thisTask.getTitle() + "\" weitergegeben an dich";
         final NotificationModel not = new NotificationModel(doc_not.getId(), not_description, TASKS, userID);
 
         WriteBatch batch = db.batch();

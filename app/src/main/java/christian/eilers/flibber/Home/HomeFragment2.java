@@ -38,6 +38,7 @@ import static christian.eilers.flibber.Utils.Strings.GROUPS;
 import static christian.eilers.flibber.Utils.Strings.NOTES;
 import static christian.eilers.flibber.Utils.Strings.NOTIFICATIONS;
 import static christian.eilers.flibber.Utils.Strings.ONE_DAY;
+import static christian.eilers.flibber.Utils.Strings.ONE_HOUR;
 import static christian.eilers.flibber.Utils.Strings.ONE_WEEK;
 import static christian.eilers.flibber.Utils.Strings.TASKS;
 import static christian.eilers.flibber.Utils.Strings.TIMESTAMP;
@@ -169,7 +170,7 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
     private void loadEvents() {
         final Query query = db.collection(GROUPS).document(groupID)
                 .collection(USERS).document(userID).collection(NOTIFICATIONS)
-                .whereGreaterThan(TIMESTAMP, new Date(System.currentTimeMillis() - ONE_DAY))
+                .whereGreaterThan(TIMESTAMP, new Date(System.currentTimeMillis() - ONE_HOUR))
                 .orderBy(TIMESTAMP, Query.Direction.DESCENDING);
 
         final FirestoreRecyclerOptions<NotificationModel> options = new FirestoreRecyclerOptions.Builder<NotificationModel>()

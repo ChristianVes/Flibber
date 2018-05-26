@@ -5,6 +5,7 @@ public class Strings {
     public static final int BUFFER = 10000; // 10 Sekunden
     public static final long ONE_WEEK = 7L * 24 * 3600 * 1000; // 1 Woche
     public static final long ONE_DAY = 24 * 3600 * 1000; // 1 Tag
+    public static final long ONE_HOUR = 3600 * 1000; // 1 Stunde
 
     public static final String TASKID = "taskID";
     public static final String STOCKID = "stockID";

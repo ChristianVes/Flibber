@@ -225,7 +225,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
                 // Save the payment in the finance collection
                 transaction.set(ref_finances.document(payment.getKey()), payment);
                 // Save notification for each involved user
-                String not_description = "Neuer Finanzeintrag \"" + payment.getTitle() + "\"";
+                String not_description = "Finanzeintrag \"" + payment.getTitle() + "\" erstellt";
                 for (String id : payment.getInvolvedIDs()) {
                     if (id.equals(userID)) continue;
                     DocumentReference doc = ref_users.document(id).collection(NOTIFICATIONS).document();

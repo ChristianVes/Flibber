@@ -122,7 +122,7 @@ public class QuickTransactionDialog extends Dialog {
                 involved,
                 value
         );
-        final String not_description = "Neue Überweisung \"" + description + "\"";
+        final String not_description = "Überweisung \"" + description + "\" an dich";
         final NotificationModel not = new NotificationModel(
                 ref_not.getId(), not_description,
                 FINANCES, userID);
