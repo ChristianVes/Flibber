@@ -140,7 +140,7 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
                 .setQuery(query, TaskModel.class)
                 .build();
 
-        adapter_tasks = new TasksAdapter2(options, users) {
+        adapter_tasks = new TasksAdapter2(options, users, userID, groupID) {
             @Override
             public void onDataChanged() {
                 super.onDataChanged();

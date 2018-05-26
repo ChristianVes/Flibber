@@ -362,7 +362,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             LocalStorage.setGroupName(this, null);
 
             Intent profileIntent = new Intent(this, ProfileActivity.class);
-            profileIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            profileIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(profileIntent);
             finish();
         }

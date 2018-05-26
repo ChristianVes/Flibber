@@ -53,10 +53,13 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     private final int HIDE = 0;
     private final int SHOW = 1;
 
-    public TasksAdapter(@NonNull FirestoreRecyclerOptions<TaskModel> options, TaskFragment fragment, HashMap<String, User> users) {
+    public TasksAdapter(@NonNull FirestoreRecyclerOptions<TaskModel> options, TaskFragment fragment,
+                        HashMap<String, User> users, String userID, String groupID) {
         super(options);
         this.fragment = fragment;
         this.users = users;
+        this.userID = userID;
+        this.groupID = groupID;
     }
 
     // Create normal/empty Viewholder depending on whether the user is involved in this task
@@ -64,8 +67,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         functions = FirebaseFunctions.getInstance();
-        userID = LocalStorage.getUserID(parent.getContext());
-        groupID = LocalStorage.getGroupID(parent.getContext());
         switch (viewType) {
             case SHOW: {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);

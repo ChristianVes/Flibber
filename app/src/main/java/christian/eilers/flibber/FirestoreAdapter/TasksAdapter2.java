@@ -46,9 +46,11 @@ public class TasksAdapter2 extends FirestoreRecyclerAdapter<TaskModel, RecyclerV
     private final int HIDE = 0;
     private final int SHOW = 1;
 
-    public TasksAdapter2(@NonNull FirestoreRecyclerOptions<TaskModel> options, HashMap<String, User> users) {
+    public TasksAdapter2(@NonNull FirestoreRecyclerOptions<TaskModel> options, HashMap<String, User> users, String userID, String groupID) {
         super(options);
         this.users = users;
+        this.userID = userID;
+        this.groupID = groupID;
     }
 
     // Create normal/empty Viewholder depending on whether the user is involved in this task
