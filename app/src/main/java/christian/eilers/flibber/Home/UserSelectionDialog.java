@@ -42,7 +42,7 @@ public class UserSelectionDialog extends Dialog {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.setBeteiligte(adapter.getInvolvedIDs());
+                activity.setInvolved(adapter.getInvolvedIDs());
                 dismiss();
             }
         });

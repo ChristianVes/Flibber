@@ -22,6 +22,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import christian.eilers.flibber.Models.NotificationModel;
 import christian.eilers.flibber.RecyclerAdapter.TaskInvolvedAdapter;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Payment;
@@ -212,6 +214,14 @@ public class TransactionDetailActivity extends AppCompatActivity {
                 // Write-Operations
                 for (String key : map.keySet()) {
                     transaction.update(ref_users.document(key), MONEY, map.get(key));
+                }
+                // Notification for each invovled user
+                String not_description = "Finanzeintrag \"" + thisPayment.getTitle() + "\" gelöscht";
+                for (String id : thisPayment.getInvolvedIDs()) {
+                    if (id.equals(userID)) continue;
+                    DocumentReference doc = ref_users.document(id).collection(NOTIFICATIONS).document();
+                    NotificationModel not = new NotificationModel(doc.getId(), not_description, FINANCES, userID);
+                    transaction.set(doc, not);
                 }
 
                 // Set Payment as DELETED (-> is not showing anymore)

@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,6 +33,7 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import christian.eilers.flibber.MainActivity;
+import christian.eilers.flibber.Models.NotificationModel;
 import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
@@ -121,17 +123,20 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
         TaskModel task = new TaskModel(doc.getId(), title, frequency, selectedIDs, hasOrder,
                 new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(frequency)));
 
-        progressBar.setVisibility(View.VISIBLE);
-        doc.set(task).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                progressBar.setVisibility(View.GONE);
-                finish();
-            }
-        });
+        String not_description = "Neue Aufgabe \"" + task.getTitle() + "\" erstellt";
+        WriteBatch batch = db.batch();
+        for (String id : task.getInvolvedIDs()) {
+            if (id.equals(userID)) continue;
+            DocumentReference doc_not = db.collection(GROUPS).document(groupID).collection(USERS).document(id).collection(NOTIFICATIONS).document();
+            NotificationModel not = new NotificationModel(doc_not.getId(), not_description, TASKS, userID);
+            batch.set(doc_not, not);
+        }
+        batch.set(doc, task);
+        batch.commit();
+        finish();
     }
 
-    public void setBeteiligte(ArrayList<String> selectedIDs) {
+    public void setInvolved(ArrayList<String> selectedIDs) {
         this.selectedIDs = selectedIDs;
         if (selectedIDs.size() == 1) tv_beteiligte.setText("1 Person");
         else tv_beteiligte.setText(selectedIDs.size() + " Personen");

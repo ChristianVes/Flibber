@@ -49,6 +49,7 @@ import christian.eilers.flibber.FirestoreAdapter.VerlaufAdapter;
 import christian.eilers.flibber.Home.HomeActivity;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Balancing;
+import christian.eilers.flibber.Models.NotificationModel;
 import christian.eilers.flibber.Models.Offset;
 import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
@@ -252,6 +253,15 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
                 for (Offset o : list_offsets) {
                     transaction.set(ref_balance.collection(ENTRIES).document(), o);
                 }
+
+                String not_description = "Kassensturz durchgeführt";
+                for (String id : users.keySet()) {
+                    if (id.equals(userID)) continue;
+                    DocumentReference doc = ref_group.collection(USERS).document(id).collection(NOTIFICATIONS).document();
+                    NotificationModel not = new NotificationModel(doc.getId(), not_description, FINANCES, userID);
+                    transaction.set(doc, not);
+                }
+
                 return ref_balance.getId();
             }
         }).addOnCompleteListener(new OnCompleteListener<String>() {
