@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.blackcat.currencyedittext.CurrencyEditText;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -29,6 +30,7 @@ import com.google.firebase.firestore.Transaction;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import christian.eilers.flibber.Models.NotificationModel;
 import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
@@ -38,6 +40,7 @@ import christian.eilers.flibber.Utils.LocalStorage;
 import static christian.eilers.flibber.Utils.Strings.FINANCES;
 import static christian.eilers.flibber.Utils.Strings.GROUPS;
 import static christian.eilers.flibber.Utils.Strings.MONEY;
+import static christian.eilers.flibber.Utils.Strings.NOTIFICATIONS;
 import static christian.eilers.flibber.Utils.Strings.USERS;
 
 public class QuickTransactionDialog extends Dialog {
@@ -105,6 +108,7 @@ public class QuickTransactionDialog extends Dialog {
         final String groupID = LocalStorage.getGroupID(context);
         final CollectionReference ref_finances = db.collection(GROUPS).document(groupID).collection(FINANCES);
         final CollectionReference ref_users = db.collection(GROUPS).document(groupID).collection(USERS);
+        final DocumentReference ref_not = ref_users.document(user.getUserID()).collection(NOTIFICATIONS).document();
 
         ArrayList<String> involved = new ArrayList<>(); // Save the current user as Array-List
         involved.add(userID);
@@ -118,6 +122,10 @@ public class QuickTransactionDialog extends Dialog {
                 involved,
                 value
         );
+        final String not_description = "Neue Überweisung \"" + description + "\"";
+        final NotificationModel not = new NotificationModel(
+                ref_not.getId(), not_description,
+                FINANCES, userID);
 
         // Run a Transaction to charge the costs between the two user's and save the payment
         // in the finance-collection
@@ -133,6 +141,7 @@ public class QuickTransactionDialog extends Dialog {
                 transaction.update(ref_users.document(userID), MONEY, money_from);
                 transaction.update(ref_users.document(payment.getPayerID()), MONEY, money_to);
                 transaction.set(ref_finances.document(payment.getKey()), payment);
+                transaction.set(ref_not, not);
                 return null;
             }
         }).addOnSuccessListener(new OnSuccessListener<Void>() {

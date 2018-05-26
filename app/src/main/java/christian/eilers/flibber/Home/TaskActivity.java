@@ -210,7 +210,17 @@ public class TaskActivity extends AppCompatActivity {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        db.collection(GROUPS).document(groupID).collection(TASKS).document(thisTask.getKey()).delete();
+                        WriteBatch batch = db.batch();
+                        DocumentReference ref_task = db.collection(GROUPS).document(groupID).collection(TASKS).document(thisTask.getKey());
+                        String not_description = "\"" + thisTask.getTitle() + "\" gelöscht";
+                        for (String id : thisTask.getInvolvedIDs()) {
+                            if (id.equals(userID)) continue;
+                            DocumentReference doc = db.collection(GROUPS).document(groupID).collection(USERS).document(id).collection(NOTIFICATIONS).document();
+                            NotificationModel not = new NotificationModel(doc.getId(), not_description, TASKS, userID);
+                            batch.set(doc, not);
+                        }
+                        batch.delete(ref_task);
+                        batch.commit();
                         finish();
                     }
                 })

@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import christian.eilers.flibber.MainActivity;
+import christian.eilers.flibber.Models.NotificationModel;
 import christian.eilers.flibber.Models.Payment;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.R;
@@ -223,6 +224,14 @@ public class TransactionActivity extends AppCompatActivity implements View.OnFoc
                 }
                 // Save the payment in the finance collection
                 transaction.set(ref_finances.document(payment.getKey()), payment);
+                // Save notification for each involved user
+                String not_description = "Neuer Finanzeintrag \"" + payment.getTitle() + "\"";
+                for (String id : payment.getInvolvedIDs()) {
+                    if (id.equals(userID)) continue;
+                    DocumentReference doc = ref_users.document(id).collection(NOTIFICATIONS).document();
+                    NotificationModel not = new NotificationModel(doc.getId(), not_description, FINANCES, userID);
+                    transaction.set(doc, not);
+                }
 
                 return null;
             }
