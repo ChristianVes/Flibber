@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
@@ -24,6 +23,7 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import christian.eilers.flibber.Home.TaskActivity;
+import christian.eilers.flibber.Models.NotificationModel;
 import christian.eilers.flibber.Models.TaskEntry;
 import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
@@ -33,6 +33,7 @@ import christian.eilers.flibber.Utils.LocalStorage;
 import static christian.eilers.flibber.Utils.Strings.ENTRIES;
 import static christian.eilers.flibber.Utils.Strings.GROUPS;
 import static christian.eilers.flibber.Utils.Strings.INVOLVEDIDS;
+import static christian.eilers.flibber.Utils.Strings.NOTIFICATIONS;
 import static christian.eilers.flibber.Utils.Strings.TASKID;
 import static christian.eilers.flibber.Utils.Strings.TASKS;
 import static christian.eilers.flibber.Utils.Strings.TIMESTAMP;
@@ -42,6 +43,7 @@ public class TasksAdapter2 extends FirestoreRecyclerAdapter<TaskModel, RecyclerV
 
     private String userID, groupID;
     private HashMap<String, User> users;
+    private FirebaseFirestore db;
 
     private final int HIDE = 0;
     private final int SHOW = 1;
@@ -51,6 +53,7 @@ public class TasksAdapter2 extends FirestoreRecyclerAdapter<TaskModel, RecyclerV
         this.users = users;
         this.userID = userID;
         this.groupID = groupID;
+        db = FirebaseFirestore.getInstance();
     }
 
     // Create normal/empty Viewholder depending on whether the user is involved in this task
@@ -110,7 +113,17 @@ public class TasksAdapter2 extends FirestoreRecyclerAdapter<TaskModel, RecyclerV
         taskHolder.btn_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                taskDone(taskHolder, model);
+                WriteBatch batch = db.batch();
+                String not_description = model.getTitle() + " erledigt!";
+                for (String id : model.getInvolvedIDs()) {
+                    if (id.equals(userID)) continue;
+                    DocumentReference doc = db.collection(GROUPS).document(groupID).collection(USERS).document(id).collection(NOTIFICATIONS).document();
+                    NotificationModel not = new NotificationModel(doc.getId(), not_description, TASKS, userID);
+                    batch.set(doc, not);
+                }
+                batch.commit();
+
+                // taskDone(taskHolder, model);
             }
         });
     }
