@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import christian.eilers.flibber.Home.TaskActivity;
 import christian.eilers.flibber.Home.TaskFragment;
+import christian.eilers.flibber.Models.NotificationModel;
 import christian.eilers.flibber.Models.TaskEntry;
 import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
@@ -37,6 +38,7 @@ import christian.eilers.flibber.Utils.LocalStorage;
 import static christian.eilers.flibber.Utils.Strings.ENTRIES;
 import static christian.eilers.flibber.Utils.Strings.GROUPS;
 import static christian.eilers.flibber.Utils.Strings.INVOLVEDIDS;
+import static christian.eilers.flibber.Utils.Strings.NOTIFICATIONS;
 import static christian.eilers.flibber.Utils.Strings.ONE_DAY;
 import static christian.eilers.flibber.Utils.Strings.TASKID;
 import static christian.eilers.flibber.Utils.Strings.TASKS;
@@ -102,19 +104,6 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
                 System.currentTimeMillis(),
                 DateUtils.DAY_IN_MILLIS,
                 DateUtils.FORMAT_ABBREV_RELATIVE));
-        // text color and typeface (bold/normal) depending on time span
-        /*
-        if (System.currentTimeMillis() + 0.5 * ONE_DAY > model.getTimestamp().getTime()) {
-            taskHolder.tv_datum.setTextColor(
-                    taskHolder.itemView.getContext().getResources().getColor(R.color.colorAccent));
-            taskHolder.tv_datum.setTypeface(null, Typeface.BOLD);
-        }
-        else {
-            taskHolder.tv_datum.setTextColor(
-                    taskHolder.itemView.getContext().getResources().getColor(R.color.colorPrimary));
-            taskHolder.tv_datum.setTypeface(null, Typeface.NORMAL);
-        }
-         */
 
         // USER-ORDER Layout
         if (!model.isOrdered()) {
@@ -155,23 +144,21 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         taskHolder.btn_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                handleTaskDone(taskHolder, model);
+                taskDone(taskHolder, model);
             }
         });
 
     }
 
     // Handle actions to be done when User has finished/taken care of a task
-    private void handleTaskDone(final TaskHolder taskHolder, final TaskModel model) {
-        fragment.getProgressBar().setVisibility(View.VISIBLE);
+    private void taskDone(TaskHolder taskHolder, TaskModel model) {
         // Change order of the involved user's
         ArrayList<String> newOrder = (ArrayList<String>) model.getInvolvedIDs().clone();
         newOrder.remove(userID);
         newOrder.add(userID);
         // Update Involved-User's and Timestamp
         final HashMap<String, Object> taskMap = new HashMap<>();
-        taskMap.put(TIMESTAMP,
-                new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(model.getFrequenz())));
+        taskMap.put(TIMESTAMP, new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(model.getFrequenz())));
         taskMap.put(INVOLVEDIDS, newOrder);
         // Create a TaskEntry
         final TaskEntry entry = new TaskEntry(userID);
@@ -184,13 +171,15 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         WriteBatch batch = db.batch();
         batch.update(docTask, taskMap);
         batch.set(docEntry, entry);
-        batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                // Toast.makeText(taskHolder.itemView.getContext(), model.getTitle() +" erledigt!", Toast.LENGTH_SHORT).show();
-                fragment.getProgressBar().setVisibility(View.GONE);
-            }
-        });
+        String not_description = model.getTitle() + " erledigt";
+        for (String id : model.getInvolvedIDs()) {
+            if (id.equals(userID)) continue;
+            DocumentReference doc = db.collection(GROUPS).document(groupID).collection(USERS).document(id).collection(NOTIFICATIONS).document();
+            NotificationModel not = new NotificationModel(doc.getId(), not_description, TASKS, userID);
+            batch.set(doc, not);
+        }
+        batch.commit();
+        Toast.makeText(taskHolder.itemView.getContext(), model.getTitle() +" erledigt!", Toast.LENGTH_SHORT).show();
     }
 
     // Custom ViewHolder for a Task

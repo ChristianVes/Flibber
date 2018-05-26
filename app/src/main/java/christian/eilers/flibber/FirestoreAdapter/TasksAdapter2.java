@@ -113,17 +113,7 @@ public class TasksAdapter2 extends FirestoreRecyclerAdapter<TaskModel, RecyclerV
         taskHolder.btn_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                WriteBatch batch = db.batch();
-                String not_description = model.getTitle() + " erledigt!";
-                for (String id : model.getInvolvedIDs()) {
-                    if (id.equals(userID)) continue;
-                    DocumentReference doc = db.collection(GROUPS).document(groupID).collection(USERS).document(id).collection(NOTIFICATIONS).document();
-                    NotificationModel not = new NotificationModel(doc.getId(), not_description, TASKS, userID);
-                    batch.set(doc, not);
-                }
-                batch.commit();
-
-                // taskDone(taskHolder, model);
+                taskDone(taskHolder, model);
             }
         });
     }
@@ -148,6 +138,13 @@ public class TasksAdapter2 extends FirestoreRecyclerAdapter<TaskModel, RecyclerV
         WriteBatch batch = db.batch();
         batch.update(docTask, taskMap);
         batch.set(docEntry, entry);
+        String not_description = model.getTitle() + " erledigt";
+        for (String id : model.getInvolvedIDs()) {
+            if (id.equals(userID)) continue;
+            DocumentReference doc = db.collection(GROUPS).document(groupID).collection(USERS).document(id).collection(NOTIFICATIONS).document();
+            NotificationModel not = new NotificationModel(doc.getId(), not_description, TASKS, userID);
+            batch.set(doc, not);
+        }
         batch.commit();
         Toast.makeText(taskHolder.itemView.getContext(), model.getTitle() +" erledigt!", Toast.LENGTH_SHORT).show();
     }

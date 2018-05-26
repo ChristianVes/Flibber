@@ -23,9 +23,11 @@ import java.util.Date;
 import java.util.HashMap;
 
 import christian.eilers.flibber.FirestoreAdapter.NoteAdapter2;
+import christian.eilers.flibber.FirestoreAdapter.NotificationAdapter;
 import christian.eilers.flibber.FirestoreAdapter.TasksAdapter2;
 import christian.eilers.flibber.MainActivity;
 import christian.eilers.flibber.Models.Note;
+import christian.eilers.flibber.Models.NotificationModel;
 import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.ProfileActivity;
@@ -34,6 +36,7 @@ import christian.eilers.flibber.Utils.LocalStorage;
 
 import static christian.eilers.flibber.Utils.Strings.GROUPS;
 import static christian.eilers.flibber.Utils.Strings.NOTES;
+import static christian.eilers.flibber.Utils.Strings.NOTIFICATIONS;
 import static christian.eilers.flibber.Utils.Strings.ONE_DAY;
 import static christian.eilers.flibber.Utils.Strings.ONE_WEEK;
 import static christian.eilers.flibber.Utils.Strings.TASKS;
@@ -57,6 +60,7 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
             tv_groupname.setText("Headquarter");
             loadNotes();
             loadTasks();
+            loadEvents();
         }
 
         return mainView;
@@ -66,11 +70,14 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
     private void initializeViews() {
         recView_notes = mainView.findViewById(R.id.recNotes);
         recView_tasks = mainView.findViewById(R.id.recTasks);
+        recView_events = mainView.findViewById(R.id.recEvents);
         tv_notes = mainView.findViewById(R.id.label_notes);
         tv_tasks = mainView.findViewById(R.id.label_tasks);
+        tv_events =mainView.findViewById(R.id.label_events);
         tv_groupname = mainView.findViewById(R.id.group_name);
         placeholder_notes = mainView.findViewById(R.id.placeholder_notes);
         placeholder_tasks = mainView.findViewById(R.id.placeholder_tasks);
+        placeholder_events = mainView.findViewById(R.id.placeholder_events);
         btn_note = mainView.findViewById(R.id.btn_note);
         btn_tasks = mainView.findViewById(R.id.btn_task);
         btn_settings = mainView.findViewById(R.id.btn_settings);
@@ -82,6 +89,7 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
         btn_settings.setOnClickListener(this);
         tv_notes.setOnClickListener(this);
         tv_tasks.setOnClickListener(this);
+        tv_events.setOnClickListener(this);
     }
 
     // Initialize variables
@@ -158,6 +166,29 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
         recView_tasks.setAdapter(adapter_tasks);
     }
 
+    private void loadEvents() {
+        final Query query = db.collection(GROUPS).document(groupID)
+                .collection(USERS).document(userID).collection(NOTIFICATIONS)
+                .whereGreaterThan(TIMESTAMP, new Date(System.currentTimeMillis() - ONE_DAY))
+                .orderBy(TIMESTAMP, Query.Direction.DESCENDING);
+
+        final FirestoreRecyclerOptions<NotificationModel> options = new FirestoreRecyclerOptions.Builder<NotificationModel>()
+                .setQuery(query, NotificationModel.class)
+                .build();
+
+        adapter_events = new NotificationAdapter(options, users) {
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                if (getItemCount() == 0) placeholder_events.setVisibility(View.VISIBLE);
+                else placeholder_events.setVisibility(View.GONE);
+            }
+        };
+
+        recView_events.setLayoutManager(new LinearLayoutManager(getContext()));
+        recView_events.setAdapter(adapter_events);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -176,6 +207,9 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
             case R.id.label_tasks:
                 ((HomeActivity) getActivity()).setTabPosition(3);
                 break;
+            case R.id.label_events:
+                //TODO
+                break;
             case R.id.btn_settings:
                 Intent intent_settings = new Intent(getContext(), SettingsActivity.class);
                 getActivity().startActivity(intent_settings);
@@ -187,6 +221,7 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
         super.onStart();
         if (adapter_notes != null) adapter_notes.startListening();
         if (adapter_tasks != null) adapter_tasks.startListening();
+        if (adapter_events != null) adapter_events.startListening();
     }
 
     @Override
@@ -194,6 +229,7 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
         super.onStop();
         if (adapter_notes != null) adapter_notes.stopListening();
         if (adapter_tasks != null) adapter_tasks.stopListening();
+        if (adapter_events != null) adapter_events.stopListening();
         if (!hasNulls()) {
             HashMap<String, Object> timestamp = new HashMap<>();
             timestamp.put(TIMESTAMP, FieldValue.serverTimestamp());
@@ -203,12 +239,13 @@ public class HomeFragment2 extends Fragment implements View.OnClickListener{
     }
 
     private View mainView;
-    private RecyclerView recView_notes, recView_tasks;
-    private TextView tv_notes, tv_tasks, placeholder_notes, placeholder_tasks, tv_groupname;
+    private RecyclerView recView_notes, recView_tasks, recView_events;
+    private TextView tv_notes, tv_tasks, tv_events, tv_groupname;
+    private TextView placeholder_notes, placeholder_tasks, placeholder_events;
     private ImageButton btn_note, btn_tasks, btn_settings;
     private ProgressBar progressBar;
 
-    private FirestoreRecyclerAdapter adapter_notes, adapter_tasks;
+    private FirestoreRecyclerAdapter adapter_notes, adapter_tasks, adapter_events;
     private FirebaseFirestore db;
     private String userID, groupID, groupname;
     private HashMap<String, User> users;
