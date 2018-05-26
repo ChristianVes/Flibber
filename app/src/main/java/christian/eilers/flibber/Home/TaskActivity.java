@@ -1,11 +1,9 @@
 package christian.eilers.flibber.Home;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,21 +26,21 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.functions.FirebaseFunctions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import christian.eilers.flibber.Home.Finance.DatePickerFragment;
 import christian.eilers.flibber.MainActivity;
+import christian.eilers.flibber.Models.NotificationModel;
 import christian.eilers.flibber.Models.TaskEntry;
 import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
@@ -53,6 +51,7 @@ import christian.eilers.flibber.Utils.LocalStorage;
 import static christian.eilers.flibber.Utils.Strings.ENTRIES;
 import static christian.eilers.flibber.Utils.Strings.GROUPS;
 import static christian.eilers.flibber.Utils.Strings.INVOLVEDIDS;
+import static christian.eilers.flibber.Utils.Strings.NOTIFICATIONS;
 import static christian.eilers.flibber.Utils.Strings.TASKID;
 import static christian.eilers.flibber.Utils.Strings.TASKS;
 import static christian.eilers.flibber.Utils.Strings.TIMESTAMP;
@@ -244,8 +243,18 @@ public class TaskActivity extends AppCompatActivity {
                         HashMap<String, Object> map = new HashMap<>();
                         map.put("frequenz", frequency);
 
-                        DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document(thisTask.getKey());
-                        doc.update(map);
+                        DocumentReference doc_task = db.collection(GROUPS).document(groupID).collection(TASKS).document(thisTask.getKey());
+
+                        WriteBatch batch = db.batch();
+                        String not_description = "Frequenz von \"" + thisTask.getTitle() + "\" geändert";
+                        for (String id : thisTask.getInvolvedIDs()) {
+                            if (id.equals(userID)) continue;
+                            DocumentReference doc = db.collection(GROUPS).document(groupID).collection(USERS).document(id).collection(NOTIFICATIONS).document();
+                            NotificationModel not = new NotificationModel(doc.getId(), not_description, TASKS, userID);
+                            batch.set(doc, not);
+                        }
+                        batch.update(doc_task, map);
+                        batch.commit();
                         dialog.dismiss();
                     }
                 })
@@ -280,24 +289,33 @@ public class TaskActivity extends AppCompatActivity {
         }
         menu.findItem(R.id.action_skip).setVisible(false);
         // Notify the second user
-        Map<String, Object> data = new HashMap<>();
+        final String toUserID = thisTask.getInvolvedIDs().get(1);
+        final Map<String, Object> data = new HashMap<>();
         data.put("taskName", thisTask.getTitle());
         data.put("groupID", groupID);
-        data.put("userID", thisTask.getInvolvedIDs().get(1));
+        data.put("userID", toUserID);
 
         // Calls the Http Function which makes the Notification
-        functions.getHttpsCallable("taskSkipped").call(data);
+        // functions.getHttpsCallable("taskSkipped").call(data);
 
         // Change the current's user position with the user after him
         ArrayList<String> newOrder = (ArrayList<String>) thisTask.getInvolvedIDs().clone();
         newOrder.remove(userID);
         newOrder.add(1, userID);
 
-        HashMap<String, Object> taskMap = new HashMap<>();
+        final HashMap<String, Object> taskMap = new HashMap<>();
         taskMap.put(INVOLVEDIDS, newOrder);
-        // UPDATE the involved-List in the Database
-        FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(TASKS)
-                .document(thisTask.getKey()).update(taskMap);
+
+        final DocumentReference doc_task = FirebaseFirestore.getInstance().collection(GROUPS).document(groupID).collection(TASKS).document(thisTask.getKey());
+        final DocumentReference doc_not = db.collection(GROUPS).document(groupID).collection(USERS).document(toUserID).collection(NOTIFICATIONS).document();
+
+        final String not_description = "hat \"" + thisTask.getTitle() + "\" an dich weitergegeben";
+        final NotificationModel not = new NotificationModel(doc_not.getId(), not_description, TASKS, userID);
+
+        WriteBatch batch = db.batch();
+        batch.update(doc_task, taskMap);
+        batch.set(doc_not, not);
+        batch.commit();
     }
 
     private void datePicker() {

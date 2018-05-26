@@ -171,7 +171,7 @@ public class TasksAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerVi
         WriteBatch batch = db.batch();
         batch.update(docTask, taskMap);
         batch.set(docEntry, entry);
-        String not_description = model.getTitle() + " erledigt";
+        String not_description = "\"" + model.getTitle() + "\" erledigt";
         for (String id : model.getInvolvedIDs()) {
             if (id.equals(userID)) continue;
             DocumentReference doc = db.collection(GROUPS).document(groupID).collection(USERS).document(id).collection(NOTIFICATIONS).document();

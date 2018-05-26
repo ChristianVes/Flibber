@@ -1,4 +1,4 @@
-package christian.eilers.flibber.Home.Finance;
+package christian.eilers.flibber.Home;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import android.widget.DatePicker;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.functions.FirebaseFunctions;
 
 import java.util.Calendar;
@@ -18,6 +19,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import christian.eilers.flibber.Models.NotificationModel;
 import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Utils.LocalStorage;
 
@@ -25,7 +27,7 @@ import static christian.eilers.flibber.Utils.Strings.*;
 
 public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
-    private String groupID, username;
+    private String groupID, userID, username;
     private TaskModel thisTask;
     private boolean called = false;
 
@@ -45,6 +47,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         this.groupID = getArguments().getString(GROUPID);
         this.thisTask = (TaskModel) getArguments().getSerializable(TASKID);
         username = LocalStorage.getUsername(getContext());
+        userID = LocalStorage.getUserID(getContext());
         // Use the current date as the default date in the picker
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
@@ -66,8 +69,19 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         changings.put(TIMESTAMP, date);
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
         final FirebaseFunctions functions = FirebaseFunctions.getInstance();
-        DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document(thisTask.getKey());
-        doc.update(changings);
+        final DocumentReference doc_task = db.collection(GROUPS).document(groupID).collection(TASKS).document(thisTask.getKey());
+
+        String not_description = "Datum von \"" + thisTask.getTitle() + "\" geändert";
+
+        WriteBatch batch = db.batch();
+        for (String id : thisTask.getInvolvedIDs()) {
+            if (id.equals(userID)) continue;
+            DocumentReference doc = db.collection(GROUPS).document(groupID).collection(USERS).document(id).collection(NOTIFICATIONS).document();
+            NotificationModel not = new NotificationModel(doc.getId(), not_description, TASKS, userID);
+            batch.set(doc, not);
+        }
+        batch.update(doc_task, changings);
+        batch.commit();
 
         // Call the corresponding function to notify the other users
         Map<String, Object> data = new HashMap<>();
@@ -76,6 +90,6 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         data.put("groupID", groupID);
         data.put("involvedIDs", thisTask.getInvolvedIDs());
         // Calls the Http Function which makes the Notification
-        functions.getHttpsCallable("taskDateChanged").call(data);
+        //functions.getHttpsCallable("taskDateChanged").call(data);
     }
 }
