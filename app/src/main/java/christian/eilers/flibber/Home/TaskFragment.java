@@ -102,9 +102,9 @@ public class TaskFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View view) {
-        // Intent @NewTaskActivity
+        // Intent @TaskCreateActivity
         if (view.getId() == R.id.fab) {
-            Intent newTask = new Intent(getContext(), NewTaskActivity.class);
+            Intent newTask = new Intent(getContext(), TaskCreateActivity.class);
             newTask.putExtra(USERS, ((HomeActivity) getActivity()).getUsers());
             getActivity().startActivity(newTask);
         }

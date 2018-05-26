@@ -76,7 +76,7 @@
             android:name=".Home.Finance.VerlaufActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Home.NewTaskActivity"
+            android:name=".Home.TaskCreateActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Home.TaskActivity"

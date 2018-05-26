@@ -5,10 +5,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import christian.eilers.flibber.Home.Finance.FinanceFragment;
-import christian.eilers.flibber.Home.HomeFragment;
-import christian.eilers.flibber.Home.TaskFragment;
-import christian.eilers.flibber.Home.SettingsFragment;
-import christian.eilers.flibber.Home.ShoppingFragment;
 
 public class HomePagerAdapter extends FragmentPagerAdapter {
     private static int NUM_ITEMS = 4;
@@ -28,7 +24,7 @@ public class HomePagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new HomeFragment2();
+                return new HomeFragment();
             case 1:
                 return new FinanceFragment();
             case 2:

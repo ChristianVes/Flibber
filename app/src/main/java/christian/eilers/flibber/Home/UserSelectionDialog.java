@@ -17,7 +17,7 @@ import christian.eilers.flibber.RecyclerAdapter.UserSelectionAdapter;
 
 public class UserSelectionDialog extends Dialog {
 
-    public UserSelectionDialog(@NonNull Context context, int themeResId, ArrayList<User> userList, NewTaskActivity activity) {
+    public UserSelectionDialog(@NonNull Context context, int themeResId, ArrayList<User> userList, TaskCreateActivity activity) {
         super(context, themeResId);
         this.activity = activity;
         this.userList = userList;
@@ -49,7 +49,7 @@ public class UserSelectionDialog extends Dialog {
 
     }
 
-    private NewTaskActivity activity;
+    private TaskCreateActivity activity;
     private Button btn;
     private RecyclerView recView;
     private ArrayList<User> userList;

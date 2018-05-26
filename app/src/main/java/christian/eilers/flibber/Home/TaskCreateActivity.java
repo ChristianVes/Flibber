@@ -3,12 +3,8 @@ package christian.eilers.flibber.Home;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -17,17 +13,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +37,7 @@ import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 import static christian.eilers.flibber.Utils.Strings.*;
 
-public class NewTaskActivity extends AppCompatActivity implements View.OnFocusChangeListener {
+public class TaskCreateActivity extends AppCompatActivity implements View.OnFocusChangeListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +50,30 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
         et_name = findViewById(R.id.input_title);
+        et_description = findViewById(R.id.input_description);
         et_frequency = findViewById(R.id.input_frequenz);
         switch_order = findViewById(R.id.switch_order);
-        progressBar = findViewById(R.id.progressBar);
         tv_beteiligte = findViewById(R.id.tv_count);
         layout_beteiligte = findViewById(R.id.layout_beteiligte);
+        btn_description = findViewById(R.id.btn_description);
 
         et_name.setOnFocusChangeListener(this);
+        et_description.setOnFocusChangeListener(this);
         et_frequency.setOnFocusChangeListener(this);
+
+        btn_description.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (et_description.getVisibility() == View.GONE) {
+                    et_description.setVisibility(View.VISIBLE);
+                    btn_description.setImageResource(R.drawable.ic_keyboard_arrow_up);
+                }
+                else {
+                    et_description.setVisibility(View.GONE);
+                    btn_description.setImageResource(R.drawable.ic_keyboard_arrow_down);
+                }
+            }
+        });
 
         setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
         getSupportActionBar().setDisplayShowTitleEnabled(false); // Titel der Actionbar ausblenden
@@ -84,8 +97,8 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
             layout_beteiligte.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Dialog dialog = new UserSelectionDialog(NewTaskActivity.this,
-                            android.R.style.Theme_Translucent_NoTitleBar, userList, NewTaskActivity.this);
+                    Dialog dialog = new UserSelectionDialog(TaskCreateActivity.this,
+                            android.R.style.Theme_Translucent_NoTitleBar, userList, TaskCreateActivity.this);
                     dialog.show();
                 }
             });
@@ -101,9 +114,17 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
     private void saveTask() {
         String title = et_name.getText().toString().trim();
         String s_frequency = et_frequency.getText().toString().trim();
+        String description = et_description.getText().toString().trim();
 
         if (TextUtils.isEmpty(title) || TextUtils.isEmpty(s_frequency)) {
             Toast.makeText(this, "Eingaben unvollständig...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        long frequency = Long.valueOf(s_frequency);
+
+        if (frequency < 1) {
+            Toast.makeText(this, "Fehlerhafte Frequenz...", Toast.LENGTH_SHORT).show();
             return;
         }
         if (selectedIDs.isEmpty()) {
@@ -115,13 +136,14 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
             return;
         }
 
-        long frequency = Long.valueOf(s_frequency);
-        boolean hasOrder = switch_order.isChecked();
+        boolean isOrdered = switch_order.isChecked();
 
         DocumentReference doc = db.collection(GROUPS).document(groupID).collection(TASKS).document();
 
-        TaskModel task = new TaskModel(doc.getId(), title, frequency, selectedIDs, hasOrder,
-                new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(frequency)));
+        TaskModel task = new TaskModel(
+                doc.getId(), title, description, frequency,
+                selectedIDs, isOrdered, true, false,
+                new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(frequency)-1 + timeTillMidnight()));
 
         String not_description = "Neue Aufgabe \"" + task.getTitle() + "\" erstellt";
         WriteBatch batch = db.batch();
@@ -134,6 +156,16 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
         batch.set(doc, task);
         batch.commit();
         finish();
+    }
+
+    private long timeTillMidnight() {
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, 1);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        return c.getTimeInMillis() - System.currentTimeMillis();
     }
 
     public void setInvolved(ArrayList<String> selectedIDs) {
@@ -171,9 +203,9 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnFocusCh
     private Toolbar toolbar;
     private RelativeLayout layout_beteiligte;
     private TextView tv_beteiligte;
-    private EditText et_name, et_frequency;
+    private EditText et_name, et_description, et_frequency;
+    private ImageButton btn_description;
     private SwitchCompat switch_order;
-    private ProgressBar progressBar;
 
     private String userID, groupID;
     private FirebaseFirestore db;

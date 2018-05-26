@@ -39,7 +39,7 @@ import static christian.eilers.flibber.Utils.Strings.TASKS;
 import static christian.eilers.flibber.Utils.Strings.TIMESTAMP;
 import static christian.eilers.flibber.Utils.Strings.USERS;
 
-public class TasksAdapter2 extends FirestoreRecyclerAdapter<TaskModel, RecyclerView.ViewHolder> {
+public class TasksHomeAdapter extends FirestoreRecyclerAdapter<TaskModel, RecyclerView.ViewHolder> {
 
     private String userID, groupID;
     private HashMap<String, User> users;
@@ -48,7 +48,7 @@ public class TasksAdapter2 extends FirestoreRecyclerAdapter<TaskModel, RecyclerV
     private final int HIDE = 0;
     private final int SHOW = 1;
 
-    public TasksAdapter2(@NonNull FirestoreRecyclerOptions<TaskModel> options, HashMap<String, User> users, String userID, String groupID) {
+    public TasksHomeAdapter(@NonNull FirestoreRecyclerOptions<TaskModel> options, HashMap<String, User> users, String userID, String groupID) {
         super(options);
         this.users = users;
         this.userID = userID;

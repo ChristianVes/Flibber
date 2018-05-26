@@ -31,13 +31,13 @@ import static christian.eilers.flibber.Utils.Strings.NOTES;
 import static christian.eilers.flibber.Utils.Strings.PROFILE;
 import static christian.eilers.flibber.Utils.Strings.USERS;
 
-public class NoteAdapter2 extends FirestoreRecyclerAdapter<Note, NoteAdapter2.NotesHolder> {
+public class NotesHomeAdapter extends FirestoreRecyclerAdapter<Note, NotesHomeAdapter.NotesHolder> {
 
     HashMap<String, User> users;
     String groupID;
     StorageReference storage;
 
-    public NoteAdapter2(@NonNull FirestoreRecyclerOptions<Note> options, HashMap<String, User> users, String groupID) {
+    public NotesHomeAdapter(@NonNull FirestoreRecyclerOptions<Note> options, HashMap<String, User> users, String groupID) {
         super(options);
         this.users = users;
         this.groupID = groupID;

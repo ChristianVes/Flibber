@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/wallpaper_home2"
-    tools:context="christian.eilers.flibber.Home.NewTaskActivity">
+    tools:context="christian.eilers.flibber.Home.TaskCreateActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -56,18 +56,52 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/input_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="10dp"
+                            android:layout_toLeftOf="@+id/btn_description"
+                            android:background="@android:color/transparent"
+                            android:hint="Titel"
+                            android:imeOptions="actionNext"
+                            android:inputType="textCapSentences"
+                            android:lines="1"
+                            android:maxLength="20"
+                            android:textSize="22sp" />
+
+                        <ImageButton
+                            android:id="@+id/btn_description"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:background="@android:color/transparent"
+                            android:clickable="false"
+                            android:contentDescription="TODO"
+                            android:padding="5dp"
+                            android:scaleType="fitEnd"
+                            android:tint="@color/colorPrimaryDark"
+                            app:srcCompat="@drawable/ic_keyboard_arrow_down" />
+
+                    </RelativeLayout>
+
                     <EditText
-                        android:id="@+id/input_title"
+                        android:id="@+id/input_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="10dp"
-                        android:background="@android:color/transparent"
-                        android:hint="Titel"
-                        android:imeOptions="actionNext"
-                        android:inputType="textCapSentences"
-                        android:maxLength="20"
+                        android:background="@drawable/layerlist_topedge"
+                        android:gravity="start"
+                        android:hint="Beschreibung [optional]"
+                        android:inputType="textMultiLine|textCapSentences"
                         android:textSize="22sp"
-                        android:textColor="@color/colorPrimaryDark"/>
+                        android:visibility="gone" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -121,33 +155,6 @@
                     android:orientation="vertical">
 
                     <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:paddingTop="15dp"
-                        android:paddingBottom="15dp"
-                        android:background="@drawable/layerlist_bottomedge_white">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Feste Reihenfolge"
-                            android:textSize="22sp"
-                            android:layout_centerVertical="true"
-                            />
-
-                        <android.support.v7.widget.SwitchCompat
-                            android:id="@+id/switch_order"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:checked="true"
-                            />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
                         android:id="@+id/layout_beteiligte"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -155,7 +162,7 @@
                         android:paddingTop="15dp"
                         android:paddingRight="10dp"
                         android:paddingBottom="15dp"
-                        android:background="?selectableItemBackground">
+                        android:background="?android:attr/selectableItemBackground">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -175,6 +182,33 @@
 
                     </RelativeLayout>
 
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:paddingTop="15dp"
+                        android:paddingBottom="15dp"
+                        android:background="@drawable/layerlist_topedge">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Feste Reihenfolge"
+                            android:textSize="22sp"
+                            android:layout_centerVertical="true"
+                            />
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/switch_order"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:checked="true"
+                            />
+
+                    </RelativeLayout>
+
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
@@ -182,12 +216,5 @@
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center"
-        android:visibility="gone"/>
 
 </android.support.design.widget.CoordinatorLayout>
