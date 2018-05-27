@@ -1,6 +1,5 @@
 package christian.eilers.flibber.Models;
 
-import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.io.Serializable;

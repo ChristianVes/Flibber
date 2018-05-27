@@ -57,6 +57,7 @@ import static christian.eilers.flibber.Utils.Strings.NAME;
 import static christian.eilers.flibber.Utils.Strings.NOTES;
 import static christian.eilers.flibber.Utils.Strings.PICPATH;
 import static christian.eilers.flibber.Utils.Strings.SHOPPING;
+import static christian.eilers.flibber.Utils.Strings.STOCK;
 import static christian.eilers.flibber.Utils.Strings.TASKS;
 import static christian.eilers.flibber.Utils.Strings.USERS;
 
@@ -90,6 +91,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         switch_shopping = findViewById(R.id.switch_shopping);
         switch_tasks = findViewById(R.id.switch_tasks);
         switch_finances = findViewById(R.id.switch_finances);
+        switch_stock = findViewById(R.id.switch_stock);
         progressBar = findViewById(R.id.progressBar);
         btn_home.setOnClickListener(this);
         btn_profile.setOnClickListener(this);
@@ -103,11 +105,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         switch_shopping.setChecked(sharedPreferences.getBoolean(SHOPPING, true));
         switch_tasks.setChecked(sharedPreferences.getBoolean(TASKS, true));
         switch_finances.setChecked(sharedPreferences.getBoolean(FINANCES, true));
+        switch_stock.setChecked(sharedPreferences.getBoolean(STOCK, false));
 
         switch_notes.setOnCheckedChangeListener(this);
         switch_shopping.setOnCheckedChangeListener(this);
         switch_tasks.setOnCheckedChangeListener(this);
         switch_finances.setOnCheckedChangeListener(this);
+        switch_stock.setOnCheckedChangeListener(this);
 
         if (groupPicPath != null)
             GlideApp.with(SettingsActivity.this)
@@ -391,6 +395,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             case R.id.switch_finances :
                 sharedPreferences.edit().putBoolean(FINANCES, isChecked).apply();
                 break;
+            case R.id.switch_stock:
+                sharedPreferences.edit().putBoolean(STOCK, isChecked).apply();
+                break;
         }
     }
 
@@ -400,7 +407,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private CircleImageView img_group;
     private ProgressBar progressBar;
     private Button btn_invite, btn_leave;
-    private SwitchCompat switch_notes, switch_shopping, switch_tasks, switch_finances;
+    private SwitchCompat switch_notes, switch_shopping, switch_tasks, switch_finances, switch_stock;
     private MaterialDialog inviteDialog;
 
     private FirebaseFirestore db;

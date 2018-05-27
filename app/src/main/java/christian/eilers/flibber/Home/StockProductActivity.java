@@ -53,11 +53,11 @@ public class StockProductActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         tv_price = findViewById(R.id.money);
         label_verlauf = findViewById(R.id.label_verlauf);
-        rec_involved = findViewById(R.id.recView_beteiligte);
+        rec_involved = findViewById(R.id.recView_involved);
         rec_verlauf = findViewById(R.id.recVerlauf);
-        progressBar = findViewById(R.id.progressBar);
 
-        rec_verlauf.setLayoutManager(new LinearLayoutManager(this));
+        rec_involved.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        rec_involved.setHasFixedSize(true);
     }
 
     private void initializeVariables() {
@@ -77,27 +77,23 @@ public class StockProductActivity extends AppCompatActivity {
     // load the StockProduct from database
     private void loadData() {
         // PRICE
-        tv_price.setAmount(thisProduct.getPrice());
+        // tv_price.setAmount(thisProduct.getPrice());
         // NAME as toolbar title
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(thisProduct.getName());
 
-        HashMap<String, User> map_involved = new HashMap<>();
-        for (String key : users.keySet()) {
-            if (thisProduct.getInvolvedIDs().contains(key))
-                map_involved.put(key, users.get(key));
-        }
-        int spanCount = 4;
-        rec_involved.setHasFixedSize(true);
-        rec_involved.setLayoutManager(new GridLayoutManager(StockProductActivity.this, spanCount));
+        // Involved users
+        ArrayList<User> userList = new ArrayList<>();
+        for (String key : thisProduct.getInvolvedIDs()) userList.add(users.get(key));
 
-        TaskInvolvedAdapter adapter_involved = new TaskInvolvedAdapter(new ArrayList<>(map_involved.values()));
-        rec_involved.setAdapter(adapter_involved);
+        TaskInvolvedAdapter adapter = new TaskInvolvedAdapter(userList);
+        rec_involved.setAdapter(adapter);
     }
 
     // delete this StockProduct and finish the activity
     private void deleteStockProduct() {
-        db.collection(GROUPS).document(groupID).collection(STOCK).document(thisProduct.getKey()).delete();
+        for (String id : thisProduct.getInvolvedIDs())
+            db.collection(GROUPS).document(groupID).collection(USERS).document(id).collection(STOCK).document(thisProduct.getKey()).delete();
         finish();
     }
 
@@ -123,7 +119,6 @@ public class StockProductActivity extends AppCompatActivity {
     private TextView label_verlauf;
     private MoneyTextView tv_price;
     private RecyclerView rec_involved, rec_verlauf;
-    private ProgressBar progressBar;
 
     private String userID, groupID;
     private StockProduct thisProduct;

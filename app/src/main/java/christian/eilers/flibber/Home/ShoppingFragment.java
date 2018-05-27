@@ -27,6 +27,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,17 +73,24 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             startActivity(main);
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             getActivity().finish();
-        } else {
-            getContext().getSharedPreferences(SHOPPING, Context.MODE_PRIVATE).edit().clear().commit();
-            ref_shopping = db.collection(GROUPS).document(groupID).collection(USERS).document(userID).collection(SHOPPING);
-            loadData();
+            return mainView;
         }
+        // clear checkBox-states
+        getContext().getSharedPreferences(SHOPPING, Context.MODE_PRIVATE).edit().clear().commit();
+        loadData();
+        if (getContext().getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(STOCK, false)) {
+            loadStock();
+            layout_stock.setVisibility(View.VISIBLE);
+        } else layout_stock.setVisibility(View.GONE);
+
+
 
         return mainView;
     }
 
     // Initialize Layout
     private void initializeViews() {
+        layout_stock = mainView.findViewById(R.id.layout_stock);
         recView = mainView.findViewById(R.id.shoppingList);
         recView_stock = mainView.findViewById(R.id.recView_stock);
         et_article = mainView.findViewById(R.id.input_shopping);
@@ -202,6 +210,8 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
 
     // Load the Shopping-List, update checkedItems and set Listeners
     private void loadData() {
+        ref_shopping = db.collection(GROUPS).document(groupID).collection(USERS).document(userID).collection(SHOPPING);
+
         final Query shoppingQuery = ref_shopping.orderBy(TIMESTAMP, Query.Direction.DESCENDING);
 
         final FirestoreRecyclerOptions<Article> options = new FirestoreRecyclerOptions.Builder<Article>()
@@ -379,6 +389,83 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
+
+    private void loadStock() {
+        final Query query_stock = db.collection(GROUPS).document(groupID).collection(USERS).document(userID)
+                .collection(STOCK).orderBy(NAME, Query.Direction.ASCENDING);
+
+        final FirestoreRecyclerOptions<StockProduct> options = new FirestoreRecyclerOptions.Builder<StockProduct>()
+                .setQuery(query_stock, StockProduct.class)
+                .build();
+
+        adapter_stock = new FirestoreRecyclerAdapter<StockProduct, StockHolder>(options) {
+            @NonNull
+            @Override
+            public StockHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_stock_small, parent, false);
+                return new StockHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull final StockHolder holder, int position, @NonNull final StockProduct model) {
+                holder.tv_name.setText(model.getName());
+
+                if (model.getInvolvedIDs().size() > 1) holder.img_group.setVisibility(View.VISIBLE);
+                else holder.img_group.setVisibility(View.GONE);
+
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final Article article = new Article(model.getKey(), model.getName(), userID, model.getInvolvedIDs().size() == 1);
+                        WriteBatch batch = db.batch();
+                        for (String id : model.getInvolvedIDs()) {
+                            DocumentReference ref = db.collection(GROUPS).document(groupID).collection(USERS).document(id).collection(SHOPPING).document(article.getKey());
+                            batch.set(ref, article);
+                        }
+                        batch.commit();
+
+                    }
+                });
+
+                holder.btn_detail.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(holder.itemView.getContext(), StockProductActivity.class);
+                        i.putExtra(STOCKID, model);
+                        i.putExtra(USERS, users);
+                        holder.itemView.getContext().startActivity(i);
+                    }
+                });
+            }
+
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                if (getItemCount() == 0) placeholder_stock.setVisibility(View.VISIBLE);
+                else placeholder_stock.setVisibility(View.GONE);
+            }
+        };
+
+        recView_stock.setLayoutManager(new LinearLayoutManager(getContext()));
+        recView_stock.addItemDecoration(new DividerItemDecoration(recView_stock.getContext(), DividerItemDecoration.VERTICAL));
+        recView_stock.setAdapter(adapter_stock);
+
+    }
+
+    // Custom Viewholder for Stock-Products
+    public class StockHolder extends RecyclerView.ViewHolder {
+        TextView tv_name;
+        ImageView img_group;
+        ImageButton btn_detail;
+
+        public StockHolder(View itemView) {
+            super(itemView);
+            tv_name = itemView.findViewById(R.id.name);
+            img_group = itemView.findViewById(R.id.ic_group);
+            btn_detail = itemView.findViewById(R.id.btn_detail);
+        }
+    }
+
     // Hide Keyboard on click outside
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
@@ -401,7 +488,9 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
             else btn_group.setColorFilter(getResources().getColor(R.color.colorPrimary));
         }
         else if (id == R.id.btn_stock) {
-            //TODO
+            Intent intent_stock = new Intent(getContext(), StockAddActivity.class);
+            intent_stock.putExtra(USERS, users);
+            startActivity(intent_stock);
         }
     }
 
@@ -409,22 +498,29 @@ public class ShoppingFragment extends Fragment implements View.OnClickListener, 
     public void onStart() {
         super.onStart();
         if (adapter != null) adapter.startListening();
+        if (!hasNulls() && getContext().getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(STOCK, false)) {
+            if (adapter_stock == null) loadStock();
+            adapter_stock.startListening();
+            layout_stock.setVisibility(View.VISIBLE);
+        } else layout_stock.setVisibility(View.GONE);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         if (adapter != null) adapter.stopListening();
+        if (adapter_stock != null) adapter_stock.stopListening();
     }
 
     private FirebaseFirestore db;
     private CollectionReference ref_shopping;
-    private FirestoreRecyclerAdapter adapter;
+    private FirestoreRecyclerAdapter adapter, adapter_stock;
     private String groupID, userID;
     private HashMap<String, User> users;
     private boolean forAll = false;
 
     private View mainView;
+    private LinearLayout layout_stock;
     private RecyclerView recView, recView_stock;
     private EditText et_article;
     private ImageButton btn_save, btn_group, btn_shopping, btn_stock;

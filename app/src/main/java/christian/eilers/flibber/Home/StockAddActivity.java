@@ -26,6 +26,7 @@ import com.blackcat.currencyedittext.CurrencyEditText;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,7 +58,6 @@ public class StockAddActivity extends AppCompatActivity implements View.OnFocusC
         et_price = findViewById(R.id.input_price);
         layout_involved = findViewById(R.id.involved);
         tv_count = findViewById(R.id.tv_count);
-        progressBar = findViewById(R.id.progressBar);
 
         et_name.requestFocus();
         et_price.setLocale(Locale.GERMANY);
@@ -84,6 +84,7 @@ public class StockAddActivity extends AppCompatActivity implements View.OnFocusC
             finish();
         } else {
             selectedIDs = new ArrayList<>();
+            selectedIDs.add(userID);
             layout_involved.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -105,7 +106,7 @@ public class StockAddActivity extends AppCompatActivity implements View.OnFocusC
     // save the StockProduct to the database and finish the activity
     private void saveProduct() {
         String name = et_name.getText().toString().trim();
-        long price = et_price.getRawValue();
+        // long price = et_price.getRawValue();
 
         if (TextUtils.isEmpty(name)) {
             Toast.makeText(this, "Produktnamen eingeben...", Toast.LENGTH_SHORT).show();
@@ -120,34 +121,30 @@ public class StockAddActivity extends AppCompatActivity implements View.OnFocusC
             return;
         }
 
-        DocumentReference doc = db.collection(GROUPS).document(groupID).collection(STOCK).document();
+        final String productID = db.collection(GROUPS).document(groupID).collection(USERS).document(userID).collection(STOCK).document().getId();
+        final StockProduct product = new StockProduct(productID, name, 0, new ArrayList<String>(), selectedIDs);
 
-        StockProduct product = new StockProduct(doc.getId(),
-                name,
-                price,
-                new ArrayList<String>(),
-                selectedIDs);
-
-        progressBar.setVisibility(View.VISIBLE);
-        doc.set(product).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                progressBar.setVisibility(View.GONE);
-                finish();
-            }
-        });
+        WriteBatch batch = db.batch();
+        for (String id : selectedIDs) {
+            DocumentReference ref = db.collection(GROUPS).document(groupID).collection(USERS).document(id).collection(STOCK).document(productID);
+            batch.set(ref, product);
+        }
+        batch.commit();
+        finish();
     }
 
     // update the selected user's list and it's text view
     public void setInvolved(ArrayList<String> selectedIDs) {
         this.selectedIDs = selectedIDs;
-        if (selectedIDs.size() == 1) tv_count.setText("1 Person");
+        if (selectedIDs.size() == 1) {
+            if (selectedIDs.contains(userID)) tv_count.setText("Nur Ich");
+            else tv_count.setText("1 Person");
+        }
         else tv_count.setText(selectedIDs.size() + " Personen");
     }
 
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
-        // TODO: et_price.hasFocus() wieder einbauen und im xml enablen
         if (et_name.hasFocus()) return;
         if (!hasFocus) {
             InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -212,7 +209,6 @@ public class StockAddActivity extends AppCompatActivity implements View.OnFocusC
     private CurrencyEditText et_price;
     private RelativeLayout layout_involved;
     private TextView tv_count;
-    private ProgressBar progressBar;
 
     private String userID, groupID;
     private FirebaseFirestore db;

@@ -17,7 +17,7 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="?android:attr/actionBarSize"
             app:titleTextAppearance="@style/Toolbar.TitleText" />
 
     </android.support.design.widget.AppBarLayout>
@@ -34,6 +34,7 @@
             android:padding="10dp">
 
             <RelativeLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -58,21 +59,13 @@
 
             </RelativeLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="10dp"
-                android:paddingBottom="5dp"
-                android:text="Beteiligte"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="22sp"
-                android:textStyle="bold"/>
-
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/recView_beteiligte"
+                android:id="@+id/recView_involved"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true">
+                android:nestedScrollingEnabled="true"
+                android:scrollbars="horizontal"
+                android:overScrollMode="ifContentScrolls">
 
             </android.support.v7.widget.RecyclerView>
 
@@ -91,7 +84,8 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recVerlauf"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:visibility="gone">
 
             </android.support.v7.widget.RecyclerView>
 

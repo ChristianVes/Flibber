@@ -56,6 +56,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
             getActivity().finish();
         } else {
             tv_groupname.setText("Headquarter");
+            notesLoaded = taskLoaded = eventsLoaded = false;
             loadNotes();
             loadTasks();
             loadEvents();
@@ -107,18 +108,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 
     // load notes from database to the recyclerView including an update listener
     private void loadNotes() {
-        Query notesQuery;
+        Date date;
         if (users.get(userID).getTimestamp() != null)
-            notesQuery = db.collection(GROUPS).document(groupID).collection(NOTES)
-                    .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
-                    .whereGreaterThan(TIMESTAMP, new Date(users.get(userID).getTimestamp().getTime() - 2 * ONE_DAY));
-
+            date = new Date(users.get(userID).getTimestamp().getTime() - 2 * ONE_DAY);
         else
-            notesQuery = db.collection(GROUPS).document(groupID).collection(NOTES)
-                    .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
-                    .whereGreaterThan(TIMESTAMP, new Date(System.currentTimeMillis() - 2 * ONE_DAY));
+            date = new Date(System.currentTimeMillis() - 2 * ONE_DAY);
 
-        FirestoreRecyclerOptions<Note> options = new FirestoreRecyclerOptions.Builder<Note>()
+        final Query notesQuery = db.collection(GROUPS).document(groupID).collection(NOTES)
+                    .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
+                    .whereGreaterThan(TIMESTAMP, date);
+
+        final FirestoreRecyclerOptions<Note> options = new FirestoreRecyclerOptions.Builder<Note>()
                 .setQuery(notesQuery, Note.class)
                 .build();
 
@@ -128,7 +128,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
                 super.onDataChanged();
                 if (getItemCount() == 0) placeholder_notes.setVisibility(View.VISIBLE);
                 else placeholder_notes.setVisibility(View.GONE);
-                progressBar.setVisibility(View.INVISIBLE);
+                notesLoaded = true;
+                if (notesLoaded && taskLoaded && eventsLoaded) progressBar.setVisibility(View.INVISIBLE);
             }
         };
 
@@ -156,7 +157,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
                 }
                 if (count == 0) placeholder_tasks.setVisibility(View.VISIBLE);
                 else placeholder_tasks.setVisibility(View.GONE);
-                progressBar.setVisibility(View.INVISIBLE);
+                taskLoaded = true;
+                if (notesLoaded && taskLoaded && eventsLoaded) progressBar.setVisibility(View.INVISIBLE);
             }
         };
 
@@ -165,15 +167,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     }
 
     private void loadEvents() {
-        Query query;
+        Date date;
         if (users.get(userID).getTimestamp() != null)
-            query = db.collection(GROUPS).document(groupID).collection(USERS).document(userID).collection(NOTIFICATIONS)
-                .whereGreaterThan(TIMESTAMP, new Date(users.get(userID).getTimestamp().getTime() - ONE_HOUR))
-                .orderBy(TIMESTAMP, Query.Direction.DESCENDING);
+            date = new Date(users.get(userID).getTimestamp().getTime() - ONE_HOUR);
         else
-            query = db.collection(GROUPS).document(groupID).collection(USERS).document(userID).collection(NOTIFICATIONS)
-                    .whereGreaterThan(TIMESTAMP, new Date(System.currentTimeMillis() - ONE_DAY))
-                    .orderBy(TIMESTAMP, Query.Direction.DESCENDING);
+            date = new Date(System.currentTimeMillis() - ONE_DAY);
+
+        final Query query = db.collection(GROUPS).document(groupID).collection(USERS).document(userID).collection(NOTIFICATIONS)
+                .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
+                .whereGreaterThan(TIMESTAMP, date);
 
         final FirestoreRecyclerOptions<NotificationModel> options = new FirestoreRecyclerOptions.Builder<NotificationModel>()
                 .setQuery(query, NotificationModel.class)
@@ -185,6 +187,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
                 super.onDataChanged();
                 if (getItemCount() == 0) placeholder_events.setVisibility(View.VISIBLE);
                 else placeholder_events.setVisibility(View.GONE);
+                eventsLoaded = true;
+                if (notesLoaded && taskLoaded && eventsLoaded) progressBar.setVisibility(View.INVISIBLE);
             }
         };
 
@@ -252,4 +256,5 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     private FirebaseFirestore db;
     private String userID, groupID, groupname;
     private HashMap<String, User> users;
+    private boolean notesLoaded, taskLoaded, eventsLoaded;
 }

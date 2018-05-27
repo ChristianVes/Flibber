@@ -10,7 +10,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -41,7 +43,7 @@ public class VerlaufActivity extends AppCompatActivity {
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
         recView = findViewById(R.id.recVerlauf);
-        progressBar = findViewById(R.id.progressBar);
+        tv_placeholder = findViewById(R.id.placeholder_verlauf);
         setSupportActionBar(toolbar); // Toolbar als Actionbar setzen
     }
 
@@ -70,7 +72,14 @@ public class VerlaufActivity extends AppCompatActivity {
                 .setQuery(query, Payment.class)
                 .build();
 
-        adapter = new VerlaufAdapter(recyclerOptions, userID, users);
+        adapter = new VerlaufAdapter(recyclerOptions, userID, users) {
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                if (getItemCount() == 0) tv_placeholder.setVisibility(View.VISIBLE);
+                else tv_placeholder.setVisibility(View.GONE);
+            }
+        };
         adapter_all = new VerlaufAllAdapter(recyclerOptions, userID, users);
 
         recView.setLayoutManager(new LinearLayoutManager(this));
@@ -127,6 +136,6 @@ public class VerlaufActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private RecyclerView recView;
-    private ProgressBar progressBar;
+    private TextView tv_placeholder;
     private Menu menu;
 }

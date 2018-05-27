@@ -19,7 +19,7 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="?android:attr/actionBarSize"
             app:title="Notizen"
             app:titleTextAppearance="@style/Toolbar.TitleText"/>
 
@@ -48,7 +48,8 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recVerlauf"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:nestedScrollingEnabled="false">
 
             </android.support.v7.widget.RecyclerView>
 
