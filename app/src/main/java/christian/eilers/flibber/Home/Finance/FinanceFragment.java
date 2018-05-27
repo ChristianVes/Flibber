@@ -309,6 +309,8 @@ public class FinanceFragment extends Fragment implements View.OnClickListener{
         if(adapterVerlauf != null) adapterVerlauf.stopListening();
     }
 
+
+
     private FirebaseFirestore db;
     private String groupID;
     private String userID;

@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -154,6 +155,23 @@ public class HomeActivity extends AppCompatActivity {
         editor.putStringSet(FINANCE_DELETED, null);
         editor.putStringSet(TASKS, null);
         editor.apply();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mView.getCurrentItem() == 0) {
+            new MaterialDialog.Builder(this)
+                    .title("Headquarter beenden?")
+                    .positiveText("Beenden")
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            finish();
+                        }
+                    })
+                    .show();
+        }
+        else mView.setCurrentItem(0);
     }
 
     // produces a map of users for given snapshots
