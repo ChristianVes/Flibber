@@ -573,7 +573,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setContentTitle("Headquarter")
                         // set content text to support devices running API level < 24
                         // ..but API < 24 should never get to this method
-                        .setContentText("keine weiteren Benachrichtigungen")
+                        .setContentText("Neue Benachrichtigungen")
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentIntent(clickPendingIntent)
                         .setAutoCancel(true)
