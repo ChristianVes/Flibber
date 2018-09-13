@@ -82,7 +82,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     private void initializeViews() {
         btn_invite = findViewById(R.id.btn_invite);
-        btn_leave = findViewById(R.id.btn_leave);
         img_group = findViewById(R.id.group_image);
         tv_name = findViewById(R.id.group_name);
         switch_notes = findViewById(R.id.switch_notes);
@@ -92,7 +91,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         switch_stock = findViewById(R.id.switch_stock);
         progressBar = findViewById(R.id.progressBar);
         btn_invite.setOnClickListener(this);
-        btn_leave.setOnClickListener(this);
         img_group.setOnClickListener(this);
 
         // Switch-States from SharedPreferences
@@ -352,9 +350,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         if (id == R.id.btn_invite) {
             invitationDialog();
         }
-        else if (id == R.id.btn_leave) {
-            Toast.makeText(this, "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
-        }
         else if (id == R.id.group_image) {
             Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(galleryIntent, REQUEST_CODE_GALLERY);
@@ -387,7 +382,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private TextView tv_name;
     private CircleImageView img_group;
     private ProgressBar progressBar;
-    private Button btn_invite, btn_leave;
+    private ImageButton btn_invite;
     private SwitchCompat switch_notes, switch_shopping, switch_tasks, switch_finances, switch_stock;
     private MaterialDialog inviteDialog;
 
