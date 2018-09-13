@@ -29,6 +29,7 @@ import christian.eilers.flibber.Models.Note;
 import christian.eilers.flibber.Models.NotificationModel;
 import christian.eilers.flibber.Models.TaskModel;
 import christian.eilers.flibber.Models.User;
+import christian.eilers.flibber.ProfileActivity;
 import christian.eilers.flibber.R;
 import christian.eilers.flibber.Utils.LocalStorage;
 
@@ -80,12 +81,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         btn_note = mainView.findViewById(R.id.btn_note);
         btn_tasks = mainView.findViewById(R.id.btn_task);
         btn_settings = mainView.findViewById(R.id.btn_settings);
+        btn_profile = mainView.findViewById(R.id.btn_profile);
         progressBar = mainView.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
 
         btn_note.setOnClickListener(this);
         btn_tasks.setOnClickListener(this);
         btn_settings.setOnClickListener(this);
+        btn_profile.setOnClickListener(this);
         tv_notes.setOnClickListener(this);
         tv_tasks.setOnClickListener(this);
         tv_events.setOnClickListener(this);
@@ -149,6 +152,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 
         adapter_tasks = new TasksHomeAdapter(options, users, userID, groupID) {
             @Override
+            // First of the three methods being called -> placeholder is first to be visible
             public void onDataChanged() {
                 super.onDataChanged();
                 int count = 0; // number of visibile items
@@ -220,6 +224,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
             case R.id.btn_settings:
                 Intent intent_settings = new Intent(getContext(), SettingsActivity.class);
                 getActivity().startActivity(intent_settings);
+                break;
+            case R.id.btn_profile:
+                // Lösche WG Key und wechsel zur Profil Activity
+                LocalStorage.setGroupID(getContext(), null);
+                LocalStorage.setGroupPicPath(getContext(), null);
+                LocalStorage.setGroupName(getContext(), null);
+
+                Intent profileIntent = new Intent(getContext(), ProfileActivity.class);
+                profileIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(profileIntent);
+                getActivity().finish();
+                break;
         }
     }
 
@@ -249,7 +265,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     private RecyclerView recView_notes, recView_tasks, recView_events;
     private TextView tv_notes, tv_tasks, tv_events, tv_groupname;
     private TextView placeholder_notes, placeholder_tasks, placeholder_events;
-    private ImageButton btn_note, btn_tasks, btn_settings;
+    private ImageButton btn_note, btn_tasks, btn_settings, btn_profile;
     private ProgressBar progressBar;
 
     private FirestoreRecyclerAdapter adapter_notes, adapter_tasks, adapter_events;

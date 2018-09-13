@@ -34,11 +34,25 @@
                 android:id="@+id/group_name"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:layout_toLeftOf="@id/btn_settings"
+                android:layout_toLeftOf="@id/btn_profile"
                 android:gravity="center_vertical"
                 android:paddingLeft="10dp"
                 android:text="Headquarter"
                 style="@style/Toolbar.TitleText" />
+
+            <ImageButton
+                android:id="@+id/btn_profile"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_toLeftOf="@id/btn_settings"
+                android:padding="7dp"
+                android:layout_marginRight="10dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/selector_stock_item"
+                android:scaleType="fitEnd"
+                android:tint="@color/colorPrimaryBlack"
+                app:srcCompat="@drawable/ic_profile"
+                android:contentDescription="TODO" />
 
             <ImageButton
                 android:id="@+id/btn_settings"

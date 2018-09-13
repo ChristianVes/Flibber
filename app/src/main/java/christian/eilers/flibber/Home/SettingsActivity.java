@@ -81,8 +81,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void initializeViews() {
-        btn_profile = findViewById(R.id.btn_profile);
-        btn_home = findViewById(R.id.btn_home);
         btn_invite = findViewById(R.id.btn_invite);
         btn_leave = findViewById(R.id.btn_leave);
         img_group = findViewById(R.id.group_image);
@@ -93,8 +91,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         switch_finances = findViewById(R.id.switch_finances);
         switch_stock = findViewById(R.id.switch_stock);
         progressBar = findViewById(R.id.progressBar);
-        btn_home.setOnClickListener(this);
-        btn_profile.setOnClickListener(this);
         btn_invite.setOnClickListener(this);
         btn_leave.setOnClickListener(this);
         img_group.setOnClickListener(this);
@@ -356,20 +352,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         if (id == R.id.btn_invite) {
             invitationDialog();
         }
-        else if (id == R.id.btn_home) {
-            finish();
-        }
-        else if (id == R.id.btn_profile) {
-            // Lösche WG Key und wechsel zur Profil Activity
-            LocalStorage.setGroupID(this, null);
-            LocalStorage.setGroupPicPath(this, null);
-            LocalStorage.setGroupName(this, null);
-
-            Intent profileIntent = new Intent(this, ProfileActivity.class);
-            profileIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(profileIntent);
-            finish();
-        }
         else if (id == R.id.btn_leave) {
             Toast.makeText(this, "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
         }
@@ -402,7 +384,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-    private ImageButton btn_profile, btn_home;
     private TextView tv_name;
     private CircleImageView img_group;
     private ProgressBar progressBar;
