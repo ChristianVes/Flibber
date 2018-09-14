@@ -73,11 +73,14 @@ public class GroupAdapter extends FirestoreRecyclerAdapter<Group, GroupAdapter.G
                 LocalStorage.setGroupID(holder.itemView.getContext(), model.getKey());
                 LocalStorage.setGroupName(holder.itemView.getContext(), model.getName());
                 LocalStorage.setGroupPicPath(holder.itemView.getContext(), model.getPicPath());
-                // update device token stored in group reference
-                HashMap<String, Object> map_devicetoken = new HashMap<>();
+                // update device token stored in this group and in the user's collection
+                // Nicht Notwendig -> devicetoken wird beim einloggen automatisch in allen gruppen aktualisiert
+                /*HashMap<String, Object> map_devicetoken = new HashMap<>();
                 map_devicetoken.put(DEVICETOKEN, FirebaseInstanceId.getInstance().getToken());
-                FirebaseFirestore.getInstance().collection(GROUPS).document(model.getKey())
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection(GROUPS).document(model.getKey())
                         .collection(USERS).document(userID).update(map_devicetoken);
+                db.collection(USERS).document(userID).update(map_devicetoken);*/
                 // start @HomeActivity
                 Intent homeIntent = new Intent(context, HomeActivity.class);
                 context.startActivity(homeIntent);

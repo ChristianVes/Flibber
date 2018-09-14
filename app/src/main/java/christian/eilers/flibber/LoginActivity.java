@@ -30,8 +30,14 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.iid.FirebaseInstanceId;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import christian.eilers.flibber.Models.User;
 import christian.eilers.flibber.Utils.LocalStorage;
@@ -139,13 +145,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             DocumentSnapshot snapshot_user = transaction.get(ref_user);
                             User user = snapshot_user.toObject(User.class);
 
-                            // Update Devicetoken
+                            // Update Devicetoken in user collection
                             transaction.update(ref_user, DEVICETOKEN, deviceToken);
                             return user;
                         }
                     }).addOnSuccessListener(new OnSuccessListener<User>() {
                         @Override
                         public void onSuccess(User user) {
+                            // update device token in group collection
+                            updateDeviceToken(userID, deviceToken);
                             eT_password.setText("");
                             // Set Local Data
                             LocalStorage.setData(LoginActivity.this, null, userID, user.getName(), user.getPicPath());
@@ -173,6 +181,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 }
             }
         });
+    }
+
+    // Update DeviceToken in each group the user is part of
+    private void updateDeviceToken(final String userID, final String deviceToken) {
+        final Map<String,Object> map_deviceToken = new HashMap<>();
+        map_deviceToken.put(DEVICETOKEN, deviceToken);
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final WriteBatch batch = db.batch();
+        db.collection(USERS).document(userID).collection(GROUPS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                    DocumentReference doc_user = db.collection(GROUPS).document(document.getId()).collection(USERS).document(userID);
+                    batch.update(doc_user, map_deviceToken);
+                }
+                batch.commit();
+            }
+        });
+
     }
 
     // Initialize views from layout file
