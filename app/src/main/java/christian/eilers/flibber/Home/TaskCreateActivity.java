@@ -98,7 +98,7 @@ public class TaskCreateActivity extends AppCompatActivity implements View.OnFocu
                 @Override
                 public void onClick(View v) {
                     Dialog dialog = new UserSelectionDialog(TaskCreateActivity.this,
-                            android.R.style.Theme_Translucent_NoTitleBar, userList, TaskCreateActivity.this);
+                            android.R.style.Theme_Translucent_NoTitleBar, userList);
                     dialog.show();
                 }
             });

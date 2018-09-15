@@ -20,8 +20,9 @@ public class InvolvedSelectionDialog extends Dialog {
     public InvolvedSelectionDialog(@NonNull Context context, int themeResId, ArrayList<User> userList) {
         super(context, themeResId);
         this.context = context;
-        getWindow().setBackgroundDrawableResource(R.color.translucent_black);
         this.userList = userList;
+        // set the background to a translucent black
+        getWindow().setBackgroundDrawableResource(R.color.translucent_black);
     }
 
     @Override
@@ -35,6 +36,7 @@ public class InvolvedSelectionDialog extends Dialog {
 
         recView.setHasFixedSize(true);
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         final UserSelectionAdapter adapter = new UserSelectionAdapter(
                 userList,
                 ((TransactionActivity)context).getSelectedIDs());
