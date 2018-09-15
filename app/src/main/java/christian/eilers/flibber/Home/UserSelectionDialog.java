@@ -29,7 +29,7 @@ public class UserSelectionDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_userlist);
-        btn = findViewById(R.id.btn);
+        btn = findViewById(R.id.btn_save);
         recView = findViewById(R.id.recView);
 
         recView.setHasFixedSize(true);

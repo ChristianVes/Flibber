@@ -9,22 +9,45 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_above="@+id/btn"
+        android:layout_above="@+id/layout_bottom"
         android:paddingTop="20dp">
 
     </android.support.v7.widget.RecyclerView>
 
-    <Button
-        android:id="@+id/btn"
+    <RelativeLayout
+        android:id="@+id/layout_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@android:color/transparent"
-        android:text="Bestätigen"
-        android:textSize="20sp"
-        android:textColor="@drawable/selector_textcolor_dialog"
-        android:gravity="right|center_vertical"
-        android:padding="20dp"/>
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/btn_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:background="@android:color/transparent"
+            android:text="Alle"
+            android:textSize="20sp"
+            android:textColor="@drawable/selector_textcolor_dialog"
+            android:gravity="left|center_vertical"
+            android:padding="20dp"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/btn_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="@android:color/transparent"
+            android:text="Bestätigen"
+            android:textSize="20sp"
+            android:textColor="@drawable/selector_textcolor_dialog"
+            android:gravity="right|center_vertical"
+            android:padding="20dp"/>
+
+    </RelativeLayout>
+
+
 
 </RelativeLayout>
 

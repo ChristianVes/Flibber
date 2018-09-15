@@ -79,6 +79,20 @@ public class UserSelectionAdapter extends RecyclerView.Adapter<UserSelectionAdap
         return involvedIDs;
     }
 
+    // Select all Users
+    public void selectAll(RecyclerView recView) {
+        ArrayList<String> userIDs = new ArrayList<>();
+        for (User u : users) userIDs.add(u.getUserID());
+        involvedIDs = (ArrayList<String>) userIDs.clone();
+        for (int i = 0; i < users.size(); i++) {
+            View itemView = recView.getChildAt(i);
+            FrameLayout frameLayout = itemView.findViewById(R.id.frame_layout);
+            int padding = frameLayout.getPaddingTop(); // Benutzte ein beliebiges
+            frameLayout.setBackgroundResource(R.drawable.layerlist_circle);
+            frameLayout.setPadding(padding,padding,padding,padding);
+        }
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         CircleImageView img_profile;
         TextView tv_username;

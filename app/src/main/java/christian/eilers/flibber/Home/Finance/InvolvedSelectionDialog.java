@@ -28,7 +28,9 @@ public class InvolvedSelectionDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_userlist);
-        btn = findViewById(R.id.btn);
+        btn_save = findViewById(R.id.btn_save);
+        btn_all = findViewById(R.id.btn_all);
+        btn_all.setVisibility(View.VISIBLE);
         recView = findViewById(R.id.recView);
 
         recView.setHasFixedSize(true);
@@ -38,7 +40,7 @@ public class InvolvedSelectionDialog extends Dialog {
                 ((TransactionActivity)context).getSelectedIDs());
         recView.setAdapter(adapter);
 
-        btn.setOnClickListener(new View.OnClickListener() {
+        btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((TransactionActivity)context).setInvolved(adapter.getInvolvedIDs());
@@ -46,10 +48,17 @@ public class InvolvedSelectionDialog extends Dialog {
             }
         });
 
+        btn_all.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adapter.selectAll(recView);
+            }
+        });
+
     }
 
     private Context context;
-    private Button btn;
+    private Button btn_save, btn_all;
     private RecyclerView recView;
     private ArrayList<User> userList;
 }
