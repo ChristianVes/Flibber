@@ -361,6 +361,72 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
+    // Show Dialog to change the user's name
+    private void changeNameDialog() {
+        new MaterialDialog.Builder(this)
+                .title("Meinen Namen ändern")
+                .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS)
+                .input(null, userName, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                    }
+                })
+                .positiveText("Speichern")
+                .negativeText("Abbrechen")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        // Read out input for the group name
+                        String name = dialog.getInputEditText().getText().toString().trim();
+                        if(TextUtils.isEmpty(name)) {
+                            Toast.makeText(ProfileActivity.this, "Keinen Namen eingegeben",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        dialog.getInputEditText().setText("");
+                        changeName(name);
+                    }
+                }).show();
+    }
+
+    // Changing the user's name
+    private void changeName(final String name) {
+        progressBar.setVisibility(View.VISIBLE);
+        DocumentReference ref_user = db.collection(USERS).document(userID);
+        final WriteBatch batch = db.batch();
+        batch.update(ref_user, NAME, name);
+        db.collection(USERS).document(userID).collection(GROUPS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                    DocumentReference doc_user = db.collection(GROUPS).document(document.getId()).collection(USERS).document(userID);
+                    batch.update(doc_user, NAME, name);
+                }
+                batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        tv_name.setText(name);
+                        userName = name;
+                        LocalStorage.setUserName(ProfileActivity.this, name);
+                        progressBar.setVisibility(View.GONE);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(ProfileActivity.this, "Netzwerkfehler...", Toast.LENGTH_SHORT);
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(ProfileActivity.this, "Netzwerkfehler...", Toast.LENGTH_SHORT);
+                progressBar.setVisibility(View.GONE);
+            }
+        });
+    }
+
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -414,7 +480,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 logout();
                 return true;
             case R.id.action_name:
-                Toast.makeText(this, "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
+                changeNameDialog();
+                // Toast.makeText(this, "Noch nicht möglich...", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
