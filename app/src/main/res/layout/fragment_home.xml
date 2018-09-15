@@ -239,6 +239,7 @@
                     android:id="@+id/label_events"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
                     android:padding="10dp"
                     android:text="Benachrichtigungen"
                     android:textColor="@color/colorPrimaryDark"

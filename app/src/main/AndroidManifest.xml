@@ -107,7 +107,8 @@
         <activity
             android:name=".Home.NotesVerlaufActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".Home.SettingsActivity"></activity>
+        <activity android:name=".Home.SettingsActivity" />
+        <activity android:name=".Home.NotificationActivity"></activity>
     </application>
 
 </manifest>

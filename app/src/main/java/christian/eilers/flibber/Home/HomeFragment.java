@@ -219,7 +219,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
                 ((HomeActivity) getActivity()).setTabPosition(3);
                 break;
             case R.id.label_events:
-                //TODO
+                Intent intent_notifications = new Intent(getContext(), NotificationActivity.class);
+                intent_notifications.putExtra(USERS, ((HomeActivity) getActivity()).getUsers());
+                getActivity().startActivity(intent_notifications);
                 break;
             case R.id.btn_settings:
                 Intent intent_settings = new Intent(getContext(), SettingsActivity.class);
