@@ -23,8 +23,8 @@ android {
         applicationId "christian.eilers.flibber"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 18
-        versionName "1.4.1"
+        versionCode 19
+        versionName "1.4.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -72,7 +72,7 @@ dependencies {
     implementation 'com.github.BlacKCaT27:CurrencyEditText:2.0.2'
     implementation 'org.fabiomsr:moneytextview:1.1.0'
     // Crashlytics
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
         transitive = true
     }
     testImplementation 'junit:junit:4.12'

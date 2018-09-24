@@ -32,6 +32,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -186,21 +187,33 @@ public class NoteCreateActivity extends AppCompatActivity implements TextView.On
     }
 
     // Erstelle Datenbank-Eintrag für die Notiz
-    private void createDbEntry(String notePicPath) {
-        final DocumentReference noteRef = db.collection(GROUPS).document(groupID).collection(NOTES).document();
-        final Note note = new Note(
-                et_title.getText().toString().trim(),
-                et_description.getText().toString().trim(),
-                userID,
-                notePicPath,
-                noteRef.getId()
-        );
-        noteRef.set(note).addOnSuccessListener(new OnSuccessListener<Void>() {
+    private void createDbEntry(final String notePicPath) {
+        db.collection(GROUPS).document(groupID).collection(USERS).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(Void aVoid) {
-                toNoteActivity(note);
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                ArrayList<String> userList = new ArrayList<>();
+                for(DocumentSnapshot doc : queryDocumentSnapshots) {
+                    User user = doc.toObject(User.class);
+                    userList.add(user.getUserID());
+                }
+                final DocumentReference noteRef = db.collection(GROUPS).document(groupID).collection(NOTES).document();
+                final Note note = new Note(
+                        et_title.getText().toString().trim(),
+                        et_description.getText().toString().trim(),
+                        userID,
+                        notePicPath,
+                        noteRef.getId(),
+                        userList
+                );
+                noteRef.set(note).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        toNoteActivity(note);
+                    }
+                });
             }
         });
+
     }
 
     // Wechsel zur Home Activity

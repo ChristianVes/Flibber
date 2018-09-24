@@ -23,6 +23,10 @@
         </activity>
 
         <meta-data
+            android:name="google_analytics_adid_collection_enabled"
+            android:value="false" />
+
+        <meta-data
             android:name="io.fabric.ApiKey"
             android:value="6f8c3dd0bc38a28bbc7acf2996898d15b8bbb108" />
 

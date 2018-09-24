@@ -64,6 +64,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     String description_notes = remoteMessage.getData().get(DESCRIPTION);
                     notesNotification(username_notes, title_notes, description_notes);
                     break;
+                case COMMENTS:
+                    if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(NOTES, true)) break;
+                    String username_comments = remoteMessage.getData().get(USER);
+                    String description_comments = remoteMessage.getData().get(DESCRIPTION);
+                    commentsNotification(username_comments, description_comments);
+                    break;
                 case FINANCES:
                     if(!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(FINANCES, false)) break;
                     String name_payment = remoteMessage.getData().get(NAME);
@@ -140,6 +146,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         title_short = username_notes;
                         description_short = title_notes;
                     }
+                    showNotification(title, description, title_short, description_short);
+                    break;
+                case COMMENTS:
+                    if (!getSharedPreferences(groupID, Context.MODE_PRIVATE).getBoolean(NOTES, true))
+                        break;
+                    String username_comments = remoteMessage.getData().get(USER);
+                    String description_comments = remoteMessage.getData().get(DESCRIPTION);
+                    title = username_comments;
+                    description = description_comments;
+                    title_short = username_comments;
+                    description_short = description_comments;
                     showNotification(title, description, title_short, description_short);
                     break;
                 case FINANCES:
@@ -547,6 +564,39 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentIntent(clickPendingIntent)
                 .setGroup(CHANNEL_ID_ALL);
         if (!TextUtils.isEmpty(description)) builder.setStyle(style);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID_NOTES, "Pinnwand",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        notificationManager.notify((int) System.currentTimeMillis(), builder.build());
+        summaryNotification();
+    }
+
+    private void commentsNotification(String username, String description) {
+        // Intent for onClick-Event
+        Intent clickIntent = new Intent(this, HomeActivity.class);
+        clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent clickPendingIntent = PendingIntent.getActivity(this, 0, clickIntent, PendingIntent.FLAG_ONE_SHOT);
+
+        // Default Notification Sound
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        // Build the Notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID_NOTES)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(username)
+                .setContentText(description)
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setContentIntent(clickPendingIntent)
+                .setGroup(CHANNEL_ID_ALL);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
